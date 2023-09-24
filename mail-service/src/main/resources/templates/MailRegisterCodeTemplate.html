@@ -1,0 +1,85 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+  <title>有语-验证码</title>
+  <style>
+    .mail-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 80%;
+      box-shadow: 0 2px 8px 0 rgba(0, 0, 0, .2);
+      margin: 0 auto;
+    }
+
+    .header {
+      padding: 10px 10px 0px 10px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .inner-wrapper {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 16px 32px;
+      border-radius: 0 0 10px 10px;
+    }
+
+    .greet {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .nickname {
+      color: #006dfe;
+    }
+
+    .caption {
+      padding-left: 16px;
+      margin-bottom: 10px;
+    }
+
+    .content {
+      margin: 10px;
+      background-color: #f8f9fa;
+      padding: 16px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .article-link {
+      padding-left: 16px;
+    }
+
+    .footer {
+      margin: 100px 0 20px 0;
+      line-height: 22px;
+      font-family: 'Microsoft YaHei';
+      font-size: 12px;
+      color: #999;
+      text-align: center;
+    }
+
+    .unsubscribe {
+      text-decoration: none;
+      color: #00a2ca;
+    }
+  </style>
+</head>
+<body>
+<div class="mail-body">
+  <div class="header">有语</div>
+  <div class="inner-wrapper">
+    <h3>您正在访问有语网, 验证码为：</h3>
+    <div class="content" id="content" th:text="${content}"></div>
+    <div>请勿泄漏你的验证码信息，如您未在有语注册账号，请忽略本邮件。</div>
+  </div>
+</div>
+</body>
+</html>

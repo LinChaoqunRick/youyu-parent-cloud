@@ -1,0 +1,15 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 124.222.79.236:8848
+    gateway:
+      routes:
+      - id: youyu-service   # 路由名称
+        uri: lb://youyu-service  # 路由的地址，lb表示使用负载均衡到微服务，也可以使用http正常转发
+        predicates: # 路由规则，断言什么请求会被路由
+        - Path=/post/**  # 只要是访问的这个路径，一律都被路由到上面指定的服务

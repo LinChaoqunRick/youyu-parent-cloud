@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.dao.NoteChapterDao">
+
+    <resultMap type="com.youyu.entity.NoteChapter" id="NoteChapterMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="noteId" column="note_id" jdbcType="INTEGER"/>
+        <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
+        <result property="userIds" column="user_ids" jdbcType="VARCHAR"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="viewcount" column="viewCount" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="deleted" column="deleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="NoteChapterMap">
+        select
+          id, note_id, parent_id, user_ids, title, content, viewCount, create_time, update_time, deleted
+        from bs_note_chapter
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="NoteChapterMap">
+        select
+          id, note_id, parent_id, user_ids, title, content, viewCount, create_time, update_time, deleted
+        from bs_note_chapter
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="noteId != null">
+                and note_id = #{noteId}
+            </if>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="userIds != null and userIds != ''">
+                and user_ids = #{userIds}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="viewcount != null and viewcount != ''">
+                and viewCount = #{viewcount}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="deleted != null">
+                and deleted = #{deleted}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from bs_note_chapter
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="noteId != null">
+                and note_id = #{noteId}
+            </if>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="userIds != null and userIds != ''">
+                and user_ids = #{userIds}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="viewcount != null and viewcount != ''">
+                and viewCount = #{viewcount}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="deleted != null">
+                and deleted = #{deleted}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into bs_note_chapter(note_id, parent_id, user_ids, title, content, viewCount, create_time, update_time, deleted)
+        values (#{noteId}, #{parentId}, #{userIds}, #{title}, #{content}, #{viewcount}, #{createTime}, #{updateTime}, #{deleted})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into bs_note_chapter(note_id, parent_id, user_ids, title, content, viewCount, create_time, update_time, deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.noteId}, #{entity.parentId}, #{entity.userIds}, #{entity.title}, #{entity.content}, #{entity.viewcount}, #{entity.createTime}, #{entity.updateTime}, #{entity.deleted})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into bs_note_chapter(note_id, parent_id, user_ids, title, content, viewCount, create_time, update_time, deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.noteId}, #{entity.parentId}, #{entity.userIds}, #{entity.title}, #{entity.content}, #{entity.viewcount}, #{entity.createTime}, #{entity.updateTime}, #{entity.deleted})
+        </foreach>
+        on duplicate key update
+        note_id = values(note_id),
+        parent_id = values(parent_id),
+        user_ids = values(user_ids),
+        title = values(title),
+        content = values(content),
+        viewCount = values(viewCount),
+        create_time = values(create_time),
+        update_time = values(update_time),
+        deleted = values(deleted)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update bs_note_chapter
+        <set>
+            <if test="noteId != null">
+                note_id = #{noteId},
+            </if>
+            <if test="parentId != null">
+                parent_id = #{parentId},
+            </if>
+            <if test="userIds != null and userIds != ''">
+                user_ids = #{userIds},
+            </if>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="viewcount != null and viewcount != ''">
+                viewCount = #{viewcount},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="deleted != null">
+                deleted = #{deleted},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from bs_note_chapter where id = #{id}
+    </delete>
+
+</mapper>
+
