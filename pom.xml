@@ -14,6 +14,10 @@
         <module>mail-service</module>
         <module>moment-service</module>
         <module>gateway-service</module>
+        <module>common-api</module>
+        <module>common-api/common-model</module>
+        <module>common-api/common-auth</module>
+        <module>common-api/common-utils</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
