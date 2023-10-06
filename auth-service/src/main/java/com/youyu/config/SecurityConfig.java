@@ -13,6 +13,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -45,6 +48,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return authenticationProvider;
     }
 
+    @Bean
+    public TokenStore tokenStore() {
+        return new JwtTokenStore(accessTokenConverter());
+    }
+
+    @Bean
+    public JwtAccessTokenConverter accessTokenConverter() {
+        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+        converter.setSigningKey("youyul");
+        return converter;
+    }
+
     @Resource
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
@@ -53,42 +68,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Resource
     private AccessDeniedHandler accessDeniedHandler;
-
-    // 登陆服务需要认证的接口
-    private final String[] LOGIN_AUTH_PATHS = {
-            "/login/logout",
-    };
-    // 文字服务需要认证的接口
-    private final String[] POST_AUTH_PATHS = {
-            "/post/setPostLike",
-            "/post/isPostLike",
-            "/post/cancelPostLike",
-            "/post/edit/detail",
-            "/post/delete",
-            "/post/update"
-    };
-    // 笔记服务需要认证的接口
-    private final String[] NOTE_AUTH_PATHS = {
-            "/note/create",
-            "/note/update",
-            "/note/delete",
-            "/noteChapter/create",
-            "/noteChapter/update",
-            "/noteChapter/delete"
-    };
-    // oss服务需要认证的接口
-    private final String[] OSS_AUTH_PATHS = {
-            "/oss/policy"
-    };
-    // 时刻服务需要认证的接口
-    private final String[] MOMENT_AUTH_PATHS = {
-            "/moment/create",
-            "/moment/delete",
-            "/momentLike/setMomentLike",
-            "/momentLike/cancelMomentLike",
-            "/momentCommentLike/setMomentCommentLike",
-            "/momentCommentLike/cancelMomentCommentLike",
-    };
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -101,13 +80,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // 对于登录接口 允许匿名访问
                 .antMatchers("/login/accountLogin").anonymous()
-                .antMatchers(LOGIN_AUTH_PATHS).authenticated()
-                .antMatchers(POST_AUTH_PATHS).authenticated()
-                .antMatchers(NOTE_AUTH_PATHS).authenticated()
-                .antMatchers(OSS_AUTH_PATHS).authenticated()
-                .antMatchers(MOMENT_AUTH_PATHS).authenticated()
                 // 除上面外的所有请求全部需要鉴权认证
-                // .anyRequest().authenticated();
                 .anyRequest().permitAll();
 
         // 添加过滤器

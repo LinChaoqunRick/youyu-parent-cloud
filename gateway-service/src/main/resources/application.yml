@@ -13,3 +13,11 @@ spring:
         uri: lb://youyu-service  # 路由的地址，lb表示使用负载均衡到微服务，也可以使用http正常转发
         predicates: # 路由规则，断言什么请求会被路由
         - Path=/post/**  # 只要是访问的这个路径，一律都被路由到上面指定的服务
+      - id: auth-service
+        uri: lb://auth-service
+        predicates:
+          - Path=/login/**
+      - id: test-service
+        uri: lb://auth-service
+        predicates:
+          - Path=/test/**

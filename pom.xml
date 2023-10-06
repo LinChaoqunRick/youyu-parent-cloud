@@ -19,6 +19,7 @@
         <module>common-api/common-auth</module>
         <module>common-api/common-base</module>
         <module>auth-service</module>
+        <module>test-service</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
