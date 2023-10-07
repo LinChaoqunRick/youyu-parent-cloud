@@ -28,9 +28,6 @@ public class LoginController {
 
     @RequestMapping("/accountLogin")
     public ResponseResult<ResultUser> login(@Valid UserFramework user) {
-        if (!StringUtils.hasText(user.getUsername())) {
-            throw new SystemException(ResultCode.REQUIRE_USERNAME);
-        }
         ResultUser resultUser = loginService.login(user);
         return ResponseResult.success("登录成功", resultUser);
     }
