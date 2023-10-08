@@ -43,7 +43,7 @@ public class PasswordAuthServiceImpl implements AuthService {
 
         // 3. 不存在抛异常
         if (user == null) {
-            throw new RuntimeException("用户名或密码错误");
+            throw new RuntimeException("用户名或密码错误123");
         }
 
         // 4. 校验密码
@@ -55,7 +55,7 @@ public class PasswordAuthServiceImpl implements AuthService {
         boolean matches = passwordEncoder.matches(passwordForm, passwordDb);
         // 4.4 不匹配，抛异常
         if (!matches) {
-            throw new RuntimeException("账号或密码错误");
+            throw new RuntimeException("用户名或密码错误456");
         }
         return user;
     }

@@ -6,7 +6,7 @@ public enum ResultCode {
     NEED_LOGIN(401, "需要登录后操作401"),
     NO_OPERATOR_AUTH(403, "无权限操作，拒绝访问"),
     NOT_FOUND(404, "访问的资源不存在"),
-    LOGIN_ERROR(505, "用户名或密码错误"),
+    LOGIN_ERROR(505, "用户名或密码错误222"),
     REQUIRE_USERNAME(504, "用户名不能为空"),
     EMAIL_CONFLICT(505, "邮箱已存在"),
     NICKNAME_CONFLICT(506, "昵称已存在"),

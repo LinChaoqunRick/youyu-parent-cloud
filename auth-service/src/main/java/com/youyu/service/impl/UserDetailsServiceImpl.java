@@ -23,13 +23,8 @@ import java.util.Objects;
 @Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private String emailRegex = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
-
     @Resource
     private MenuMapper menuMapper;
-
-    @Resource
-    private UserFrameworkMapper userFrameworkMapper;
 
     @Resource
     ApplicationContext applicationContext;
