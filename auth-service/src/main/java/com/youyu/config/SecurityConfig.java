@@ -1,5 +1,6 @@
 package com.youyu.config;
 
+import com.youyu.authentication.config.DaoAuthenticationProviderCustom;
 import com.youyu.filter.JwtAuthenticationTokenFilter;
 import com.youyu.service.impl.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
@@ -7,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -27,25 +29,17 @@ import javax.annotation.Resource;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Resource
-    private UserDetailsServiceImpl userDetailsServiceImpl;
+    DaoAuthenticationProviderCustom daoAuthenticationProviderCustom;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
-    /**
-     * 账号密码验证
-     *
-     * @return
-     */
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        //对默认的UserDetailsService进行覆盖
-        authenticationProvider.setUserDetailsService(userDetailsServiceImpl);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return authenticationProvider;
+
+    //使用自己定义DaoAuthenticationProviderCustom来代替框架的DaoAuthenticationProvider
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(daoAuthenticationProviderCustom);
     }
 
     @Bean

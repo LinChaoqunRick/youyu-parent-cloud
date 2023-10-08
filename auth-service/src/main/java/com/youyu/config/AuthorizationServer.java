@@ -46,11 +46,11 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
 
     //令牌端点的访问配置
     @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-
-        super.configure(endpoints);
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         endpoints
-                .authenticationManager(authenticationManager);//认证管理器
+                .authenticationManager(authenticationManager)//认证管理器
+                .tokenServices(authorizationServerTokenServices)//令牌管理服务
+                .allowedTokenEndpointRequestMethods(HttpMethod.POST);
     }
 
     //令牌端点的安全配置
