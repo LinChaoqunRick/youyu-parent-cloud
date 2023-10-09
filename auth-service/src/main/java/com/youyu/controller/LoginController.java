@@ -10,6 +10,7 @@ import com.youyu.service.LoginService;
 import com.youyu.utils.SecurityUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +28,7 @@ public class LoginController {
     private LoginService loginService;
 
     @RequestMapping("/accountLogin")
-    public ResponseResult<ResultUser> login(@Valid UserFramework user) {
+    public ResponseResult<ResultUser> login(@Valid UserFramework user) throws HttpRequestMethodNotSupportedException {
         ResultUser resultUser = loginService.login(user);
         return ResponseResult.success("登录成功", resultUser);
     }

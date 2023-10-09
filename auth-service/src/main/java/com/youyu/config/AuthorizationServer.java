@@ -37,7 +37,7 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
                 .withClient("XcWebApp")// client_id
                 .secret(new BCryptPasswordEncoder().encode("XcWebApp"))//客户端密钥
                 .resourceIds("xuecheng-plus")//资源列表
-                .authorizedGrantTypes("authorization_code", "password", "refresh_token")// 该client允许的授权类型authorization_code,password,refresh_token,implicit,client_credentials
+                .authorizedGrantTypes("authorization_code", "password", "client_credentials", "implicit", "refresh_token")// 该client允许的授权类型authorization_code,password,refresh_token,implicit,client_credentials
                 .scopes("all")// 允许的授权范围
                 .autoApprove(false)//false跳转到授权页面
                 .redirectUris("http://localhost/");//客户端接收授权码的重定向地址

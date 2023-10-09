@@ -1,5 +1,6 @@
 package com.youyu.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.youyu.authentication.sms.SmsCodeAuthenticationToken;
 import com.youyu.dto.login.ResultUser;
@@ -25,15 +26,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.stereotype.Service;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -62,17 +65,31 @@ public class LoginServiceImpl implements LoginService {
     @Resource
     private HttpServletResponse response;
 
+    @Resource
+    private TokenEndpoint tokenEndpoint;
+
     @Override
-    public ResultUser login(UserFramework user) {
+    public ResultUser login(UserFramework user) throws HttpRequestMethodNotSupportedException {
+        Map<String, String> params = new HashMap<>();
+        //构建密码登录
+        params.put("username", user.getUsername());
+        params.put("password", user.getPassword());
+        params.put("authType", "password");
         // AuthenticationManager authenticate;
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(JSON.toJSONString(params), user.getPassword());
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
         // 如果认证没通过，给出相应提示
         if (Objects.isNull(authenticate)) {
             throw new RuntimeException("登录失败");
         }
-        // 如果认证通过了，使用userId生成一个jwt jwt才存入ResponseResult返回
 
+        Map<String, String> map = new HashMap<>();
+        map.put("username", JSON.toJSONString(params));
+        map.put("grant_type", "password");
+
+
+        OAuth2AccessToken oAuth2AccessToken = tokenEndpoint.postAccessToken(authenticate, map).getBody();
+        // 如果认证通过了，使用userId生成一个jwt jwt才存入ResponseResult返回
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
         UserFramework result = loginUser.getUser();
         String userId = result.getId().toString();
