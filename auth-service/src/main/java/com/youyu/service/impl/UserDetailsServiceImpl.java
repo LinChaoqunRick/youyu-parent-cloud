@@ -7,6 +7,7 @@ import com.youyu.entity.auth.AuthParamsEntity;
 import com.youyu.mapper.MenuMapper;
 import com.youyu.mapper.UserFrameworkMapper;
 import com.youyu.service.AuthService;
+import com.youyu.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -29,6 +30,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Resource
     ApplicationContext applicationContext;
 
+    @Resource
+    private RedisCache redisCache;
+
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         AuthParamsEntity authParamsEntity = null;
@@ -47,7 +51,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // 查询对应权限信息
         List<String> permission = menuMapper.selectPermsByUserId(user.getId());
+
         // 把数据封装成UserDetails返回
-        return new LoginUser(user, permission);
+        LoginUser loginUser = new LoginUser(user, permission);
+
+        // 把完整的用户信息存入redis userId作为key
+        redisCache.setCacheObject("user:" + user.getId(), loginUser);
+
+        return loginUser;
     }
 }

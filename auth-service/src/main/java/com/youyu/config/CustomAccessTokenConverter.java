@@ -54,9 +54,10 @@ public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
         if (token.getScope() != null) {
             response.put(scopeAttribute, token.getScope());
         }
-        if (token.getAdditionalInformation().containsKey(JTI)) {
+
+        /*if (token.getAdditionalInformation().containsKey(JTI)) {
             response.put(JTI, token.getAdditionalInformation().get(JTI));
-        }
+        }*/
 
         if (token.getExpiration() != null) {
             response.put(EXP, token.getExpiration().getTime() / 1000);

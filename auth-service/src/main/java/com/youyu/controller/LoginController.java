@@ -35,21 +35,9 @@ public class LoginController {
     private LoginService loginService;
 
     @RequestMapping("/token")
-    public ResponseResult postAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
+    public ResponseResult<OAuth2AccessToken> postAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
         OAuth2AccessToken body = tokenEndpoint.postAccessToken(principal, parameters).getBody();
         return ResponseResult.success(body);
-    }
-
-    @RequestMapping("/accountLogin")
-    public ResponseResult<ResultUser> login(@Valid UserFramework user) throws HttpRequestMethodNotSupportedException {
-        ResultUser resultUser = loginService.login(user);
-        return ResponseResult.success("登录成功", resultUser);
-    }
-
-    @RequestMapping("/telephoneLogin")
-    public ResponseResult<ResultUser> telephoneLogin(@RequestParam String telephone, @RequestParam String code) {
-        ResultUser resultUser = loginService.loginTelephone(telephone, code);
-        return ResponseResult.success("登录成功", resultUser);
     }
 
     @RequestMapping("/logout")

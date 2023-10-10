@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface LoginService {
 
-    ResultUser login(UserFramework user) throws HttpRequestMethodNotSupportedException;
+//    ResultUser login(UserFramework user) throws HttpRequestMethodNotSupportedException;
 
-    ResultUser loginTelephone(String telephone, String code);
+//    ResultUser loginTelephone(String telephone, String code);
 
     void logout();
 

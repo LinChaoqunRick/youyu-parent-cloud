@@ -2,7 +2,6 @@ package com.youyu.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.youyu.authentication.sms.SmsCodeAuthenticationToken;
 import com.youyu.dto.login.ResultUser;
 import com.youyu.entity.LoginUser;
 import com.youyu.entity.Route;
@@ -64,64 +63,6 @@ public class LoginServiceImpl implements LoginService {
 
     @Resource
     private HttpServletResponse response;
-
-    @Resource
-    private TokenEndpoint tokenEndpoint;
-
-    @Override
-    public ResultUser login(UserFramework user) throws HttpRequestMethodNotSupportedException {
-        Map<String, String> params = new HashMap<>();
-        //构建密码登录
-        params.put("username", user.getUsername());
-        params.put("password", user.getPassword());
-        params.put("authType", "password");
-        // AuthenticationManager authenticate;
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(JSON.toJSONString(params), user.getPassword());
-        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
-        // 如果认证没通过，给出相应提示
-        if (Objects.isNull(authenticate)) {
-            throw new RuntimeException("登录失败");
-        }
-
-        Map<String, String> map = new HashMap<>();
-        map.put("username", JSON.toJSONString(params));
-        map.put("grant_type", "password");
-
-
-        OAuth2AccessToken oAuth2AccessToken = tokenEndpoint.postAccessToken(authenticate, map).getBody();
-        // 如果认证通过了，使用userId生成一个jwt jwt才存入ResponseResult返回
-        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        UserFramework result = loginUser.getUser();
-        String userId = result.getId().toString();
-        String jwt = JwtUtil.createJWT(userId);
-
-        ResultUser resultUser = new ResultUser(result, jwt);
-        // 把完整的用户信息存入redis userId作为key
-        redisCache.setCacheObject("user:" + userId, loginUser);
-        return resultUser;
-    }
-
-    @Override
-    public ResultUser loginTelephone(String telephone, String code) {
-        SmsCodeAuthenticationToken authenticationToken = new SmsCodeAuthenticationToken(telephone, code);
-        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
-
-        // 如果认证没通过，给出相应提示
-        if (Objects.isNull(authenticate)) {
-            throw new RuntimeException("登录失败");
-        }
-        // 如果认证通过了，使用userId生成一个jwt jwt才存入ResponseResult返回
-
-        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        UserFramework result = loginUser.getUser();
-        String userId = result.getId().toString();
-        String jwt = JwtUtil.createJWT(userId);
-
-        ResultUser resultUser = new ResultUser(result, jwt);
-        // 把完整的用户信息存入redis userId作为key
-        redisCache.setCacheObject("user:" + userId, loginUser);
-        return resultUser;
-    }
 
     @Override
     public void logout() {
