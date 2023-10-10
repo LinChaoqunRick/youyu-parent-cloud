@@ -8,6 +8,8 @@ import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.LoginService;
 import com.youyu.utils.SecurityUtils;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -18,14 +20,25 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.security.Principal;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/oauth")
 public class LoginController {
 
     @Resource
+    private TokenEndpoint tokenEndpoint;
+
+    @Resource
     private LoginService loginService;
+
+    @RequestMapping("/token")
+    public ResponseResult postAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
+        OAuth2AccessToken body = tokenEndpoint.postAccessToken(principal, parameters).getBody();
+        return ResponseResult.success(body);
+    }
 
     @RequestMapping("/accountLogin")
     public ResponseResult<ResultUser> login(@Valid UserFramework user) throws HttpRequestMethodNotSupportedException {

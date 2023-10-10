@@ -31,15 +31,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        /*LambdaQueryWrapper<UserFramework> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        UserFramework user;
-        // 查询用户信息
-        if (username.matches(emailRegex)) { // 如果是邮箱登录
-            user = userFrameworkMapper.getUserByEmail(username);
-        } else { // 如果是手机号登录
-            user = userFrameworkMapper.getUserByUsername(username);
-        }*/
-
         AuthParamsEntity authParamsEntity = null;
         try {
             authParamsEntity = JSON.parseObject(s, AuthParamsEntity.class);

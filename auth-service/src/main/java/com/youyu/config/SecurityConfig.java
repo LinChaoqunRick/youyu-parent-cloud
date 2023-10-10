@@ -31,6 +31,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Resource
     DaoAuthenticationProviderCustom daoAuthenticationProviderCustom;
 
+    @Resource
+    CustomAccessTokenConverter customAccessTokenConverter;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -49,9 +52,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey("youyul");
-        return converter;
+        JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
+        jwtAccessTokenConverter.setAccessTokenConverter(customAccessTokenConverter);//add
+        jwtAccessTokenConverter.setSigningKey("youyul");
+        return jwtAccessTokenConverter;
     }
 
     @Resource

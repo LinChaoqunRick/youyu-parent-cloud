@@ -25,6 +25,9 @@ public class TokenConfig {
     @Resource
     private JwtAccessTokenConverter accessTokenConverter;
 
+    @Resource
+    private CustomTokenEnhancer customTokenEnhancer;
+
     //令牌管理服务
     @Bean(name = "authorizationServerTokenServicesCustom")
     public AuthorizationServerTokenServices tokenService() {
@@ -33,7 +36,7 @@ public class TokenConfig {
         service.setTokenStore(tokenStore);//令牌存储策略
 
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
-        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(accessTokenConverter));
+        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(customTokenEnhancer, accessTokenConverter));
         service.setTokenEnhancer(tokenEnhancerChain);
 
         service.setAccessTokenValiditySeconds(7200); // 令牌默认有效期2小时
