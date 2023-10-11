@@ -42,7 +42,7 @@
         </dependency>
         <dependency>
             <groupId>com.youyu</groupId>
-            <artifactId>framework</artifactId>
+            <artifactId>common-auth</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

@@ -5,12 +5,13 @@ import com.youyu.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.mail.MessagingException;
 
 @RestController
 @RequestMapping("/mail")
 public class MailController {
-    @Autowired
+    @Resource
     private MailService mailService;
 
     @ResponseBody
