@@ -4,12 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.youyu.entity.LoginUser;
 import com.youyu.enums.ResultCode;
 import com.youyu.result.ResponseResult;
-import com.youyu.utils.JwtUtil;
 import com.youyu.utils.RedisCache;
 import com.youyu.utils.WebUtils;
-import io.jsonwebtoken.Claims;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -29,28 +28,27 @@ import java.util.Objects;
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
-    @Autowired
+    @Resource
     private RedisCache redisCache;
 
     @Resource
+    @Lazy
     private TokenStore tokenStore;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //获取token
         String token = request.getHeader("token");
-
-        OAuth2AccessToken accessToken = tokenStore.readAccessToken(token);
-
         if (!StringUtils.hasText(token) || request.getRequestURI().equals("/login/refreshToken")) {
             // 如果请求中不存在token，则放行，让后面的拦截器拦截它
             filterChain.doFilter(request, response);
             return;
         }
         //解析token
-        Claims claims = null;
+
+        OAuth2AccessToken accessToken;
         try {
-            claims = JwtUtil.parseJWT(token);
+            accessToken = tokenStore.readAccessToken(token);
         } catch (Exception e) {
             // 如果存在token，但是非法的token（token格式不正确、已过期、假的token）
             e.printStackTrace();
@@ -59,7 +57,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             response.setStatus(HttpStatus.SC_UNAUTHORIZED);
             return;
         }
-        String userId = claims.getSubject();
+        String userId = String.valueOf(accessToken.getAdditionalInformation().get("user_id"));
         //从redis中获取用户信息
         String redisKey = "user:" + userId;
         LoginUser loginUser = redisCache.getCacheObject(redisKey);

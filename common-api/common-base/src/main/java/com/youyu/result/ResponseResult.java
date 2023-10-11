@@ -13,6 +13,12 @@ public class ResponseResult<T> {
         this.data = data;
     }
 
+    public ResponseResult(int code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
+
     public static <T> ResponseResult<T> success(T data) {
         return new ResponseResult<>(ResultCode.SUCCESS.getCode(), "success", data);
     }

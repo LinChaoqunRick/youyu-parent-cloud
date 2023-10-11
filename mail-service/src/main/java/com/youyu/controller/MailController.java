@@ -22,4 +22,11 @@ public class MailController {
         Boolean result = mailService.sendRegisterCode(target, repeat);
         return ResponseResult.success(result);
     }
+
+    @ResponseBody
+    @RequestMapping("/testError")
+    public ResponseResult<Boolean> sendRegisterCode() {
+        int a = 1 / 0;
+        return ResponseResult.success(false);
+    }
 }

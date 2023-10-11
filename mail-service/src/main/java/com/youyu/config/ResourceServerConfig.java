@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 @Configuration
 @EnableResourceServer
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-public class ResouceServerConfig extends ResourceServerConfigurerAdapter {
+public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
 
     //资源服务标识
