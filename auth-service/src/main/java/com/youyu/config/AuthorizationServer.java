@@ -40,7 +40,7 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
                 .authorizedGrantTypes("authorization_code", "password", "client_credentials", "implicit", "refresh_token")// 该client允许的授权类型authorization_code,password,refresh_token,implicit,client_credentials
                 .scopes("all")// 允许的授权范围
                 .autoApprove(false)//false跳转到授权页面
-                .redirectUris("http://localhost/");//客户端接收授权码的重定向地址
+                .redirectUris("http://localhost/3000/login");//客户端接收授权码的重定向地址
     }
 
 
