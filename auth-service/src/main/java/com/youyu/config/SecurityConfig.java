@@ -74,6 +74,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()  //
                 .and()
                 .formLogin().permitAll();    //使用表单登录
+
+        // http.csrf().disable();
     }
 
     @Bean

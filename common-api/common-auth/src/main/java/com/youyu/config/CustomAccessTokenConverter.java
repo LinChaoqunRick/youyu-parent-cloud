@@ -40,7 +40,7 @@ public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
         OAuth2Request clientToken = authentication.getOAuth2Request();
 
         if (!authentication.isClientOnly()) {
-            response.putAll(userTokenConverter.convertUserAuthentication(authentication.getUserAuthentication()));
+            // response.putAll(userTokenConverter.convertUserAuthentication(authentication.getUserAuthentication()));
             LoginUser loginUser = (LoginUser) authentication.getPrincipal();
             Long userId = loginUser.getUser().getId();
             response.put("user_id", userId);
