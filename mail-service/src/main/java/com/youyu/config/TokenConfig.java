@@ -25,7 +25,7 @@ public class TokenConfig {
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        jwtAccessTokenConverter.setAccessTokenConverter(customAccessTokenConverter);//add
+        jwtAccessTokenConverter.setAccessTokenConverter(customAccessTokenConverter);
         jwtAccessTokenConverter.setSigningKey("youyul");
         return jwtAccessTokenConverter;
     }

@@ -15,9 +15,7 @@ import java.util.Map;
 public class AuthParamsEntity {
     private String username; //用户名
     private String password; //密码
-
     private String smsCode; // 短信验证码
-
     private String authType; // 认证的类型   password:用户名密码模式类型    sms:短信模式类型
 
 }

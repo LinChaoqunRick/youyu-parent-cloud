@@ -1,0 +1,11 @@
+server:
+  port: 8100
+spring:
+  application:
+    name: test-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 11.11.11.11:8848
+        username: nacos
+        password: nacos123

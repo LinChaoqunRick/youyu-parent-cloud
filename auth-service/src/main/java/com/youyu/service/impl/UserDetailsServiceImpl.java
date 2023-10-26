@@ -33,21 +33,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Resource
     private RedisCache redisCache;
 
+    @Resource
+    private UserFrameworkMapper userFrameworkMapper;
+
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         AuthParamsEntity authParamsEntity = null;
+        UserFramework user = null;
         try {
             authParamsEntity = JSON.parseObject(s, AuthParamsEntity.class);
+            String authType = authParamsEntity.getAuthType(); // 获取认证类型，beanName就是 认证类型 + 后缀，例如 password + _authservice = password_authservice
+            AuthService authService = applicationContext.getBean(authType + "_authService", AuthService.class); // 根据认证类型，从Spring容器中取出对应的bean
+            user = authService.execute(authParamsEntity);
         } catch (Exception e) {
-            log.error("认证请求数据格式不对：{}", s);
-            throw new RuntimeException("认证请求数据格式不对");
+            user = userFrameworkMapper.getUserByUsername(s);
         }
-
-        // 获取认证类型，beanName就是 认证类型 + 后缀，例如 password + _authservice = password_authservice
-        String authType = authParamsEntity.getAuthType();
-        // 根据认证类型，从Spring容器中取出对应的bean
-        AuthService authService = applicationContext.getBean(authType + "_authService", AuthService.class);
-        UserFramework user = authService.execute(authParamsEntity);
 
         // 查询对应权限信息
         List<String> permission = menuMapper.selectPermsByUserId(user.getId());

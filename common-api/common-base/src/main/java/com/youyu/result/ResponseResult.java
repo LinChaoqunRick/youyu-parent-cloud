@@ -27,8 +27,8 @@ public class ResponseResult<T> {
         return new ResponseResult<T>(ResultCode.SUCCESS.getCode(), message, data);
     }
 
-    public static <T> ResponseResult<T> error(ResultCode resultCode) {
-        return new ResponseResult<T>(resultCode.getCode(), resultCode.getMessage(), null);
+    public static ResponseResult error(ResultCode resultCode) {
+        return new ResponseResult(resultCode.getCode(), resultCode.getMessage(), null);
     }
 
     public static <T> ResponseResult<T> error(int code, String message) {

@@ -30,8 +30,8 @@ public class ResouceServerConfig extends ResourceServerConfigurerAdapter {
     @Resource
     TokenStore tokenStore;
 
-    @Resource
-    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+    /*@Resource
+    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;*/
 
     @Resource
     private AuthenticationEntryPoint authenticationEntryPoint;
@@ -54,7 +54,7 @@ public class ResouceServerConfig extends ResourceServerConfigurerAdapter {
                 .anyRequest().permitAll();
 
         // 添加过滤器
-        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         // 配置异常处理器
         http.exceptionHandling()

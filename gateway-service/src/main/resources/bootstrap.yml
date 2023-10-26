@@ -6,7 +6,9 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 124.222.79.236:8848
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos123
     gateway:
       routes:
       - id: youyu-service   # 路由名称

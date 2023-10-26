@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -32,7 +33,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     DaoAuthenticationProviderCustom daoAuthenticationProviderCustom;
 
     @Resource
-    CustomAccessTokenConverter customAccessTokenConverter;
+    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+
+    @Resource
+    private AuthenticationEntryPoint authenticationEntryPoint;
+
+    @Resource
+    private AccessDeniedHandler accessDeniedHandler;
+
+    @Resource
+    private CustomAccessTokenConverter customAccessTokenConverter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -53,33 +63,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        jwtAccessTokenConverter.setAccessTokenConverter(customAccessTokenConverter);//add
+        jwtAccessTokenConverter.setAccessTokenConverter(customAccessTokenConverter);
         jwtAccessTokenConverter.setSigningKey("youyul");
         return jwtAccessTokenConverter;
     }
 
-    @Resource
-    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
-
-    @Resource
-    private AuthenticationEntryPoint authenticationEntryPoint;
-
-    @Resource
-    private AccessDeniedHandler accessDeniedHandler;
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                //关闭csrf
-                .csrf().disable()
-                //不通过Session获取SecurityContext
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
                 .authorizeRequests()
-                // 对于登录接口 允许匿名访问
-                .antMatchers("/login/accountLogin").anonymous()
-                // 除上面外的所有请求全部需要鉴权认证
-                .anyRequest().permitAll();
+                .anyRequest().authenticated()  //
+                .and()
+                .formLogin().permitAll();    //使用表单登录
+
+        http.csrf().disable();
 
         // 添加过滤器
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
@@ -88,9 +85,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler);
-
-        // 允许跨域
-        http.cors();
     }
 
     @Bean
