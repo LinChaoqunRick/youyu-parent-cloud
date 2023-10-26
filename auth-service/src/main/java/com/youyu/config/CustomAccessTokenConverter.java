@@ -2,16 +2,13 @@ package com.youyu.config;
 
 
 import com.youyu.entity.UserFramework;
-import com.youyu.service.impl.UserDetailsServiceImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 import org.springframework.security.oauth2.provider.token.UserAuthenticationConverter;
 import org.springframework.stereotype.Component;
 
@@ -37,10 +34,7 @@ public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
 
         if (!authentication.isClientOnly()) {
             // 删除权限信息，使用自定义过滤器从redis中取出权限信息封装成UsernamePasswordAuthenticationToken
-            // response.putAll(userTokenConverter.convertUserAuthentication(authentication.getUserAuthentication()));
-            Map<String, Object> additionalInformation = token.getAdditionalInformation();
-            UserFramework user = (UserFramework) additionalInformation.get("userInfo");
-            response.put("user_id", user.getId());
+            response.putAll(userTokenConverter.convertUserAuthentication(authentication.getUserAuthentication()));
         } else {
             if (clientToken.getAuthorities() != null && !clientToken.getAuthorities().isEmpty()) {
                 response.put(UserAuthenticationConverter.AUTHORITIES,
@@ -61,6 +55,20 @@ public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
 
         if (includeGrantType && authentication.getOAuth2Request().getGrantType() != null) {
             response.put(GRANT_TYPE, authentication.getOAuth2Request().getGrantType());
+        }
+
+        try {
+            Map<String, Object> additionalInformation = token.getAdditionalInformation();
+
+            UserFramework user = (UserFramework) additionalInformation.get("userInfo");
+            response.put("user_id", user.getId());
+
+            Object ati = additionalInformation.get("ati");
+            if (Objects.nonNull(ati)) {
+                response.put("ati", ati);
+            }
+        } catch (Exception ignored) {
+
         }
 
         response.put(clientIdAttribute, clientToken.getClientId());
