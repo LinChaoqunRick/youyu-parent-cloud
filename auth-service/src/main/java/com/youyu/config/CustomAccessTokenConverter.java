@@ -34,7 +34,8 @@ public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
 
         if (!authentication.isClientOnly()) {
             // 删除权限信息，使用自定义过滤器从redis中取出权限信息封装成UsernamePasswordAuthenticationToken
-            response.putAll(userTokenConverter.convertUserAuthentication(authentication.getUserAuthentication()));
+             response.putAll(userTokenConverter.convertUserAuthentication(authentication.getUserAuthentication()));
+//            userTokenConverter.convertUserAuthentication(authentication.getUserAuthentication());
         } else {
             if (clientToken.getAuthorities() != null && !clientToken.getAuthorities().isEmpty()) {
                 response.put(UserAuthenticationConverter.AUTHORITIES,
@@ -78,6 +79,7 @@ public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
         return response;
     }
 
+    @Override
     public OAuth2Authentication extractAuthentication(Map<String, ?> map) {
         Map<String, String> parameters = new HashMap<String, String>();
         Set<String> scope = extractScope(map);

@@ -55,9 +55,9 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         endpoints
-                .userDetailsService(userDetailsService)
                 .authenticationManager(authenticationManager)//认证管理器
-                .tokenServices(authorizationServerTokenServices);//令牌管理服务
+                .tokenServices(authorizationServerTokenServices)//令牌管理服务
+                .allowedTokenEndpointRequestMethods(HttpMethod.POST);
     }
 
     //令牌端点的安全配置
