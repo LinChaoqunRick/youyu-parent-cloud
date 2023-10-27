@@ -7,6 +7,7 @@ import com.youyu.entity.auth.AuthParamsEntity;
 import com.youyu.mapper.MenuMapper;
 import com.youyu.mapper.UserFrameworkMapper;
 import com.youyu.service.AuthService;
+import com.youyu.utils.BeanTransformUtils;
 import com.youyu.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -38,15 +43,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        AuthParamsEntity authParamsEntity = null;
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        Map<String, String[]> map = request.getParameterMap();
         UserFramework user = null;
         try {
-            authParamsEntity = JSON.parseObject(s, AuthParamsEntity.class);
-            String authType = authParamsEntity.getAuthType(); // 获取认证类型，beanName就是 认证类型 + 后缀，例如 password + _authservice = password_authservice
+            AuthParamsEntity authParamsEntity = BeanTransformUtils.requestParamsMapToBean(map, AuthParamsEntity.class);
+            String authType = authParamsEntity.getAuthType(); // 获取认证类型，beanName就是 认证类型 + 后缀，例如 password + _authService = password_authservice
             AuthService authService = applicationContext.getBean(authType + "_authService", AuthService.class); // 根据认证类型，从Spring容器中取出对应的bean
             user = authService.execute(authParamsEntity);
         } catch (Exception e) {
-            user = userFrameworkMapper.getUserByUsername(s);
+            log.error("认证请求数据格式不对：{}", e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
 
         // 查询对应权限信息

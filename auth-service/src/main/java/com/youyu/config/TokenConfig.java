@@ -3,6 +3,7 @@ package com.youyu.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.provider.token.*;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -26,14 +27,18 @@ public class TokenConfig {
     @Resource
     private CustomTokenEnhancer customTokenEnhancer;
 
-    //令牌管理服务
-    @Primary
-    @Bean(name = "authorizationServerTokenServicesCustom")
-    public AuthorizationServerTokenServices tokenService() {
-        DefaultTokenServices service = new DefaultTokenServices();
-        service.setSupportRefreshToken(true);//支持刷新令牌
+    @Resource
+    private AuthenticationManager authenticationManagerBean;
 
+    //令牌管理服务
+    @Bean(name = "authorizationServerTokenServicesCustom")
+    public DefaultTokenServices tokenService() {
+        DefaultTokenServices service = new DefaultTokenServices();
+
+        service.setAuthenticationManager(authenticationManagerBean);
+        service.setSupportRefreshToken(true);//支持刷新令牌
         service.setTokenStore(tokenStore);//令牌存储策略
+
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
         tokenEnhancerChain.setTokenEnhancers(Arrays.asList(customTokenEnhancer, jwtAccessTokenConverter));
         service.setTokenEnhancer(tokenEnhancerChain);

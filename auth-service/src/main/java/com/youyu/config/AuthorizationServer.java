@@ -29,7 +29,7 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
     private AuthorizationServerTokenServices authorizationServerTokenServices;
 
     @Resource
-    private AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManagerBean;
 
     @Resource
     private BCryptPasswordEncoder passwordEncoder;
@@ -55,8 +55,9 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         endpoints
-                .authenticationManager(authenticationManager)//认证管理器
+                .authenticationManager(authenticationManagerBean)//认证管理器
                 .tokenServices(authorizationServerTokenServices)//令牌管理服务
+                .userDetailsService(userDetailsService)
                 .allowedTokenEndpointRequestMethods(HttpMethod.POST);
     }
 
