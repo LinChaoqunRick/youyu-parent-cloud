@@ -1,6 +1,5 @@
 package com.youyu.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.youyu.entity.LoginUser;
 import com.youyu.entity.UserFramework;
 import com.youyu.entity.auth.AuthParamsEntity;
@@ -10,11 +9,12 @@ import com.youyu.service.AuthService;
 import com.youyu.utils.BeanTransformUtils;
 import com.youyu.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -46,14 +46,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         Map<String, String[]> map = request.getParameterMap();
         UserFramework user = null;
+        AuthParamsEntity authParamsEntity = null;
         try {
-            AuthParamsEntity authParamsEntity = BeanTransformUtils.requestParamsMapToBean(map, AuthParamsEntity.class);
-            String authType = authParamsEntity.getAuthType(); // 获取认证类型，beanName就是 认证类型 + 后缀，例如 password + _authService = password_authservice
-            AuthService authService = applicationContext.getBean(authType + "_authService", AuthService.class); // 根据认证类型，从Spring容器中取出对应的bean
-            user = authService.execute(authParamsEntity);
+            authParamsEntity = BeanTransformUtils.requestParamsMapToBean(map, AuthParamsEntity.class);
         } catch (Exception e) {
             log.error("认证请求数据格式不对：{}", e.getMessage());
             throw new RuntimeException(e.getMessage());
+        }
+
+        if (Objects.nonNull(authParamsEntity.getRefresh_token())) { // 如果是refresh_token
+            user = userFrameworkMapper.getUserByUsername(s);
+        } else {
+            String authType = authParamsEntity.getAuthType(); // 获取认证类型，beanName就是 认证类型 + 后缀，例如 password + _authService = password_authservice
+            AuthService authService = applicationContext.getBean(authType + "_authService", AuthService.class); // 根据认证类型，从Spring容器中取出对应的bean
+            user = authService.execute(authParamsEntity);
         }
 
         // 查询对应权限信息
