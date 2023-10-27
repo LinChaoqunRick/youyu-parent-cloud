@@ -14,8 +14,6 @@ import javax.annotation.Resource;
  **/
 @Configuration
 public class TokenConfig {
-    @Resource
-    CustomAccessTokenConverter customAccessTokenConverter;
 
     @Bean
     public TokenStore tokenStore() {
@@ -25,7 +23,6 @@ public class TokenConfig {
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        jwtAccessTokenConverter.setAccessTokenConverter(customAccessTokenConverter);
         jwtAccessTokenConverter.setSigningKey("youyul");
         return jwtAccessTokenConverter;
     }
