@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Component
@@ -35,6 +36,17 @@ public class CustomUserAuthenticationTokenConverter extends DefaultUserAuthentic
             return new UsernamePasswordAuthenticationToken(principal, "N/A", authorities);
         }
         return null;
+    }
+
+    @Override
+    public Map<String, ?> convertUserAuthentication(Authentication authentication) {
+        Map<String, Object> response = new LinkedHashMap<String, Object>();
+        response.put(USERNAME, authentication.getName());
+        // 注释掉，权限不放在token中，使用过滤器封装权限信息 见: JwtAuthenticationTokenFilter.java
+        /*if (authentication.getAuthorities() != null && !authentication.getAuthorities().isEmpty()) {
+            response.put(AUTHORITIES, AuthorityUtils.authorityListToSet(authentication.getAuthorities()));
+        }*/
+        return response;
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(Map<String, ?> map) {

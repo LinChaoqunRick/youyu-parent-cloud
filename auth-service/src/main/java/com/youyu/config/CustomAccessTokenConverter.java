@@ -34,8 +34,7 @@ public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
 
         if (!authentication.isClientOnly()) {
             // 删除权限信息，使用自定义过滤器从redis中取出权限信息封装成UsernamePasswordAuthenticationToken
-             response.putAll(userTokenConverter.convertUserAuthentication(authentication.getUserAuthentication()));
-//            userTokenConverter.convertUserAuthentication(authentication.getUserAuthentication());
+            response.putAll(userTokenConverter.convertUserAuthentication(authentication.getUserAuthentication()));
         } else {
             if (clientToken.getAuthorities() != null && !clientToken.getAuthorities().isEmpty()) {
                 response.put(UserAuthenticationConverter.AUTHORITIES,
@@ -58,18 +57,14 @@ public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
             response.put(GRANT_TYPE, authentication.getOAuth2Request().getGrantType());
         }
 
-        try {
-            Map<String, Object> additionalInformation = token.getAdditionalInformation();
+        Map<String, Object> additionalInformation = token.getAdditionalInformation();
 
-            UserFramework user = (UserFramework) additionalInformation.get("userInfo");
-            response.put("user_id", user.getId());
+        UserFramework user = (UserFramework) additionalInformation.get("userInfo");
+        response.put("user_id", user.getId());
 
-            Object ati = additionalInformation.get("ati");
-            if (Objects.nonNull(ati)) {
-                response.put("ati", ati);
-            }
-        } catch (Exception ignored) {
-
+        Object ati = additionalInformation.get("ati");
+        if (Objects.nonNull(ati)) {
+            response.put("ati", ati);
         }
 
         response.put(clientIdAttribute, clientToken.getClientId());
