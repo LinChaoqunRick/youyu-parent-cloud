@@ -8,7 +8,7 @@ import java.util.List;
 
 public class LineCounter {
     public static void main(String[] args) {
-        String targetDirectoryPath = "d:\\Users\\Desktop\\conf0.6\\labels"; // 请输入你的目标文件夹路径。例如 D:\\test
+        String targetDirectoryPath = "d:\\Users\\Desktop\\detect4\\龙海exp"; // 请输入你的目标文件夹路径。例如 D:\\test
         List<File> txtFiles = getAllTxtFiles(new File(targetDirectoryPath));
         for(File txtFile : txtFiles) {
             System.out.println("文件名：" + txtFile.getName() + ", 气孔数量：" + countLineBreaks(txtFile));

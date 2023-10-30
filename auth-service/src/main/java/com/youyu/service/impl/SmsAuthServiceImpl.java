@@ -32,7 +32,7 @@ public class SmsAuthServiceImpl implements AuthService {
         String smsCode = authParamsEntity.getSmsCode();
         UserFramework user = userFrameworkMapper.getUserByUsername(username);
         if (user == null) {
-            throw new RuntimeException("用户名或密码错误");
+            throw new RuntimeException("手机号或验证码错误");
         }
         checkSmsCode(username, smsCode);
         return user;
