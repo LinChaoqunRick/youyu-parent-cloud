@@ -18,9 +18,6 @@ import java.util.*;
 @Component
 public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
 
-    //@Resource
-    // private CustomUserAuthenticationTokenConverter userTokenConverter;
-
     @Resource
     private UserAuthenticationConverter userTokenConverter;
 

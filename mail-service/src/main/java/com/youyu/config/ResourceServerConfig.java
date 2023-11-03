@@ -23,7 +23,6 @@ import javax.annotation.Resource;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
-
     //资源服务标识
     public static final String RESOURCE_ID = "xuecheng-plus";
 
@@ -53,7 +52,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/mail/sendRegisterCode").authenticated()
+                .antMatchers("/mail/**").authenticated()
                 .anyRequest().permitAll();
 
         // 添加过滤器

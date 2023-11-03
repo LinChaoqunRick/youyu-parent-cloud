@@ -88,10 +88,4 @@ public class LoginController {
         }
         return ResponseResult.success(user);
     }
-
-    @RequestMapping("/refreshToken")
-    public ResponseResult<String> refreshToken() {
-        String token = loginService.refreshToken();
-        return ResponseResult.success(token);
-    }
 }

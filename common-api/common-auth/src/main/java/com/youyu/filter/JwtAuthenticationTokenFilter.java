@@ -7,7 +7,6 @@ import com.youyu.result.ResponseResult;
 import com.youyu.utils.RedisCache;
 import com.youyu.utils.WebUtils;
 import org.apache.http.HttpStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,15 +44,19 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        //解析token
 
+        //解析token
         OAuth2AccessToken accessToken;
         try {
             accessToken = tokenStore.readAccessToken(token);
+            boolean expired = accessToken.isExpired();
+            if (expired) {
+                throw new RuntimeException("Token已过期");
+            }
         } catch (Exception e) {
             // 如果存在token，但是非法的token（token格式不正确、已过期、假的token）
             e.printStackTrace();
-            ResponseResult result = ResponseResult.error(ResultCode.NEED_LOGIN);
+            ResponseResult result = ResponseResult.error(ResultCode.NEED_LOGIN.getCode(), e.getMessage());
             WebUtils.renderString(response, JSON.toJSONString(result));
             response.setStatus(HttpStatus.SC_UNAUTHORIZED);
             return;
@@ -63,19 +66,21 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String redisKey = "user:" + userId;
         LoginUser loginUser = redisCache.getCacheObject(redisKey);
         if (Objects.isNull(loginUser)) {
-            // token过期 假的token token不存在
-            ResponseResult result = ResponseResult.error(ResultCode.NEED_LOGIN);
+            ResponseResult result = ResponseResult.error(ResultCode.NEED_LOGIN.getCode(), "用户信息获取失败");
             WebUtils.renderString(response, JSON.toJSONString(result));
             response.setStatus(HttpStatus.SC_UNAUTHORIZED);
             return;
         }
-        //存入SecurityContextHolder
-        //TODO 获取权限信息封装到Authentication中
+
+        //获取权限信息封装到Authentication中
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(
                 request));
+
+        //存入SecurityContextHolder
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
         //放行
         filterChain.doFilter(request, response);
     }
