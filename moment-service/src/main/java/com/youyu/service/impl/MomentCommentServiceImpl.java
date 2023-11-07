@@ -143,7 +143,7 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
                 throw new SystemException(ResultCode.OPERATION_FAIL);
             }
         } else {
-            throw new SystemException(ResultCode.NO_OPERATOR_AUTH);
+            throw new SystemException(ResultCode.FORBIDDEN);
         }
     }
 

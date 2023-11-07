@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.user.*;
-import com.youyu.entity.User;
-import com.youyu.entity.UserDetailOutput;
-import com.youyu.entity.UserFollow;
+import com.youyu.entity.*;
 import com.youyu.mapper.UserFollowMapper;
 import com.youyu.mapper.UserMapper;
 import com.youyu.service.UserService;
@@ -66,7 +64,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<Long> followIds = userFollows.stream()
                 .map(user -> user.getUserIdTo())
                 .collect(Collectors.toList());
-        if (followIds.size() == 0) {
+        if (followIds.isEmpty()) {
             return new PageOutput<>();
         }
 
@@ -122,6 +120,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         } else {
             return null;
         }
+    }
+
+    @Override
+    public List<Route> getAuthRoutes(Long id) {
+        return userMapper.getAuthRoutes(id);
+    }
+
+    @Override
+    public List<Route> getRoutesByRoleId(Long roleId) {
+        return userMapper.getRoutesByRoleId(roleId);
+    }
+
+    @Override
+    public UserFramework getUserById(Long id) {
+        UserFramework user = userMapper.getUserById(id);
+        return user;
     }
 
     private void setFollow(Long currentUserId, List<UserListOutput> list) {

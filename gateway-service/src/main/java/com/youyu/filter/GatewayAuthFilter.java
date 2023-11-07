@@ -3,6 +3,7 @@ package com.youyu.filter;
 import com.alibaba.fastjson.JSON;
 import com.youyu.enums.ResultCode;
 import com.youyu.result.ResponseResult;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -68,23 +69,24 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
                 return chain.filter(exchange);
             }
         }
-        //检查token是否存在
+
         String token = getToken(exchange);
         if (StringUtils.isBlank(token)) {
-            return buildReturnMono("没有认证", exchange);
+            return buildReturnMono(HttpStatus.UNAUTHORIZED, ResultCode.UNAUTHORIZED.getMessage(), exchange);
         }
+
         //判断是否是有效的token
         OAuth2AccessToken oAuth2AccessToken;
         try {
             oAuth2AccessToken = tokenStore.readAccessToken(token);
             boolean expired = oAuth2AccessToken.isExpired();
             if (expired) {
-                return buildReturnMono("认证令牌已过期", exchange);
+                return buildReturnMono(HttpStatus.UNAUTHORIZED, "认证令牌已过期", exchange);
             }
             return chain.filter(exchange);
         } catch (InvalidTokenException e) {
             log.info("认证令牌无效: {}", token);
-            return buildReturnMono("认证令牌无效", exchange);
+            return buildReturnMono(HttpStatus.UNAUTHORIZED, "认证令牌无效", exchange);
         }
     }
 
@@ -103,12 +105,12 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
         return token;
     }
 
-    private Mono<Void> buildReturnMono(String error, ServerWebExchange exchange) {
+    private Mono<Void> buildReturnMono(HttpStatus status, String errorMessage, ServerWebExchange exchange) {
         ServerHttpResponse response = exchange.getResponse();
-        String jsonString = JSON.toJSONString(ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR.getCode(), error));
+        String jsonString = JSON.toJSONString(ResponseResult.error(status.value(), errorMessage));
         byte[] bits = jsonString.getBytes(StandardCharsets.UTF_8);
         DataBuffer buffer = response.bufferFactory().wrap(bits);
-        response.setStatusCode(HttpStatus.UNAUTHORIZED);
+        response.setStatusCode(status);
         response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
         return response.writeWith(Mono.just(buffer));
     }

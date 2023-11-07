@@ -81,7 +81,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
                 throw new SystemException(ResultCode.OPERATION_FAIL);
             }
         } else {
-            throw new SystemException(ResultCode.NO_OPERATOR_AUTH);
+            throw new SystemException(ResultCode.FORBIDDEN);
         }
     }
 

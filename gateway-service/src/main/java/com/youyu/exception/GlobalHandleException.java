@@ -1,7 +1,6 @@
-package com.youyu.handler.exception;
+package com.youyu.exception;
 
 import com.youyu.enums.ResultCode;
-import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
@@ -10,8 +9,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
@@ -21,9 +18,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class GlobalHandleException {
-
-    @Resource
-    private HttpServletRequest request;
 
     @ExceptionHandler(SystemException.class)
     public ResponseResult systemExceptionHandler(SystemException ex) {

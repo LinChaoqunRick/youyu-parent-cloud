@@ -75,16 +75,6 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public List<Route> getAuthRoutes(Long id) {
-        return loginMapper.getAuthRoutes(id);
-    }
-
-    @Override
-    public List<Route> getRoutesByRoleId(Long roleId) {
-        return loginMapper.getRoutesByRoleId(roleId);
-    }
-
-    @Override
     public int register(String nickname, String username, String email, String password, String code, int type) {
         UserFramework newUser = new UserFramework();
         LambdaQueryWrapper<UserFramework> queryWrapper = new LambdaQueryWrapper<>();
@@ -136,51 +126,5 @@ public class LoginServiceImpl implements LoginService {
         userRoleMapper.insert(userRole);
 
         return insert;
-    }
-
-    @Override
-    public UserFramework getUserById(Long id) {
-        UserFramework user = userFrameworkMapper.getUserById(id);
-        return user;
-    }
-
-    @Override
-    public String refreshToken() {
-        String token = request.getHeader("token");
-        if (token == null) {
-            response.setStatus(HttpStatus.SC_PAYMENT_REQUIRED);
-            throw new RuntimeException("必填参数token不能为空");
-        }
-        Claims claims = null;
-        try {
-            claims = JwtUtil.parseJWTException(token);  // 解析token
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (claims == null) {
-            response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-            throw new RuntimeException("token解析异常，请重新登录");
-        } else {
-            // 如果过期时间超过一定时间，则强制要求用户重新登录，否则刷新token
-            long expireTime = claims.getExpiration().getTime();
-            long nowTime = (new Date()).getTime();
-            long diffDay = DateUtils.getAbsTimeStampDiffDay(expireTime, nowTime);
-            if (diffDay > 15) {
-                response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-                throw new RuntimeException("token失效时间过长，请重新登录");
-            } else {
-                String userId = claims.getSubject();
-                // 从redis中获取用户信息，如果信息还存在，创建并返回新的token。如果不存在，报错，前端情况登录信息
-                String redisKey = "user:" + userId;
-                LoginUser loginUser = redisCache.getCacheObject(redisKey);
-                if (loginUser == null) {
-                    response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-                    throw new RuntimeException("用户信息不存在，请重新登录");
-                } else {
-                    return JwtUtil.createJWT(userId);
-                }
-            }
-        }
     }
 }

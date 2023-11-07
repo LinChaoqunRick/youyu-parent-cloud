@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * (ProfileMenu)表实体类
@@ -19,7 +20,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("bs_profile_menu")
-public class ProfileMenu extends Model<ProfileMenu> {
+public class ProfileMenu implements Serializable {
     //主键id
     private Long id;
     //用户id

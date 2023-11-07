@@ -175,7 +175,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 throw new SystemException(ResultCode.OPERATION_FAIL);
             }
         } else {
-            throw new SystemException(ResultCode.NO_OPERATOR_AUTH);
+            throw new SystemException(ResultCode.FORBIDDEN);
         }
     }
 

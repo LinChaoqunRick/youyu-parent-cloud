@@ -12,6 +12,4 @@ import java.util.List;
 @Repository
 public interface LoginMapper {
     UserFramework getUserForLogin(@Param("username") String username, @Param("email") String email);
-    List<Route> getAuthRoutes(@Param("id") Long id);
-    List<Route> getRoutesByRoleId(@Param("roleId") Long roleId);
 }

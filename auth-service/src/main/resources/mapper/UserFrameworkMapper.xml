@@ -16,10 +16,6 @@
         </where>
     </select>
 
-    <select id="getUserById" resultType="com.youyu.entity.UserFramework">
-        SELECT * FROM bs_user where id = #{id}
-    </select>
-
     <select id="getUserByUsername" resultType="com.youyu.entity.UserFramework">
         SELECT * FROM bs_user where username = #{username}
     </select>

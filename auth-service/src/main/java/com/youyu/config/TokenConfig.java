@@ -43,8 +43,8 @@ public class TokenConfig {
         tokenEnhancerChain.setTokenEnhancers(Arrays.asList(customTokenEnhancer, jwtAccessTokenConverter));
         service.setTokenEnhancer(tokenEnhancerChain);
 
-        service.setAccessTokenValiditySeconds(3600 * 6); // 令牌默认有效期2小时
-        service.setRefreshTokenValiditySeconds(3600 * 24 * 3); // 刷新令牌默认有效期3天
+        service.setAccessTokenValiditySeconds(3600 * 12); // 令牌默认有效期12小时
+        service.setRefreshTokenValiditySeconds(3600 * 24 * 7); // 刷新令牌默认有效期3天
         return service;
     }
 

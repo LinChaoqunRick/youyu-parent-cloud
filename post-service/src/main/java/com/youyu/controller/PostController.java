@@ -79,7 +79,7 @@ public class PostController {
     public ResponseResult<Boolean> update(@Valid @RequestBody Post post) {
         Long userId = SecurityUtils.getUserId();
         if (!userId.equals(post.getUserId())) {
-            throw new SystemException(ResultCode.NO_OPERATOR_AUTH);
+            throw new SystemException(ResultCode.FORBIDDEN);
         }
         post.setUpdateTime(new Date());
         boolean save = postService.updateById(post);
@@ -91,7 +91,7 @@ public class PostController {
         Post post = postService.getById(postId);
         Long currentUserId = SecurityUtils.getUserId();
         if (!currentUserId.equals(post.getUserId())) {
-            throw new SystemException(ResultCode.NO_OPERATOR_AUTH);
+            throw new SystemException(ResultCode.FORBIDDEN);
         }
         boolean remove = postService.removeById(postId);
         return ResponseResult.success(remove);
