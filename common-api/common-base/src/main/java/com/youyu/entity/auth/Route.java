@@ -1,4 +1,4 @@
-package com.youyu.entity;
+package com.youyu.entity.auth;
 
 import java.io.Serializable;
 
@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class Route implements Serializable {
     private static final long serialVersionUID = 526044276510510351L;
-    
+
     private Integer id;
     /**
      * 路由名称

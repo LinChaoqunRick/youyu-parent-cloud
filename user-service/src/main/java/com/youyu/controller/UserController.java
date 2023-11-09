@@ -2,9 +2,11 @@ package com.youyu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.user.*;
-import com.youyu.entity.*;
+import com.youyu.entity.auth.UserFramework;
+import com.youyu.entity.user.ProfileMenu;
+import com.youyu.entity.user.User;
+import com.youyu.entity.user.UserDetailOutput;
+import com.youyu.entity.user.UserFollow;
 import com.youyu.enums.ResultCode;
 import com.youyu.enums.RoleEnum;
 import com.youyu.exception.SystemException;
@@ -162,7 +164,7 @@ public class UserController {
     }
 
     @RequestMapping("/getCurrentUser")
-    public ResponseResult<UserFramework> getCurrentUser() {
+    public ResponseResult<com.youyu.entity.auth.UserFramework> getCurrentUser() {
         Long currentUserId = SecurityUtils.getUserId();
         UserFramework user;
         if (Objects.nonNull(currentUserId)) {

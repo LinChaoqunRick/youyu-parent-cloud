@@ -1,12 +1,9 @@
 package com.youyu.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.youyu.dto.login.ResultUser;
 import com.youyu.entity.LoginUser;
-import com.youyu.entity.Route;
-import com.youyu.entity.UserFramework;
-import com.youyu.entity.UserRole;
+import com.youyu.entity.auth.UserFramework;
+import com.youyu.entity.auth.UserRole;
 import com.youyu.enums.ResultCode;
 import com.youyu.enums.RoleEnum;
 import com.youyu.enums.SMSTemplate;
@@ -15,22 +12,12 @@ import com.youyu.mapper.LoginMapper;
 import com.youyu.mapper.UserFrameworkMapper;
 import com.youyu.mapper.UserRoleMapper;
 import com.youyu.service.LoginService;
-import com.youyu.utils.DateUtils;
-import com.youyu.utils.JwtUtil;
 import com.youyu.utils.RedisCache;
-import io.jsonwebtoken.Claims;
-import org.apache.http.HttpStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.stereotype.Service;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;

@@ -2,8 +2,7 @@ package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.entity.User;
-import com.youyu.entity.UserFollow;
+import com.youyu.entity.user.UserFollow;
 import com.youyu.mapper.UserFollowMapper;
 import com.youyu.service.UserFollowService;
 import com.youyu.utils.SecurityUtils;

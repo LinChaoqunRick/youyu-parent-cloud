@@ -1,6 +1,6 @@
 package com.youyu.aspect;
 
-import com.youyu.entity.ActionLog;
+import com.youyu.entity.auth.ActionLog;
 import com.youyu.utils.SecurityUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;

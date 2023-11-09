@@ -1,4 +1,4 @@
-package com.youyu.entity;
+package com.youyu.entity.user;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
@@ -19,7 +19,7 @@ import java.io.Serializable;
 @TableName("bs_user_follow")
 public class UserFollow implements Serializable {
     private static final long serialVersionUID = 323345274748085048L;
-    
+
     private Long id;
     /**
      * 关注人id

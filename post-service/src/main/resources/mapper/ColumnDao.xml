@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.youyu.dao.ColumnDao">
 
-    <resultMap type="com.youyu.entity.Column" id="ColumnMap">
+    <resultMap type="com.youyu.entity.user.Column" id="ColumnMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>

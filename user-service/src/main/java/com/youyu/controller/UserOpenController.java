@@ -6,7 +6,7 @@ import com.youyu.dto.user.UserFansListInput;
 import com.youyu.dto.user.UserFollowListInput;
 import com.youyu.dto.user.UserListInput;
 import com.youyu.dto.user.UserListOutput;
-import com.youyu.entity.ProfileMenu;
+import com.youyu.entity.user.ProfileMenu;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
 import com.youyu.service.UserService;

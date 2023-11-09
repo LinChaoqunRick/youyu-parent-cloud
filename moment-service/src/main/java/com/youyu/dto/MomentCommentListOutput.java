@@ -1,10 +1,7 @@
 package com.youyu.dto;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.youyu.entity.MomentComment;
-import com.youyu.entity.MomentCommentLike;
 import com.youyu.entity.MomentUserOutput;
-import com.youyu.entity.User;
 import lombok.Data;
 
 @Data

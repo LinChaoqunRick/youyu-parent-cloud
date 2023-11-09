@@ -1,4 +1,4 @@
-package com.youyu.entity;
+package com.youyu.entity.auth;
 
 import lombok.Data;
 

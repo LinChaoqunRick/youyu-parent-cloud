@@ -7,7 +7,6 @@ import com.youyu.dto.post.*;
 import com.youyu.entity.Post;
 import com.youyu.entity.PostCollect;
 import com.youyu.entity.PostLike;
-import com.youyu.entity.User;
 import com.youyu.enums.CreateType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;

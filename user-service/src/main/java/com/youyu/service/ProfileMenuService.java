@@ -1,7 +1,7 @@
 package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.entity.ProfileMenu;
+import com.youyu.entity.user.ProfileMenu;
 
 /**
  * (ProfileMenu)表服务接口

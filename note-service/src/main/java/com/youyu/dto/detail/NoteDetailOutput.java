@@ -1,7 +1,6 @@
 package com.youyu.dto.detail;
 
 import com.youyu.entity.Note;
-import com.youyu.entity.User;
 import lombok.Data;
 
 @Data

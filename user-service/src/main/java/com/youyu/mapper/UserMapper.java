@@ -1,9 +1,9 @@
 package com.youyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.youyu.entity.Route;
-import com.youyu.entity.User;
-import com.youyu.entity.UserFramework;
+import com.youyu.entity.auth.Route;
+import com.youyu.entity.user.User;
+import com.youyu.entity.auth.UserFramework;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;

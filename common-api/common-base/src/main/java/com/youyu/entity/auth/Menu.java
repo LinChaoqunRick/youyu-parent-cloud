@@ -1,4 +1,4 @@
-package com.youyu.entity;
+package com.youyu.entity.auth;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -23,7 +23,7 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Menu implements Serializable {
     private static final long serialVersionUID = -54979041104113736L;
-    
+
         @TableId
     private Long id;
     /**
@@ -54,13 +54,13 @@ public class Menu implements Serializable {
     * 菜单图标
     */
     private String icon;
-    
+
     private Long createBy;
-    
+
     private Date createTime;
-    
+
     private Long updateBy;
-    
+
     private Date updateTime;
     /**
     * 是否删除（0未删除 1已删除）

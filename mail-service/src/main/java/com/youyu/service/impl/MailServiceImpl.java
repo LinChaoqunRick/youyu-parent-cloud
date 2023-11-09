@@ -3,7 +3,7 @@ package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.youyu.dto.MailReplyInput;
-import com.youyu.entity.UserFramework;
+import com.youyu.entity.auth.UserFramework;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.mapper.UserFrameworkMapper;

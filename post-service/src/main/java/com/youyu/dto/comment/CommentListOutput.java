@@ -3,8 +3,6 @@ package com.youyu.dto.comment;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.youyu.dto.post.PostUserOutput;
 import com.youyu.entity.Comment;
-import com.youyu.entity.CommentLike;
-import com.youyu.entity.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

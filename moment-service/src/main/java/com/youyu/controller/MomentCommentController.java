@@ -6,8 +6,6 @@ import com.youyu.dto.MomentCommentListOutput;
 import com.youyu.dto.MomentReplyListInput;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.entity.MomentComment;
-import com.youyu.enums.ResultCode;
-import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.MomentCommentService;
 import org.springframework.web.bind.annotation.*;
@@ -37,25 +35,25 @@ public class MomentCommentController {
         return ResponseResult.success(detail);
     }
 
-    @RequestMapping("/listMomentCommentPage")
-    public ResponseResult<PageOutput<MomentCommentListOutput>> listMomentCommentPage(@Valid MomentCommentListInput input) {
-        PageOutput<MomentCommentListOutput> comments = momentCommentService.listMomentCommentPage(input);
-        return ResponseResult.success(comments);
-    }
-
-    @RequestMapping("/listMomentCommentAll")
-    public ResponseResult<List<MomentCommentListOutput>> listMomentCommentAll(@Valid MomentCommentListInput input) {
-        List<MomentCommentListOutput> outputList = momentCommentService.listMomentCommentAll(input);
-        return ResponseResult.success(outputList);
-    }
-
     @RequestMapping("/delete")
     public ResponseResult<Boolean> delete(Long commentId) {
         boolean remove = momentCommentService.deleteComment(commentId);
         return ResponseResult.success(remove);
     }
 
-    @RequestMapping("/listMomentReplyPage")
+    @RequestMapping("/open/listMomentCommentPage")
+    public ResponseResult<PageOutput<MomentCommentListOutput>> listMomentCommentPage(@Valid MomentCommentListInput input) {
+        PageOutput<MomentCommentListOutput> comments = momentCommentService.listMomentCommentPage(input);
+        return ResponseResult.success(comments);
+    }
+
+    @RequestMapping("/open/listMomentCommentAll")
+    public ResponseResult<List<MomentCommentListOutput>> listMomentCommentAll(@Valid MomentCommentListInput input) {
+        List<MomentCommentListOutput> outputList = momentCommentService.listMomentCommentAll(input);
+        return ResponseResult.success(outputList);
+    }
+
+    @RequestMapping("/open/listMomentReplyPage")
     public ResponseResult<PageOutput<MomentCommentListOutput>> listMomentReplyPage(@Valid MomentReplyListInput input) {
         PageOutput<MomentCommentListOutput> comments = momentCommentService.listMomentReplyPage(input);
         return ResponseResult.success(comments);

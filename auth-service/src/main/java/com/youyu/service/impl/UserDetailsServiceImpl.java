@@ -1,7 +1,7 @@
 package com.youyu.service.impl;
 
 import com.youyu.entity.LoginUser;
-import com.youyu.entity.UserFramework;
+import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.auth.AuthParamsEntity;
 import com.youyu.mapper.MenuMapper;
 import com.youyu.mapper.UserFrameworkMapper;
@@ -11,11 +11,9 @@ import com.youyu.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;

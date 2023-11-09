@@ -1,4 +1,4 @@
-package com.youyu.entity;
+package com.youyu.entity.user;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;

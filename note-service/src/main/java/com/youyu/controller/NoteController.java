@@ -1,28 +1,20 @@
 package com.youyu.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.detail.NoteDetailOutput;
 import com.youyu.dto.list.NoteListInput;
 import com.youyu.dto.list.NoteListOutput;
 import com.youyu.entity.Note;
-import com.youyu.entity.NoteChapter;
-import com.youyu.entity.User;
-import com.youyu.mapper.NoteMapper;
+
 import com.youyu.result.ResponseResult;
 import com.youyu.service.NoteChapterService;
 import com.youyu.service.NoteService;
 import com.youyu.service.UserService;
-import com.youyu.utils.BeanCopyUtils;
-import com.youyu.utils.PageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * (Note)表控制层

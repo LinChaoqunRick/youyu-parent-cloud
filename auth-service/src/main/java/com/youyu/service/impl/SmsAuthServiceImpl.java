@@ -1,6 +1,6 @@
 package com.youyu.service.impl;
 
-import com.youyu.entity.UserFramework;
+import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.auth.AuthParamsEntity;
 import com.youyu.enums.ResultCode;
 import com.youyu.enums.SMSTemplate;
@@ -9,13 +9,9 @@ import com.youyu.mapper.UserFrameworkMapper;
 import com.youyu.service.AuthService;
 import com.youyu.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @Service("sms_authService")

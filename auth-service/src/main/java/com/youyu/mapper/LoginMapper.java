@@ -1,12 +1,9 @@
 package com.youyu.mapper;
 
-import com.youyu.entity.Route;
-import com.youyu.entity.UserFramework;
+import com.youyu.entity.auth.UserFramework;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Mapper
 @Repository

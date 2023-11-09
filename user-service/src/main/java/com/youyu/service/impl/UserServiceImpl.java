@@ -5,7 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.user.*;
-import com.youyu.entity.*;
+import com.youyu.entity.auth.Route;
+import com.youyu.entity.auth.UserFramework;
+import com.youyu.entity.user.User;
+import com.youyu.entity.user.UserDetailOutput;
+import com.youyu.entity.user.UserFollow;
 import com.youyu.mapper.UserFollowMapper;
 import com.youyu.mapper.UserMapper;
 import com.youyu.service.UserService;
@@ -133,7 +137,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public UserFramework getUserById(Long id) {
+    public com.youyu.entity.auth.UserFramework getUserById(Long id) {
         UserFramework user = userMapper.getUserById(id);
         return user;
     }

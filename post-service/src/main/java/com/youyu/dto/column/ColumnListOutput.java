@@ -1,7 +1,7 @@
 package com.youyu.dto.column;
 
 import com.youyu.dto.post.PostUserOutput;
-import com.youyu.entity.Column;
+import com.youyu.entity.user.Column;
 import lombok.Data;
 
 @Data

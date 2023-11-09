@@ -1,4 +1,4 @@
-package com.youyu.entity;
+package com.youyu.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;

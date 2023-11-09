@@ -1,7 +1,7 @@
 package com.youyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.youyu.entity.ProfileMenu;
+import com.youyu.entity.user.ProfileMenu;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 

@@ -1,25 +1,17 @@
 package com.youyu.controller;
 
-import com.youyu.entity.UserFramework;
-import com.youyu.enums.ResultCode;
-import com.youyu.enums.RoleEnum;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.LoginService;
-import com.youyu.utils.SecurityUtils;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.endpoint.AuthorizationEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Objects;
