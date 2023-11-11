@@ -3,15 +3,17 @@ package com.youyu.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.dto.MomentLikeUserListInput;
+import com.youyu.dto.moment.MomentLikeUserListInput;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.user.UserListOutput;
-import com.youyu.entity.*;
+import com.youyu.entity.moment.Moment;
+import com.youyu.entity.moment.MomentLike;
+import com.youyu.entity.moment.MomentUserOutput;
+import com.youyu.entity.user.User;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
+import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.MomentLikeMapper;
 import com.youyu.mapper.MomentMapper;
-import com.youyu.mapper.UserMapper;
 import com.youyu.service.MomentLikeService;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
@@ -34,7 +36,7 @@ public class MomentLikeServiceImpl extends ServiceImpl<MomentLikeMapper, MomentL
     private MomentLikeMapper momentLikeMapper;
 
     @Resource
-    private UserMapper userMapper;
+    private UserServiceClient userServiceClient;
 
     @Resource
     private MomentMapper momentMapper;
@@ -84,7 +86,7 @@ public class MomentLikeServiceImpl extends ServiceImpl<MomentLikeMapper, MomentL
         likeLambdaQueryWrapper.select(MomentLike::getUserId);
         List<MomentLike> momentLikes = momentLikeMapper.selectList(likeLambdaQueryWrapper);
         List<Long> userIds = momentLikes.stream().map(MomentLike::getUserId).collect(Collectors.toList());
-        if (userIds.size() == 0) {
+        if (userIds.isEmpty()) {
             return null;
         }
 
@@ -93,7 +95,7 @@ public class MomentLikeServiceImpl extends ServiceImpl<MomentLikeMapper, MomentL
 
         // 分页查询
         Page<User> page = new Page<>(input.getPageNum(), input.getPageSize());
-        Page<User> postPage = userMapper.selectPage(page, userLambdaQueryWrapper);
+        Page<User> postPage = userServiceClient.selectPage(page, userLambdaQueryWrapper).getData();
 
         // 封装查询结果
         return PageUtils.setPageResult(postPage, MomentUserOutput.class);

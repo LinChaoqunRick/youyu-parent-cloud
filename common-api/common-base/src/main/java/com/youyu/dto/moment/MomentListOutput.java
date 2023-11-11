@@ -1,7 +1,7 @@
-package com.youyu.dto;
+package com.youyu.dto.moment;
 
-import com.youyu.entity.Moment;
-import com.youyu.entity.MomentUserOutput;
+import com.youyu.entity.moment.Moment;
+import com.youyu.entity.moment.MomentUserOutput;
 import lombok.Data;
 
 import java.util.List;

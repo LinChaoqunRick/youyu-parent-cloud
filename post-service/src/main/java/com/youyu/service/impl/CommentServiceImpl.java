@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.dto.MailReplyInput;
+import com.youyu.dto.mail.MailReplyInput;
 import com.youyu.dto.comment.CommentListInput;
 import com.youyu.dto.comment.CommentListOutput;
 import com.youyu.dto.comment.PostReplyListInput;

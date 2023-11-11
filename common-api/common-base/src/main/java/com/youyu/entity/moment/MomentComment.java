@@ -1,4 +1,4 @@
-package com.youyu.entity;
+package com.youyu.entity.moment;
 
 import java.util.Date;
 
@@ -12,7 +12,6 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 /**
  * (MomentComment)表实体类

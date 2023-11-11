@@ -1,4 +1,4 @@
-package com.youyu.entity;
+package com.youyu.entity.moment;
 
 import lombok.Data;
 

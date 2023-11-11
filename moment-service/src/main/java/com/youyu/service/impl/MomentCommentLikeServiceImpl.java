@@ -2,11 +2,11 @@ package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.entity.MomentComment;
+import com.youyu.entity.moment.MomentComment;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.mapper.MomentCommentLikeMapper;
-import com.youyu.entity.MomentCommentLike;
+import com.youyu.entity.moment.MomentCommentLike;
 import com.youyu.mapper.MomentCommentMapper;
 import com.youyu.service.MomentCommentLikeService;
 import com.youyu.utils.SecurityUtils;

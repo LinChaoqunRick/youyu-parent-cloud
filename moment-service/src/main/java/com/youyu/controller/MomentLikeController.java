@@ -1,8 +1,7 @@
 package com.youyu.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.youyu.entity.MomentLike;
+import com.youyu.entity.moment.MomentLike;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;

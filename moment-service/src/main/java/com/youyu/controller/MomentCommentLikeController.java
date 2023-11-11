@@ -1,13 +1,9 @@
 package com.youyu.controller;
 
 
-import com.youyu.entity.MomentCommentLike;
-import com.youyu.entity.MomentLike;
-import com.youyu.enums.ResultCode;
-import com.youyu.exception.SystemException;
+import com.youyu.entity.moment.MomentCommentLike;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.MomentCommentLikeService;
-import com.youyu.service.MomentLikeService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

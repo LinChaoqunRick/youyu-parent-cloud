@@ -1,7 +1,7 @@
-package com.youyu.dto;
+package com.youyu.dto.moment;
 
-import com.youyu.entity.MomentComment;
-import com.youyu.entity.MomentUserOutput;
+import com.youyu.entity.moment.MomentComment;
+import com.youyu.entity.moment.MomentUserOutput;
 import lombok.Data;
 
 @Data

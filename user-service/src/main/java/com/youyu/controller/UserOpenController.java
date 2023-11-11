@@ -1,12 +1,14 @@
 package com.youyu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.user.UserFansListInput;
 import com.youyu.dto.user.UserFollowListInput;
 import com.youyu.dto.user.UserListInput;
 import com.youyu.dto.user.UserListOutput;
 import com.youyu.entity.user.ProfileMenu;
+import com.youyu.entity.user.User;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
 import com.youyu.service.UserService;
@@ -61,6 +63,21 @@ public class UserOpenController {
     @RequestMapping("/fansList")
     ResponseResult<PageOutput<UserListOutput>> fansList(@Valid UserFansListInput input) {
         return ResponseResult.success(userService.fansList(input));
+    }
+
+    @RequestMapping("/selectCount")
+    public ResponseResult<Integer> selectCount(LambdaQueryWrapper<User> queryWrapper) {
+        return ResponseResult.success(userService.count(queryWrapper));
+    }
+
+    @RequestMapping("/selectById")
+    public ResponseResult<User> selectById(Long userId) {
+        return ResponseResult.success(userService.getById(userId));
+    }
+
+    @RequestMapping("/selectPage")
+    public ResponseResult<Page<User>> selectPage(Page<User> page, LambdaQueryWrapper<User> lambdaQueryWrapper) {
+        return ResponseResult.success(userService.page(page, lambdaQueryWrapper));
     }
 }
 

@@ -1,12 +1,10 @@
 package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.dto.MomentLikeUserListInput;
+import com.youyu.dto.moment.MomentLikeUserListInput;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.entity.MomentLike;
-import com.youyu.entity.MomentUserOutput;
-
-import java.util.List;
+import com.youyu.entity.moment.MomentLike;
+import com.youyu.entity.moment.MomentUserOutput;
 
 /**
  * (MomentLike)表服务接口

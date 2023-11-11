@@ -1,4 +1,4 @@
-package com.youyu.entity;
+package com.youyu.entity.moment;
 
 import java.util.Date;
 
@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 /**
  * (MomentCommentLike)表实体类

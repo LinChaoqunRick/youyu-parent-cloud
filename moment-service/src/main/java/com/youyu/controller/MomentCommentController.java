@@ -1,11 +1,11 @@
 package com.youyu.controller;
 
 
-import com.youyu.dto.MomentCommentListInput;
-import com.youyu.dto.MomentCommentListOutput;
-import com.youyu.dto.MomentReplyListInput;
+import com.youyu.dto.moment.MomentCommentListInput;
+import com.youyu.dto.moment.MomentCommentListOutput;
+import com.youyu.dto.moment.MomentReplyListInput;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.entity.MomentComment;
+import com.youyu.entity.moment.MomentComment;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.MomentCommentService;
 import org.springframework.web.bind.annotation.*;

@@ -1,6 +1,5 @@
 package com.youyu.dto.post;
 
-import com.youyu.dto.user.UserOutput;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

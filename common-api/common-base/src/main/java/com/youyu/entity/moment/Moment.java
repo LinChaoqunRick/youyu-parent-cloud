@@ -1,4 +1,4 @@
-package com.youyu.entity;
+package com.youyu.entity.moment;
 
 import java.util.Date;
 
@@ -9,8 +9,6 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 /**
  * (Moment)表实体类

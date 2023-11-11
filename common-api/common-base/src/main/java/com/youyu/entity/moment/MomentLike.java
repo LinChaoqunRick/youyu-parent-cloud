@@ -1,4 +1,4 @@
-package com.youyu.entity;
+package com.youyu.entity.moment;
 
 import java.util.Date;
 
@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 /**
  * (MomentLike)表实体类

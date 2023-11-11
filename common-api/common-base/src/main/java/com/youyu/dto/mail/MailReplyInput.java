@@ -1,4 +1,4 @@
-package com.youyu.dto;
+package com.youyu.dto.mail;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

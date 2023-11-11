@@ -1,7 +1,6 @@
 package com.youyu.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.youyu.dto.MailReplyInput;
+import com.youyu.dto.mail.MailReplyInput;
 import com.youyu.dto.comment.CommentListInput;
 import com.youyu.dto.comment.CommentListOutput;
 import com.youyu.dto.comment.PostReplyListInput;
@@ -18,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.mail.MessagingException;
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * (Comment)表控制层
