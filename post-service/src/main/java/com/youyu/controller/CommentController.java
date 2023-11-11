@@ -1,18 +1,16 @@
 package com.youyu.controller;
 
-import com.youyu.dto.mail.MailReplyInput;
-import com.youyu.dto.comment.CommentListInput;
-import com.youyu.dto.comment.CommentListOutput;
-import com.youyu.dto.comment.PostReplyListInput;
+import com.youyu.dto.post.comment.CommentListInput;
+import com.youyu.dto.post.comment.CommentListOutput;
+import com.youyu.dto.post.comment.PostReplyListInput;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.entity.Comment;
-import com.youyu.entity.CommentLike;
+import com.youyu.entity.post.Comment;
+import com.youyu.entity.post.CommentLike;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.CommentLikeService;
 import com.youyu.service.CommentService;
-import com.youyu.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,11 +30,8 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    @Autowired
-    private CommentLikeService commentLikeService;
-
     @Resource
-    private MailService mailService;
+    private CommentLikeService commentLikeService;
 
     @RequestMapping("/getCommentsPage")
     ResponseResult<PageOutput<CommentListOutput>> getCommentsPage(@Valid CommentListInput input) {

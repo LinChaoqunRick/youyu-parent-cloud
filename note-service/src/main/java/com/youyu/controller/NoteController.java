@@ -1,18 +1,17 @@
 package com.youyu.controller;
 
 import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.detail.NoteDetailOutput;
-import com.youyu.dto.list.NoteListInput;
-import com.youyu.dto.list.NoteListOutput;
-import com.youyu.entity.Note;
+import com.youyu.dto.note.detail.NoteDetailOutput;
+import com.youyu.dto.note.list.NoteListInput;
+import com.youyu.dto.note.list.NoteListOutput;
+import com.youyu.entity.note.Note;
 
 import com.youyu.result.ResponseResult;
 import com.youyu.service.NoteChapterService;
 import com.youyu.service.NoteService;
-import com.youyu.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.Date;
 
@@ -26,13 +25,10 @@ import java.util.Date;
 @RequestMapping("/note")
 public class NoteController {
 
-    @Autowired
+    @Resource
     private NoteService noteService;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
+    @Resource
     private NoteChapterService noteChapterService;
 
     @RequestMapping("/create")

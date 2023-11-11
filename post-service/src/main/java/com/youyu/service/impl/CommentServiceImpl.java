@@ -5,33 +5,30 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.dto.mail.MailReplyInput;
-import com.youyu.dto.comment.CommentListInput;
-import com.youyu.dto.comment.CommentListOutput;
-import com.youyu.dto.comment.PostReplyListInput;
+import com.youyu.dto.post.comment.CommentListInput;
+import com.youyu.dto.post.comment.CommentListOutput;
+import com.youyu.dto.post.comment.PostReplyListInput;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.post.PostUserOutput;
-import com.youyu.entity.Comment;
-import com.youyu.entity.CommentLike;
-import com.youyu.entity.Post;
+import com.youyu.dto.post.post.PostUserOutput;
+import com.youyu.entity.post.Comment;
+import com.youyu.entity.post.CommentLike;
+import com.youyu.entity.post.Post;
 import com.youyu.entity.user.User;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
+import com.youyu.feign.MailServiceClient;
+import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.CommentMapper;
-import com.youyu.mapper.UserMapper;
 import com.youyu.service.CommentLikeService;
 import com.youyu.service.CommentService;
-import com.youyu.service.MailService;
 import com.youyu.service.PostService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,20 +42,20 @@ import java.util.stream.Collectors;
 @Service("commentService")
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
 
-    @Autowired
+    @Resource
     private CommentMapper commentMapper;
 
-    @Autowired
+    @Resource
     private PostService postService;
 
-    @Autowired
+    @Resource
     private CommentLikeService commentLikeService;
 
     @Resource
-    private MailService mailService;
+    private MailServiceClient mailServiceClient;
 
     @Resource
-    private UserMapper userMapper;
+    private UserServiceClient userServiceClient;
 
     @Override
     public PageOutput<CommentListOutput> getCommentsPage(CommentListInput input) {
@@ -96,8 +93,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         PageOutput<CommentListOutput> outputs = PageUtils.setPageResult(page, CommentListOutput.class);
 
         List<Long> userIds = new ArrayList<>();
-        userIds.addAll(outputs.getList().stream().map(Comment::getUserId).collect(Collectors.toList()));
-        userIds.addAll(outputs.getList().stream().map(Comment::getUserIdTo).collect(Collectors.toList()));
+        userIds.addAll(outputs.getList().stream().map(Comment::getUserId).toList());
+        userIds.addAll(outputs.getList().stream().map(Comment::getUserIdTo).toList());
         Map<Long, PostUserOutput> userMap = createUserMap(userIds);
 
         setExtraData(outputs.getList(), userMap);
@@ -114,8 +111,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             if (comment.getUserId().equals(comment.getUserIdTo())) {
                 return output;
             }
-            User user = userMapper.selectById(comment.getUserId());
-            User userTo = userMapper.selectById(comment.getUserIdTo());
+            User user = userServiceClient.selectById(comment.getUserId()).getData();
+            User userTo = userServiceClient.selectById(comment.getUserIdTo()).getData();
             Post post = postService.getById(comment.getPostId());
 
             // 回复人已绑定邮箱
@@ -127,11 +124,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 mailReplyInput.setCaption("用户@" + user.getNickname() + " 在你的博客《" + post.getTitle() + "》下留言了：");
                 mailReplyInput.setContent(comment.getContent());
                 mailReplyInput.setUrl("http://v2.youyul.com/post/details/" + post.getId());
-                try {
-                    mailService.sendPostReplyNotice(mailReplyInput);
-                } catch (MessagingException e) {
-                    e.printStackTrace();
-                }
+                mailServiceClient.sendPostCommentMailNotice(mailReplyInput);
             }
 
             return output;
@@ -174,11 +167,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         } else {
             throw new SystemException(ResultCode.FORBIDDEN);
         }
-    }
-
-    @Async
-    public void sendNotifyMail() {
-
     }
 
     /**

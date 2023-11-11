@@ -14,7 +14,6 @@
         <module>moment-service</module>
         <module>gateway-service</module>
         <module>common-api</module>
-        <module>common-api/common-model</module>
         <module>common-api/common-auth</module>
         <module>common-api/common-base</module>
         <module>auth-service</module>

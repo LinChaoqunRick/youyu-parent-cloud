@@ -1,9 +1,9 @@
 package com.youyu.controller;
 
-import com.youyu.dto.column.ColumnListOutput;
-import com.youyu.dto.column.ColumnPostInput;
+import com.youyu.dto.post.column.ColumnListOutput;
+import com.youyu.dto.post.column.ColumnPostInput;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.post.PostListOutput;
+import com.youyu.dto.post.post.PostListOutput;
 import com.youyu.entity.user.Column;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ColumnService;

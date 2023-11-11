@@ -4,18 +4,18 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.detail.NoteDetailOutput;
-import com.youyu.dto.detail.NoteUserExtraInfo;
-import com.youyu.dto.detail.NoteUserOutput;
-import com.youyu.dto.list.NoteListInput;
-import com.youyu.dto.list.NoteListOutput;
-import com.youyu.entity.*;
+import com.youyu.dto.note.detail.NoteDetailOutput;
+import com.youyu.dto.note.detail.NoteUserExtraInfo;
+import com.youyu.dto.note.detail.NoteUserOutput;
+import com.youyu.dto.note.list.NoteListInput;
+import com.youyu.dto.note.list.NoteListOutput;
+import com.youyu.entity.note.Note;
+import com.youyu.entity.note.NoteChapter;
 import com.youyu.entity.user.User;
+import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.NoteChapterMapper;
 import com.youyu.mapper.NoteMapper;
 import com.youyu.service.NoteService;
-import com.youyu.service.UserFollowService;
-import com.youyu.service.UserService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.PageUtils;
 import org.springframework.stereotype.Service;
@@ -41,10 +41,7 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note> implements No
     private NoteChapterMapper noteChapterMapper;
 
     @Resource
-    private UserService userService;
-
-    @Resource
-    private UserFollowService userFollowService;
+    private UserServiceClient userServiceClient;
 
     @Override
     public PageOutput<NoteListOutput> noteList(NoteListInput input) {
@@ -63,7 +60,7 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note> implements No
 
     @Override
     public NoteUserOutput getUserDetailById(Long userId, boolean enhance) {
-        User user = userService.getById(userId);
+        User user = userServiceClient.selectById(userId).getData();
         NoteUserOutput userDetailOutput = BeanCopyUtils.copyBean(user, NoteUserOutput.class);
         if (enhance) {
             setUserExtraData(userDetailOutput);
@@ -73,7 +70,7 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note> implements No
 
     @Override
     public List<NoteUserOutput> getUserDetailByIds(List<Long> userIds, boolean enhance) {
-        List<User> users = userService.listByIds(userIds);
+        List<User> users = userServiceClient.listByIds(userIds).getData();
         List<NoteUserOutput> outputs = BeanCopyUtils.copyBeanList(users, NoteUserOutput.class);
         if (enhance) {
             outputs.forEach(this::setUserExtraData);
@@ -130,8 +127,8 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note> implements No
 
     public void setUserExtraData(NoteUserOutput user) {
         NoteUserExtraInfo extraInfo = new NoteUserExtraInfo();
-        extraInfo.setFansCount(userFollowService.getUserFollowCount(user.getId()));
+        extraInfo.setFansCount(userServiceClient.getUserFollowCount(user.getId()).getData());
         user.setExtraInfo(extraInfo);
-        user.setFollow(userFollowService.isCurrentUserFollow(user.getId()));
+        user.setFollow(userServiceClient.isCurrentUserFollow(user.getId()).getData());
     }
 }

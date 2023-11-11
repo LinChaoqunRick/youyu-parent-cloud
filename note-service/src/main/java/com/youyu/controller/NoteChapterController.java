@@ -1,17 +1,13 @@
 package com.youyu.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.youyu.dto.detail.NoteChapterDetailOutput;
-import com.youyu.dto.post.PostUserOutput;
-import com.youyu.entity.NoteChapter;
+import com.youyu.dto.note.detail.NoteChapterDetailOutput;
+import com.youyu.entity.note.NoteChapter;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.NoteChapterService;
-import com.youyu.service.PostService;
-import com.youyu.utils.BeanCopyUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -25,11 +21,8 @@ import java.util.List;
 @RequestMapping("/noteChapter")
 public class NoteChapterController {
 
-    @Autowired
+    @Resource
     private NoteChapterService noteChapterService;
-
-    @Autowired
-    private PostService postService;
 
     @RequestMapping("/create")
     public ResponseResult<Boolean> createChapter(@Valid NoteChapter chapter) {

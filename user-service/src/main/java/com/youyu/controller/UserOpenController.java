@@ -12,12 +12,14 @@ import com.youyu.entity.user.User;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
 import com.youyu.service.UserService;
+import io.swagger.models.auth.In;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -78,6 +80,11 @@ public class UserOpenController {
     @RequestMapping("/selectPage")
     public ResponseResult<Page<User>> selectPage(Page<User> page, LambdaQueryWrapper<User> lambdaQueryWrapper) {
         return ResponseResult.success(userService.page(page, lambdaQueryWrapper));
+    }
+
+    @RequestMapping("/listByIds")
+    public ResponseResult<List<User>> listByIds(List<Long> userIds) {
+        return ResponseResult.success(userService.listByIds(userIds));
     }
 }
 

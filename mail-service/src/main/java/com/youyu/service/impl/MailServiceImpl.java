@@ -69,7 +69,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public Boolean sendPostReplyNotice(MailReplyInput input) {
+    public Boolean sendPostCommentMailNotice(MailReplyInput input) {
         Context context = new Context();
         context.setVariable("nickname", input.getNickname());
         context.setVariable("caption", input.getCaption());

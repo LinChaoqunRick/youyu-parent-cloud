@@ -31,6 +31,12 @@ public class MailController {
         return ResponseResult.success(result);
     }
 
+    @RequestMapping("/sendPostCommentMailNotice")
+    public ResponseResult<Boolean> sendPostCommentMailNotice(MailReplyInput input) throws MessagingException {
+        Boolean result = mailService.sendPostCommentMailNotice(input);
+        return ResponseResult.success(result);
+    }
+
 
     @RequestMapping("/testError")
     public ResponseResult<Boolean> testError() {

@@ -1,16 +1,14 @@
 package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.entity.Comment;
-import com.youyu.entity.CommentLike;
+import com.youyu.entity.post.Comment;
+import com.youyu.entity.post.CommentLike;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.mapper.CommentLikeMapper;
 import com.youyu.mapper.CommentMapper;
 import com.youyu.service.CommentLikeService;
-import com.youyu.service.CommentService;
 import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;

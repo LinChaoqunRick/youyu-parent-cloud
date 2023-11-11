@@ -34,4 +34,9 @@ public class UserFollowController {
     ResponseResult<Boolean> isCurrentUserFollow(Long userId) {
         return ResponseResult.success(userFollowService.isCurrentUserFollow(userId));
     }
+
+    @RequestMapping("/getUserFollowCount")
+    public ResponseResult<Integer> getUserFollowCount(Long userId) {
+        return ResponseResult.success(userFollowService.getUserFollowCount(userId));
+    }
 }

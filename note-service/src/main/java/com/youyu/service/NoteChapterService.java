@@ -1,9 +1,9 @@
 package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.dto.detail.NoteChapterDetailOutput;
-import com.youyu.dto.list.ChapterListOutput;
-import com.youyu.entity.NoteChapter;
+import com.youyu.dto.note.detail.NoteChapterDetailOutput;
+import com.youyu.dto.note.list.ChapterListOutput;
+import com.youyu.entity.note.NoteChapter;
 
 import java.util.List;
 

@@ -7,7 +7,7 @@ import javax.mail.MessagingException;
 
 public interface MailService {
     Boolean sendRegisterCode(String target, boolean repeat) throws MessagingException;
-    Boolean sendPostReplyNotice(MailReplyInput input) throws MessagingException;
+    Boolean sendPostCommentMailNotice(MailReplyInput input) throws MessagingException;
     Boolean sendMomentCommentNotice(MailReplyInput input) throws MessagingException;
     Boolean sendMomentCommentMailNotice(MomentCommentListOutput detail);
 }
