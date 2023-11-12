@@ -1,12 +1,16 @@
 package com.youyu.enums;
 
-public enum ResultCode {
+import lombok.Getter;
+import org.apache.http.HttpStatus;
+
+@Getter
+public enum ResultCode implements HttpStatus {
     SUCCESS(200, "成功"),
     INTERNAL_SERVER_ERROR(500, "内部服务器错误"),
-    NEED_LOGIN(401, "需要登录后操作401"),
-    NO_OPERATOR_AUTH(403, "无权限操作，拒绝访问"),
+    UNAUTHORIZED(401, "未认证用户"),
+    FORBIDDEN(403, "拒绝访问"),
     NOT_FOUND(404, "访问的资源不存在"),
-    LOGIN_ERROR(505, "用户名或密码错误222"),
+    LOGIN_ERROR(505, "用户名或密码错误"),
     REQUIRE_USERNAME(504, "用户名不能为空"),
     EMAIL_CONFLICT(505, "邮箱已存在"),
     NICKNAME_CONFLICT(506, "昵称已存在"),
@@ -27,16 +31,8 @@ public enum ResultCode {
         this.message = message;
     }
 
-    public int getCode() {
-        return code;
-    }
-
     public void setCode(int code) {
         this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
     public void setMessage(String message) {

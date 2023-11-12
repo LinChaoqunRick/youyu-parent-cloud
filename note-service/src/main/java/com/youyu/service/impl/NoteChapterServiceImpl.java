@@ -1,13 +1,11 @@
 package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.dto.detail.NoteChapterDetailOutput;
-import com.youyu.dto.detail.NoteUserOutput;
-import com.youyu.dto.list.ChapterListOutput;
-import com.youyu.dto.post.PostUserOutput;
-import com.youyu.entity.NoteChapter;
+import com.youyu.dto.note.detail.NoteChapterDetailOutput;
+import com.youyu.dto.note.detail.NoteUserOutput;
+import com.youyu.dto.note.list.ChapterListOutput;
+import com.youyu.entity.note.NoteChapter;
 import com.youyu.mapper.NoteChapterMapper;
 import com.youyu.service.NoteChapterService;
 import com.youyu.service.NoteService;

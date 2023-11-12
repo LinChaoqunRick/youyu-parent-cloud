@@ -2,12 +2,11 @@ package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.detail.NoteDetailOutput;
-import com.youyu.dto.detail.NoteUserOutput;
-import com.youyu.dto.list.NoteListInput;
-import com.youyu.dto.list.NoteListOutput;
-import com.youyu.dto.post.PostUserOutput;
-import com.youyu.entity.Note;
+import com.youyu.dto.note.detail.NoteDetailOutput;
+import com.youyu.dto.note.detail.NoteUserOutput;
+import com.youyu.dto.note.list.NoteListInput;
+import com.youyu.dto.note.list.NoteListOutput;
+import com.youyu.entity.note.Note;
 
 import java.util.List;
 

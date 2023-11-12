@@ -1,7 +1,7 @@
 package com.youyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.youyu.entity.MomentCommentLike;
+import com.youyu.entity.moment.MomentCommentLike;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 

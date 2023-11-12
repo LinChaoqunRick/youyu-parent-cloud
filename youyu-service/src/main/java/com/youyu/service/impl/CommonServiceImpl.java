@@ -3,10 +3,10 @@ package com.youyu.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.youyu.dto.DynamicListInput;
-import com.youyu.dto.MomentListOutput;
-import com.youyu.dto.list.ChapterListOutput;
-import com.youyu.dto.list.NoteListOutput;
-import com.youyu.dto.post.PostListOutput;
+import com.youyu.dto.moment.MomentListOutput;
+import com.youyu.dto.note.list.ChapterListOutput;
+import com.youyu.dto.note.list.NoteListOutput;
+import com.youyu.dto.post.post.PostListOutput;
 import com.youyu.entity.DynamicInfo;
 import com.youyu.mapper.CommonMapper;
 import com.youyu.service.*;
@@ -15,8 +15,6 @@ import com.youyu.utils.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 

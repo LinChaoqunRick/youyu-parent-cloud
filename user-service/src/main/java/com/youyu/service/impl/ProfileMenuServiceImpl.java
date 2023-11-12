@@ -2,7 +2,7 @@ package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.mapper.ProfileMenuDao;
-import com.youyu.entity.ProfileMenu;
+import com.youyu.entity.user.ProfileMenu;
 import com.youyu.service.ProfileMenuService;
 import org.springframework.stereotype.Service;
 

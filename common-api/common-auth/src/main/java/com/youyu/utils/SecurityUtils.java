@@ -5,7 +5,11 @@ import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 public class SecurityUtils {
@@ -37,7 +41,7 @@ public class SecurityUtils {
         if (Objects.equals(getUserId(), userId)) {
             return true;
         } else {
-            throw new SystemException(ResultCode.NO_OPERATOR_AUTH);
+            throw new SystemException(ResultCode.FORBIDDEN);
         }
     }
 
@@ -47,7 +51,17 @@ public class SecurityUtils {
 
     public static void authContextUser(Long userId) {
         if (!isContextUser(userId)) {
-            throw new SystemException(ResultCode.NO_OPERATOR_AUTH);
+            throw new SystemException(ResultCode.FORBIDDEN);
+        }
+    }
+
+    public static String getAuthorizationToken() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String authorization = request.getHeader("Authorization");
+        if (StringUtils.hasText(authorization)) {
+            return authorization.split(" ")[1];
+        } else {
+            return null;
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.youyu.service.impl;
 
-import com.youyu.entity.UserFramework;
+import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.auth.AuthParamsEntity;
 import com.youyu.enums.ResultCode;
 import com.youyu.enums.SMSTemplate;
@@ -9,13 +9,9 @@ import com.youyu.mapper.UserFrameworkMapper;
 import com.youyu.service.AuthService;
 import com.youyu.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @Service("sms_authService")
@@ -32,7 +28,7 @@ public class SmsAuthServiceImpl implements AuthService {
         String smsCode = authParamsEntity.getSmsCode();
         UserFramework user = userFrameworkMapper.getUserByUsername(username);
         if (user == null) {
-            throw new RuntimeException("用户名或密码错误");
+            throw new RuntimeException("手机号或验证码错误");
         }
         checkSmsCode(username, smsCode);
         return user;

@@ -1,7 +1,7 @@
 package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.entity.MomentCommentLike;
+import com.youyu.entity.moment.MomentCommentLike;
 
 /**
  * (MomentCommentLike)表服务接口

@@ -1,7 +1,7 @@
 package com.youyu.config;
 
 import com.youyu.entity.LoginUser;
-import com.youyu.entity.UserFramework;
+import com.youyu.entity.auth.UserFramework;
 import org.springframework.security.oauth2.common.*;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
@@ -25,4 +25,6 @@ public class CustomTokenEnhancer implements TokenEnhancer {
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
         return accessToken;
     }
+
+
 }

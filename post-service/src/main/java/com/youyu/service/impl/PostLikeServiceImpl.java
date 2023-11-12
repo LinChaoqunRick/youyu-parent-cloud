@@ -1,7 +1,7 @@
 package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.entity.PostLike;
+import com.youyu.entity.post.PostLike;
 import com.youyu.mapper.PostLikeMapper;
 import com.youyu.service.PostLikeService;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,7 @@
 package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.entity.User;
-import com.youyu.entity.UserFollow;
+import com.youyu.entity.user.UserFollow;
 
 import java.util.List;
 

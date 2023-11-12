@@ -1,0 +1,11 @@
+server:
+  port: 8130
+spring:
+  application:
+    name: moment-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos123

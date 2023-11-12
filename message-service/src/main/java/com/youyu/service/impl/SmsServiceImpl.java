@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.youyu.config.SendCode;
 import com.youyu.dto.SmsSendInput;
 import com.youyu.dto.SmsVerifyInput;
-import com.youyu.entity.User;
+import com.youyu.entity.user.User;
 import com.youyu.enums.ResultCode;
 import com.youyu.enums.SMSTemplate;
 import com.youyu.exception.SystemException;

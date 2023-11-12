@@ -1,13 +1,12 @@
 package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.dto.comment.CommentListOutput;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.post.PostDetailOutput;
-import com.youyu.dto.post.PostListInput;
-import com.youyu.dto.post.PostListOutput;
-import com.youyu.dto.post.PostUserOutput;
-import com.youyu.entity.Post;
+import com.youyu.dto.post.post.PostDetailOutput;
+import com.youyu.dto.post.post.PostListInput;
+import com.youyu.dto.post.post.PostListOutput;
+import com.youyu.dto.post.post.PostUserOutput;
+import com.youyu.entity.post.Post;
 
 import java.util.List;
 

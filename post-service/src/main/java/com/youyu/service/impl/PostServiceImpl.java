@@ -4,15 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
-import com.youyu.dto.column.ColumnListOutput;
-import com.youyu.dto.comment.CommentListOutput;
-import com.youyu.dto.post.*;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.user.UserOutput;
-import com.youyu.entity.*;
+import com.youyu.dto.post.column.ColumnListOutput;
+import com.youyu.dto.post.comment.CommentListOutput;
+import com.youyu.dto.post.post.*;
+import com.youyu.entity.post.Category;
+import com.youyu.entity.post.Post;
+import com.youyu.entity.post.PostCollect;
+import com.youyu.entity.post.PostLike;
+import com.youyu.entity.user.User;
+import com.youyu.entity.user.UserFollow;
 import com.youyu.enums.CreateType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
+import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.*;
 import com.youyu.service.CategoryService;
 import com.youyu.service.ColumnService;
@@ -20,7 +25,6 @@ import com.youyu.service.PostService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,26 +40,23 @@ import java.util.Objects;
 @Service("postService")
 public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements PostService {
 
-    @Autowired
-    private UserMapper userMapper;
+    @Resource
+    private UserServiceClient userServiceClient;
 
-    @Autowired
+    @Resource
     private CategoryService categoryService;
 
-    @Autowired
+    @Resource
     private PostMapper postMapper;
 
-    @Autowired
+    @Resource
     private CommentMapper commentMapper;
 
-    @Autowired
+    @Resource
     private PostLikeMapper postLikeMapper;
 
-    @Autowired
+    @Resource
     private PostCollectMapper postCollectMapper;
-
-    @Autowired
-    private UserFollowMapper userFollowMapper;
 
     @Resource
     private ColumnService columnService;
@@ -209,7 +210,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         if (Objects.isNull(userId)) {
             return null;
         }
-        User user = userMapper.selectById(userId);
+        User user = userServiceClient.selectById(userId).getData();
         if (!Objects.isNull(user)) {
             PostUserOutput userDetailOutput = BeanCopyUtils.copyBean(user, PostUserOutput.class);
             if (enhance) {
@@ -235,7 +236,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
                 // 粉丝数量
                 LambdaQueryWrapper<UserFollow> userFollowLambdaQueryWrapper = new LambdaQueryWrapper<>();
                 userFollowLambdaQueryWrapper.eq(UserFollow::getUserIdTo, userId);
-                long fansCount = userFollowMapper.selectCount(userFollowLambdaQueryWrapper);
+                long fansCount = userServiceClient.selectCount(userFollowLambdaQueryWrapper).getData();
                 extraInfo.setFansCount(fansCount);
 
                 userDetailOutput.setExtraInfo(extraInfo);
@@ -246,7 +247,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
                     LambdaQueryWrapper<UserFollow> queryWrapper1 = new LambdaQueryWrapper<>();
                     queryWrapper1.eq(UserFollow::getUserId, currentUserId);
                     queryWrapper1.eq(UserFollow::getUserIdTo, userId);
-                    int count = userFollowMapper.selectCount(queryWrapper1);
+                    int count = userServiceClient.selectCount(queryWrapper1).getData();
                     userDetailOutput.setFollow(count > 0);
                 }
             }

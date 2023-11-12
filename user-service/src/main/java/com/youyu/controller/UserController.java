@@ -2,14 +2,13 @@ package com.youyu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.github.pagehelper.PageInfo;
-import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.user.*;
-import com.youyu.entity.ProfileMenu;
-import com.youyu.entity.User;
-import com.youyu.entity.UserDetailOutput;
-import com.youyu.entity.UserFollow;
+import com.youyu.entity.auth.UserFramework;
+import com.youyu.entity.user.ProfileMenu;
+import com.youyu.entity.user.User;
+import com.youyu.entity.user.UserDetailOutput;
+import com.youyu.entity.user.UserFollow;
 import com.youyu.enums.ResultCode;
+import com.youyu.enums.RoleEnum;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
@@ -17,10 +16,12 @@ import com.youyu.service.UserFollowService;
 import com.youyu.service.UserService;
 import com.youyu.utils.RedisCache;
 import com.youyu.utils.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Objects;
 
@@ -34,25 +35,20 @@ import java.util.Objects;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private UserFollowService userFollowService;
 
-    @Autowired
+    @Resource
     private ProfileMenuService profileMenuService;
 
-    @Autowired
+    @Resource
     PasswordEncoder passwordEncoder;
 
-    @Autowired
+    @Resource
     private RedisCache redisCache;
-
-    @RequestMapping("/list")
-    ResponseResult<PageOutput<UserListOutput>> list(UserListInput input) {
-        return ResponseResult.success(userService.list(input));
-    }
 
     @RequestMapping("/follow")
     ResponseResult<Boolean> userFollow(UserFollow input) {
@@ -74,16 +70,6 @@ public class UserController {
         SecurityUtils.authContextUser(userId);
         UserDetailOutput detail = userService.detail(userId);
         return ResponseResult.success(detail);
-    }
-
-    @RequestMapping("/followList")
-    ResponseResult<PageOutput<UserListOutput>> followList(@Valid UserFollowListInput input) {
-        return ResponseResult.success(userService.followList(input));
-    }
-
-    @RequestMapping("/fansList")
-    ResponseResult<PageOutput<UserListOutput>> fansList(@Valid UserFansListInput input) {
-        return ResponseResult.success(userService.fansList(input));
     }
 
     @RequestMapping("/saveBasicInfo")
@@ -169,26 +155,34 @@ public class UserController {
         return ResponseResult.success(true);
     }
 
-    @RequestMapping("/getProfileMenu")
-    ResponseResult<ProfileMenu> getProfileMenu(@RequestParam Long userId) {
-        LambdaQueryWrapper<ProfileMenu> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProfileMenu::getUserId, userId);
-        ProfileMenu menu = profileMenuService.getOne(queryWrapper);
-        if (Objects.isNull(menu)) {
-            ProfileMenu defaultMenu = new ProfileMenu();
-            defaultMenu.setUserId(userId);
-            defaultMenu.setId(-1L);
-            return ResponseResult.success(defaultMenu);
-        }
-        return ResponseResult.success(menu);
-    }
-
     @RequestMapping("/setProfileMenu")
     ResponseResult<Boolean> getProfileMenu(@Valid ProfileMenu profileMenu) {
         LambdaUpdateWrapper<ProfileMenu> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(ProfileMenu::getUserId, profileMenu.getUserId());
         boolean saveOrUpdate = profileMenuService.saveOrUpdate(profileMenu, updateWrapper);
         return ResponseResult.success(saveOrUpdate);
+    }
+
+    @RequestMapping("/getCurrentUser")
+    public ResponseResult<com.youyu.entity.auth.UserFramework> getCurrentUser() {
+        Long currentUserId = SecurityUtils.getUserId();
+        UserFramework user;
+        if (Objects.nonNull(currentUserId)) {
+            user = userService.getUserById(currentUserId);
+        } else {
+            throw new SystemException(ResultCode.USER_NOT_EXIST);
+        }
+        return ResponseResult.success(user);
+    }
+
+    @RequestMapping("/getAuthRoutes")
+    public ResponseResult getAuthRoutes(HttpServletRequest request) {
+        String token = SecurityUtils.getAuthorizationToken();
+        if (StringUtils.hasText(token)) {
+            return ResponseResult.success(userService.getAuthRoutes(SecurityUtils.getUserId()));
+        } else {
+            return ResponseResult.success(userService.getRoutesByRoleId(RoleEnum.NO_LOGGED_USER.getId()));
+        }
     }
 }
 

@@ -1,10 +1,10 @@
 package com.youyu.controller;
 
-import com.youyu.dto.MomentListInput;
-import com.youyu.dto.MomentListOutput;
+import com.youyu.dto.moment.MomentListInput;
+import com.youyu.dto.moment.MomentListOutput;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.entity.Moment;
-import com.youyu.entity.MomentUserOutput;
+import com.youyu.entity.moment.Moment;
+import com.youyu.entity.moment.MomentUserOutput;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.MomentService;
 import com.youyu.utils.SecurityUtils;
@@ -48,26 +48,32 @@ public class MomentController {
         return ResponseResult.success(remove);
     }
 
-    @RequestMapping("/list")
+    @RequestMapping("/open/list")
     public ResponseResult<PageOutput<MomentListOutput>> list(MomentListInput input) {
         PageOutput<MomentListOutput> momentList = momentService.momentList(input);
         return ResponseResult.success(momentList);
     }
-    @RequestMapping("/list/following")
+
+    @RequestMapping("/open/list/following")
     public ResponseResult<PageOutput<MomentListOutput>> listFollowing(MomentListInput input) {
         PageOutput<MomentListOutput> momentList = momentService.momentListFollow(input);
         return ResponseResult.success(momentList);
     }
 
-    @RequestMapping("/get")
+    @RequestMapping("/open/get")
     public ResponseResult<MomentListOutput> getMomentDetail(@RequestParam Long momentId) {
         return ResponseResult.success(momentService.getMoment(momentId));
     }
 
-    @RequestMapping("/getMomentUserDetailById")
+    @RequestMapping("/open/getMomentUserDetailById")
     public ResponseResult<MomentUserOutput> getMomentUserDetailById(Long userId) {
         MomentUserOutput userDetailById = momentService.getMomentUserDetailById(userId, true);
         return ResponseResult.success(userDetailById);
+    }
+
+    @RequestMapping("/open/selectById")
+    public ResponseResult<Moment> selectById(Long momentId) {
+        return ResponseResult.success(momentService.getById(momentId));
     }
 }
 

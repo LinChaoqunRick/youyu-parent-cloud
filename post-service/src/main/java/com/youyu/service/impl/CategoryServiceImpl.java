@@ -2,7 +2,7 @@ package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.mapper.CategoryMapper;
-import com.youyu.entity.Category;
+import com.youyu.entity.post.Category;
 import com.youyu.service.CategoryService;
 import org.springframework.stereotype.Service;
 

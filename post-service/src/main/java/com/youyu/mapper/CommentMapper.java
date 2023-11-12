@@ -1,12 +1,11 @@
 package com.youyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.youyu.dto.comment.CommentListOutput;
-import com.youyu.entity.Comment;
+import com.youyu.dto.post.comment.CommentListOutput;
+import com.youyu.entity.post.Comment;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 

@@ -2,9 +2,9 @@ package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.post.PostCollectListInput;
-import com.youyu.dto.post.PostListOutput;
-import com.youyu.entity.PostCollect;
+import com.youyu.dto.post.post.PostCollectListInput;
+import com.youyu.dto.post.post.PostListOutput;
+import com.youyu.entity.post.PostCollect;
 
 
 /**

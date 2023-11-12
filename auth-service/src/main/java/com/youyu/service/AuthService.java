@@ -1,6 +1,6 @@
 package com.youyu.service;
 
-import com.youyu.entity.UserFramework;
+import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.auth.AuthParamsEntity;
 
 /**

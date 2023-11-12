@@ -1,6 +1,7 @@
 package com.youyu.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.youyu.entity.auth.UserFramework;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class LoginUser implements UserDetails {
 
-    private UserFramework user;
+    private com.youyu.entity.auth.UserFramework user;
 
     private List<String> permissions;
 

@@ -1,14 +1,12 @@
 package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.dto.column.ColumnListOutput;
-import com.youyu.dto.column.ColumnPostInput;
+import com.youyu.dto.post.column.ColumnListOutput;
+import com.youyu.dto.post.column.ColumnPostInput;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.post.PostDetailOutput;
-import com.youyu.dto.post.PostListOutput;
-import com.youyu.entity.Column;
+import com.youyu.dto.post.post.PostListOutput;
+import com.youyu.entity.user.Column;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**

@@ -3,28 +3,31 @@ package com.youyu.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.dto.MomentLikeUserListInput;
-import com.youyu.dto.MomentListInput;
-import com.youyu.dto.MomentListOutput;
+import com.youyu.dto.moment.MomentLikeUserListInput;
+import com.youyu.dto.moment.MomentListInput;
+import com.youyu.dto.moment.MomentListOutput;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.entity.*;
+import com.youyu.entity.moment.Moment;
+import com.youyu.entity.moment.MomentLike;
+import com.youyu.entity.moment.MomentUserExtraInfo;
+import com.youyu.entity.moment.MomentUserOutput;
+import com.youyu.entity.user.User;
+import com.youyu.entity.user.UserFollow;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
+import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.*;
 import com.youyu.service.MomentCommentService;
 import com.youyu.service.MomentLikeService;
 import com.youyu.service.MomentService;
-import com.youyu.service.UserFollowService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,7 +43,7 @@ import java.util.stream.Collectors;
 public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> implements MomentService {
 
     @Resource
-    private UserMapper userMapper;
+    private UserServiceClient userServiceClient;
 
     @Resource
     private MomentMapper momentMapper;
@@ -48,12 +51,6 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
     @Resource
     @Lazy
     private MomentCommentService momentCommentService;
-
-    @Resource
-    private UserFollowMapper userFollowMapper;
-
-    @Resource
-    private UserFollowService userFollowService;
 
     @Resource
     private MomentLikeMapper momentLikeMapper;
@@ -81,7 +78,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
                 throw new SystemException(ResultCode.OPERATION_FAIL);
             }
         } else {
-            throw new SystemException(ResultCode.NO_OPERATOR_AUTH);
+            throw new SystemException(ResultCode.FORBIDDEN);
         }
     }
 
@@ -108,7 +105,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
 
     @Override
     public PageOutput<MomentListOutput> momentListFollow(MomentListInput input) {
-        List<Long> userIdList = userFollowService.getFollowUserIdList(null);
+        List<Long> userIdList = userServiceClient.getFollowUserIdList(null).getData();
         String idsString = userIdList.stream().map(String::valueOf).collect(Collectors.joining(","));
         input.setUserIds(idsString);
         return momentList(input);
@@ -129,8 +126,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
 
     @Override
     public MomentUserOutput getMomentUserDetailById(Long userId, boolean enhance) {
-        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        User user = userMapper.selectById(userId);
+        User user = userServiceClient.selectById(userId).getData();
         MomentUserOutput momentUserOutput = BeanCopyUtils.copyBean(user, MomentUserOutput.class);
 
         if (enhance) {
@@ -148,14 +144,14 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
             // 查询粉丝数量
             LambdaQueryWrapper<UserFollow> userFollowLambdaQueryWrapper = new LambdaQueryWrapper<>();
             userFollowLambdaQueryWrapper.eq(UserFollow::getUserIdTo, userId);
-            int fansCount = userFollowMapper.selectCount(userFollowLambdaQueryWrapper);
+            int fansCount = userServiceClient.selectCount(userFollowLambdaQueryWrapper).getData();
             extraInfo.setFansCount(fansCount);
 
             momentUserOutput.setExtraInfo(extraInfo);
         }
 
         if (Objects.nonNull(SecurityUtils.getUserId())) {
-            boolean follow = userFollowService.isCurrentUserFollow(userId);
+            boolean follow = userServiceClient.isCurrentUserFollow(userId).getData();
             momentUserOutput.setFollow(follow);
         }
         return momentUserOutput;

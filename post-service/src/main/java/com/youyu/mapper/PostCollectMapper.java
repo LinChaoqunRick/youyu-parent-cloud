@@ -1,11 +1,9 @@
 package com.youyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.youyu.entity.PostCollect;
+import com.youyu.entity.post.PostCollect;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 /**
  * (PostCollect)表数据库访问层

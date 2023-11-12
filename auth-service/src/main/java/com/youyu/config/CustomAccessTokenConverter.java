@@ -1,9 +1,7 @@
 package com.youyu.config;
 
 
-import com.youyu.entity.UserFramework;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
+import com.youyu.entity.auth.UserFramework;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -17,9 +15,6 @@ import java.util.*;
 
 @Component
 public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
-
-    //@Resource
-    // private CustomUserAuthenticationTokenConverter userTokenConverter;
 
     @Resource
     private UserAuthenticationConverter userTokenConverter;

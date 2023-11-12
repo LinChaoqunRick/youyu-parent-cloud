@@ -1,7 +1,7 @@
 package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.entity.PostLike;
+import com.youyu.entity.post.PostLike;
 
 /**
  * (PostLike)表服务接口

@@ -3,11 +3,10 @@ package com.youyu.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.post.*;
-import com.youyu.entity.Post;
-import com.youyu.entity.PostCollect;
-import com.youyu.entity.PostLike;
-import com.youyu.entity.User;
+import com.youyu.dto.post.post.*;
+import com.youyu.entity.post.Post;
+import com.youyu.entity.post.PostCollect;
+import com.youyu.entity.post.PostLike;
 import com.youyu.enums.CreateType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -79,7 +78,7 @@ public class PostController {
     public ResponseResult<Boolean> update(@Valid @RequestBody Post post) {
         Long userId = SecurityUtils.getUserId();
         if (!userId.equals(post.getUserId())) {
-            throw new SystemException(ResultCode.NO_OPERATOR_AUTH);
+            throw new SystemException(ResultCode.FORBIDDEN);
         }
         post.setUpdateTime(new Date());
         boolean save = postService.updateById(post);
@@ -91,7 +90,7 @@ public class PostController {
         Post post = postService.getById(postId);
         Long currentUserId = SecurityUtils.getUserId();
         if (!currentUserId.equals(post.getUserId())) {
-            throw new SystemException(ResultCode.NO_OPERATOR_AUTH);
+            throw new SystemException(ResultCode.FORBIDDEN);
         }
         boolean remove = postService.removeById(postId);
         return ResponseResult.success(remove);

@@ -1,11 +1,11 @@
 package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.dto.MomentCommentListInput;
-import com.youyu.dto.MomentCommentListOutput;
-import com.youyu.dto.MomentReplyListInput;
+import com.youyu.dto.moment.MomentCommentListInput;
+import com.youyu.dto.moment.MomentCommentListOutput;
+import com.youyu.dto.moment.MomentReplyListInput;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.entity.MomentComment;
+import com.youyu.entity.moment.MomentComment;
 
 import java.util.List;
 
