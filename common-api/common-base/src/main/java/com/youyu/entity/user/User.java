@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
@@ -17,8 +20,11 @@ import java.io.Serializable;
  * @author makejava
  * @since 2023-02-10 21:05:47
  */
+@EqualsAndHashCode(callSuper = true)
 @TableName("bs_user")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User extends Model<User> implements Serializable {
     private static final long serialVersionUID = -81729684263381566L;
 

@@ -9,8 +9,8 @@ import com.youyu.entity.user.User;
 import com.youyu.enums.ResultCode;
 import com.youyu.enums.SMSTemplate;
 import com.youyu.exception.SystemException;
+import com.youyu.feign.UserServiceClient;
 import com.youyu.service.SmsService;
-import com.youyu.service.UserService;
 import com.youyu.utils.NumberUtils;
 import com.youyu.utils.RedisCache;
 import org.springframework.stereotype.Service;
@@ -29,14 +29,14 @@ public class SmsServiceImpl implements SmsService {
     private RedisCache redisCache;
 
     @Resource
-    private UserService userService;
+    private UserServiceClient userServiceClient;
 
     @Override
     public boolean send(SmsSendInput input) {
         if (input.isRepeat()) {
             LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
             lambdaQueryWrapper.eq(User::getUsername, input.getTelephone());
-            int count = userService.count(lambdaQueryWrapper);
+            int count = userServiceClient.selectCount(lambdaQueryWrapper).getData();
             if (count > 0) {
                 throw new SystemException(ResultCode.TELEPHONE_CONFLICT);
             }

@@ -13,6 +13,7 @@ import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
 import com.youyu.service.UserService;
 import io.swagger.models.auth.In;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -78,8 +79,18 @@ public class UserOpenController {
     }
 
     @RequestMapping("/selectPage")
-    public ResponseResult<Page<User>> selectPage(Page<User> page, LambdaQueryWrapper<User> lambdaQueryWrapper) {
+    public ResponseResult<Page<User>> selectPage(@RequestParam long current, @RequestParam long size,
+                                                 @RequestBody(required = false) LambdaQueryWrapper<User> lambdaQueryWrapper) {
+        Page<User> page = new Page<>(current, size);
         return ResponseResult.success(userService.page(page, lambdaQueryWrapper));
+    }
+
+    @RequestMapping("/pageUserByUserIds")
+    public ResponseResult<Page<User>> pageUserByUserIds(@RequestParam long current, @RequestParam long size, @RequestParam List<Long> userIds) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(User::getId, userIds);
+        Page<User> page = userService.page(new Page<>(current, size), queryWrapper);
+        return ResponseResult.success(page);
     }
 
     @RequestMapping("/listByIds")

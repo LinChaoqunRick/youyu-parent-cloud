@@ -17,6 +17,7 @@ import com.youyu.mapper.MomentMapper;
 import com.youyu.service.MomentLikeService;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
  * @since 2023-07-02 11:20:04
  */
 @Service("momentLikeService")
+@Slf4j
 public class MomentLikeServiceImpl extends ServiceImpl<MomentLikeMapper, MomentLike> implements MomentLikeService {
 
     @Resource
@@ -89,14 +91,10 @@ public class MomentLikeServiceImpl extends ServiceImpl<MomentLikeMapper, MomentL
         if (userIds.isEmpty()) {
             return null;
         }
-
-        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userLambdaQueryWrapper.in(User::getId, userIds);
-
+        log.info("123123123123");
         // 分页查询
-        Page<User> page = new Page<>(input.getPageNum(), input.getPageSize());
-        Page<User> postPage = userServiceClient.selectPage(page, userLambdaQueryWrapper).getData();
-
+        Page<User> postPage = userServiceClient.pageUserByUserIds(input.getPageNum(), input.getPageSize(), userIds).getData();
+        log.info("456456456456");
         // 封装查询结果
         return PageUtils.setPageResult(postPage, MomentUserOutput.class);
     }

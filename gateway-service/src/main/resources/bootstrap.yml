@@ -6,7 +6,9 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: v3.youyul.com
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos123
     gateway:
       routes:
       - id: youyu-service   # 路由名称
@@ -24,12 +26,17 @@ spring:
         predicates:
           - Path=/user/**
 
-      - id: test-service
-        uri: lb://test-service
+      - id: moment-service
+        uri: lb://moment-service
         predicates:
-          - Path=/test/**
+          - Path=/moment/**,/momentComment/**,/momentCommentLike/**,/momentLike/**
 
       - id: mail-service
         uri: lb://mail-service
         predicates:
           - Path=/mail/**
+
+      - id: test-service
+        uri: lb://test-service
+        predicates:
+          - Path=/test/**

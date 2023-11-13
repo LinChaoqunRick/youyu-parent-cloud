@@ -1,7 +1,11 @@
 package com.youyu.result;
 
 import com.youyu.enums.ResultCode;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 public class ResponseResult<T> {
     private int code = 200;
     private String message = "success";
