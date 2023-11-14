@@ -30,7 +30,7 @@ public class NoteChapterController {
         return ResponseResult.success(save);
     }
 
-    @RequestMapping("/list")
+    @RequestMapping("/open/list")
     public ResponseResult<List<NoteChapter>> listChapter(Long noteId) {
         List<NoteChapter> list = noteChapterService.listChapter(noteId);
         return ResponseResult.success(list);

@@ -18,18 +18,14 @@ public interface UserServiceClient {
     @PostMapping(value = "/user/open/selectById")
     ResponseResult<User> selectById(@RequestParam Long userId);
 
-    @PostMapping(value = "/user/follow/selectCount")
-    ResponseResult<Integer> selectCount(LambdaQueryWrapper<UserFollow> input);
+    @PostMapping(value = "/user/follow/selectCountByUserIdTo")
+    ResponseResult<Integer> selectCountByUserIdTo(@RequestParam Long userIdTo);
 
     @PostMapping(value = "/user/follow/getFollowUserIdList")
-    ResponseResult<List<Long>> getFollowUserIdList(Long userId);
+    ResponseResult<List<Long>> getFollowUserIdList(@RequestParam Long userId);
 
     @PostMapping(value = "/user/follow/isCurrentUserFollow")
-    ResponseResult<Boolean> isCurrentUserFollow(Long userId);
-
-    @PostMapping(value = "/user/open/selectPage")
-    ResponseResult<Page<User>> selectPage(@RequestParam long current, @RequestParam long size,
-                                          @RequestBody(required = false) LambdaQueryWrapper<User> lambdaQueryWrapper);
+    ResponseResult<Boolean> isCurrentUserFollow(@RequestParam Long userId);
 
     @RequestMapping("/user/open/pageUserByUserIds")
     ResponseResult<Page<User>> pageUserByUserIds(@RequestParam long current, @RequestParam long size, @RequestParam List<Long> userIds);

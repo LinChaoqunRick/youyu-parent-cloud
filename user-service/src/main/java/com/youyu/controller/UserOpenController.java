@@ -7,21 +7,25 @@ import com.youyu.dto.user.UserFansListInput;
 import com.youyu.dto.user.UserFollowListInput;
 import com.youyu.dto.user.UserListInput;
 import com.youyu.dto.user.UserListOutput;
+import com.youyu.entity.user.PositionInfo;
 import com.youyu.entity.user.ProfileMenu;
 import com.youyu.entity.user.User;
+import com.youyu.entity.user.UserFollow;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
+import com.youyu.service.UserFollowService;
 import com.youyu.service.UserService;
-import io.swagger.models.auth.In;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.youyu.utils.RequestUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * (User)表控制层
@@ -37,7 +41,16 @@ public class UserOpenController {
     private UserService userService;
 
     @Resource
+    private UserFollowService userFollowService;
+
+    @Resource
     private ProfileMenuService profileMenuService;
+
+    @Resource
+    private RestTemplate restTemplate;
+
+    @Value("${amap.key}")
+    private String amapKey;
 
     @RequestMapping("/list")
     ResponseResult<PageOutput<UserListOutput>> list(UserListInput input) {
@@ -68,21 +81,16 @@ public class UserOpenController {
         return ResponseResult.success(userService.fansList(input));
     }
 
-    @RequestMapping("/selectCount")
-    public ResponseResult<Integer> selectCount(LambdaQueryWrapper<User> queryWrapper) {
-        return ResponseResult.success(userService.count(queryWrapper));
+    @RequestMapping("/selectCountByUserIdTo")
+    public ResponseResult<Integer> selectCountByUserIdTo(Long userId) {
+        LambdaQueryWrapper<UserFollow> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserFollow::getUserIdTo, userId);
+        return ResponseResult.success(userFollowService.count(queryWrapper));
     }
 
     @RequestMapping("/selectById")
     public ResponseResult<User> selectById(Long userId) {
         return ResponseResult.success(userService.getById(userId));
-    }
-
-    @RequestMapping("/selectPage")
-    public ResponseResult<Page<User>> selectPage(@RequestParam long current, @RequestParam long size,
-                                                 @RequestBody(required = false) LambdaQueryWrapper<User> lambdaQueryWrapper) {
-        Page<User> page = new Page<>(current, size);
-        return ResponseResult.success(userService.page(page, lambdaQueryWrapper));
     }
 
     @RequestMapping("/pageUserByUserIds")
@@ -96,6 +104,12 @@ public class UserOpenController {
     @RequestMapping("/listByIds")
     public ResponseResult<List<User>> listByIds(List<Long> userIds) {
         return ResponseResult.success(userService.listByIds(userIds));
+    }
+
+    @RequestMapping("/getUserPositionInfo")
+    public ResponseResult<PositionInfo> getUserPositionInfo() {
+        PositionInfo positionInfo = restTemplate.getForObject("https://restapi.amap.com/v3/ip?key=" + amapKey + "&ip=" + RequestUtils.getClientIp(), PositionInfo.class);
+        return ResponseResult.success(positionInfo);
     }
 }
 

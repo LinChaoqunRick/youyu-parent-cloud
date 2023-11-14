@@ -2,6 +2,7 @@ package com.youyu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.youyu.entity.auth.Route;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.user.ProfileMenu;
 import com.youyu.entity.user.User;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -164,7 +166,7 @@ public class UserController {
     }
 
     @RequestMapping("/getCurrentUser")
-    public ResponseResult<com.youyu.entity.auth.UserFramework> getCurrentUser() {
+    public ResponseResult<UserFramework> getCurrentUser() {
         Long currentUserId = SecurityUtils.getUserId();
         UserFramework user;
         if (Objects.nonNull(currentUserId)) {
@@ -176,7 +178,7 @@ public class UserController {
     }
 
     @RequestMapping("/getAuthRoutes")
-    public ResponseResult getAuthRoutes(HttpServletRequest request) {
+    public ResponseResult<List<Route>> getAuthRoutes() {
         String token = SecurityUtils.getAuthorizationToken();
         if (StringUtils.hasText(token)) {
             return ResponseResult.success(userService.getAuthRoutes(SecurityUtils.getUserId()));

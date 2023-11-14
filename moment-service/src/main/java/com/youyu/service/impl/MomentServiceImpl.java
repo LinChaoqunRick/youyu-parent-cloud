@@ -144,9 +144,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
             // todo.. 查询点赞数量
 
             // 查询粉丝数量
-            LambdaQueryWrapper<UserFollow> userFollowLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            userFollowLambdaQueryWrapper.eq(UserFollow::getUserIdTo, userId);
-            int fansCount = userServiceClient.selectCount(userFollowLambdaQueryWrapper).getData();
+            int fansCount = userServiceClient.selectCountByUserIdTo(userId).getData();
             extraInfo.setFansCount(fansCount);
 
             momentUserOutput.setExtraInfo(extraInfo);
