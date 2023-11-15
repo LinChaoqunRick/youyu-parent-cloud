@@ -1,11 +1,14 @@
 package com.youyu.controller;
 
+import com.youyu.entity.post.Category;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * (BsCategory)表控制层
@@ -16,12 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
-    @Autowired
+    @Resource
     private CategoryService categoryService;
 
-    @GetMapping("/list")
-    public ResponseResult list() {
-        return ResponseResult.success(categoryService.list());
+    @GetMapping("/open/list")
+    public ResponseResult<List<Category>> list() {
+        List<Category> categoryList = categoryService.list();
+        return ResponseResult.success(categoryList);
     }
 }
 

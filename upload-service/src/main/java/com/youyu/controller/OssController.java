@@ -55,7 +55,7 @@ public class OssController {
      * @return
      */
     @RequestMapping("/policy")
-    public ResponseResult policy(@RequestParam(defaultValue = "post/images") String base) {
+    public ResponseResult<Map<String, String>> policy(@RequestParam(defaultValue = "post/images") String base) {
         Date date = new Date();
         int first = date.getYear();
 
@@ -102,7 +102,7 @@ public class OssController {
      * @return
      */
     @RequestMapping("/sts")
-    public ResponseResult sts() {
+    public ResponseResult<AssumeRoleResponse.Credentials> sts() {
         AssumeRoleResponse.Credentials credentials = null;
         String roleSessionName = "SessionTest";
         // 以下Policy用于限制仅允许使用临时访问凭证向目标存储空间examplebucket上传文件。

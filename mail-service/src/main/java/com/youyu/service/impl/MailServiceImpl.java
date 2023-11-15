@@ -47,9 +47,7 @@ public class MailServiceImpl implements MailService {
     @Override
     public Boolean sendRegisterCode(String target, boolean repeat) throws MessagingException {
         if (repeat) { // 不发送给已存在的邮箱
-            LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-            lambdaQueryWrapper.eq(User::getEmail, target);
-            Integer count = userServiceClient.selectCount(lambdaQueryWrapper).getData();
+            Integer count = userServiceClient.selectCountByEmail(target).getData();
             if (count > 0) {
                 throw new SystemException(ResultCode.EMAIL_CONFLICT);
             }

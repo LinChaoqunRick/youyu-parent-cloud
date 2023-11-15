@@ -1,6 +1,5 @@
 package com.youyu.controller;
 
-import com.aliyuncs.exceptions.ClientException;
 import com.youyu.dto.SmsSendInput;
 import com.youyu.dto.SmsVerifyInput;
 import com.youyu.result.ResponseResult;

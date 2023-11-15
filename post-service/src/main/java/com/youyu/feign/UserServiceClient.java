@@ -7,23 +7,18 @@ import com.youyu.entity.user.UserFollow;
 import com.youyu.result.ResponseResult;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 @FeignClient(value = "user-service")
 public interface UserServiceClient {
     @PostMapping(value = "/user/open/selectById")
-    ResponseResult<User> selectById(Long userId);
+    ResponseResult<User> selectById(@RequestParam Long userId);
 
     @PostMapping(value = "/user/follow/selectCount")
-    ResponseResult<Integer> selectCount(LambdaQueryWrapper<UserFollow> input);
+    ResponseResult<Integer> selectCount(@RequestParam Long userId);
 
-    @PostMapping(value = "/user/follow/getFollowUserIdList")
-    ResponseResult<List<Long>> getFollowUserIdList(Long userId);
-
-    @PostMapping(value = "/user/follow/isCurrentUserFollow")
-    ResponseResult<Boolean> isCurrentUserFollow(Long userId);
-
-    @PostMapping(value = "/user/open/selectPage")
-    ResponseResult<Page<User>> selectPage(Page<User> page, LambdaQueryWrapper<User> lambdaQueryWrapper);
+    @PostMapping(value = "/user/follow/isFollow")
+    ResponseResult<Integer> isFollow(@RequestParam Long userId, @RequestParam Long userIdTo);
 }

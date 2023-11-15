@@ -26,10 +26,25 @@ spring:
         predicates:
           - Path=/user/**
 
+      - id: post-service
+        uri: lb://post-service
+        predicates:
+          - Path=/category/**,/column/**,/comment/**,/post/**
+
       - id: moment-service
         uri: lb://moment-service
         predicates:
           - Path=/moment/**,/momentComment/**,/momentCommentLike/**,/momentLike/**
+
+      - id: note-service
+        uri: lb://note-service
+        predicates:
+          - Path=/noteChapter/**,/note/**
+
+      - id: upload-service
+        uri: lb://upload-service
+        predicates:
+          - Path=/oss/**
 
       - id: mail-service
         uri: lb://mail-service

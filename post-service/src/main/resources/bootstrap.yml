@@ -1,8 +1,8 @@
 server:
-  port: 8081
+  port: 8150
 spring:
   application:
-    name: youyu-service
+    name: post-service
   cloud:
     nacos:
       discovery:

@@ -1,0 +1,15 @@
+server:
+  port: 8170
+spring:
+  application:
+    name: message-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos123
+aliyun:
+  oss:
+    accessKeyId: LTAI4GByNYLu8m45X7ciiHVP # 访问身份验证中用到用户标识
+    accessKeySecret: AGjk1izsAJl9OPPcUgC6CSlfZysXJT # 用户用于加密签名字符串和oss用来验证签名字符串的密钥

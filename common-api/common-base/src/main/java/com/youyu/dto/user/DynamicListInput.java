@@ -1,4 +1,4 @@
-package com.youyu.dto;
+package com.youyu.dto.user;
 
 import com.youyu.dto.common.PageBase;
 import lombok.Data;

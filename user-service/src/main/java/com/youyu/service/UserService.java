@@ -1,6 +1,7 @@
 package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.pagehelper.PageInfo;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.user.*;
 import com.youyu.entity.auth.Route;
@@ -30,4 +31,6 @@ public interface UserService extends IService<User> {
     List<Route> getRoutesByRoleId(Long roleId);
 
     UserFramework getUserById(Long id);
+
+    PageInfo<Object> getUserDynamics(DynamicListInput input);
 }

@@ -2,6 +2,7 @@ package com.youyu.controller;
 
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.note.detail.NoteDetailOutput;
+import com.youyu.dto.note.list.ChapterListOutput;
 import com.youyu.dto.note.list.NoteListInput;
 import com.youyu.dto.note.list.NoteListOutput;
 import com.youyu.entity.note.Note;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.List;
 
 /**
  * (Note)表控制层
@@ -37,14 +39,14 @@ public class NoteController {
         return ResponseResult.success(save);
     }
 
-    @RequestMapping("/list")
+    @RequestMapping("/open/list")
     public ResponseResult<PageOutput<NoteListOutput>> noteList(NoteListInput input) {
         PageOutput<NoteListOutput> pageOutput = noteService.noteList(input);
         return ResponseResult.success(pageOutput);
     }
 
-    @RequestMapping("/get")
-    public ResponseResult<NoteDetailOutput> getNote(Long noteId) {
+    @RequestMapping("/open/get")
+    public ResponseResult<NoteDetailOutput> getNote(@RequestParam Long noteId) {
         NoteDetailOutput note = noteService.getNote(noteId);
         return ResponseResult.success(note);
     }
@@ -54,6 +56,12 @@ public class NoteController {
         note.setUpdateTime(new Date());
         boolean update = noteService.updateById(note);
         return ResponseResult.success(update);
+    }
+
+    @RequestMapping("/open/noteListByIds")
+    ResponseResult<List<NoteListOutput>> noteListByIds(@RequestParam List<Long> noteIds) {
+        List<NoteListOutput> noteListOutputs = noteService.noteListByIds(noteIds);
+        return ResponseResult.success(noteListOutputs);
     }
 }
 

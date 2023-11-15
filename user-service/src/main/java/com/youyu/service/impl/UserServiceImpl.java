@@ -3,25 +3,35 @@ package com.youyu.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.moment.MomentListOutput;
+import com.youyu.dto.note.list.ChapterListOutput;
+import com.youyu.dto.note.list.NoteListOutput;
+import com.youyu.dto.post.post.PostListOutput;
 import com.youyu.dto.user.*;
 import com.youyu.entity.auth.Route;
 import com.youyu.entity.auth.UserFramework;
+import com.youyu.entity.user.DynamicInfo;
 import com.youyu.entity.user.User;
 import com.youyu.entity.user.UserDetailOutput;
 import com.youyu.entity.user.UserFollow;
+import com.youyu.feign.MomentServiceClient;
+import com.youyu.feign.NoteServiceClient;
+import com.youyu.feign.PostServiceClient;
 import com.youyu.mapper.UserFollowMapper;
 import com.youyu.mapper.UserMapper;
 import com.youyu.service.UserService;
 import com.youyu.utils.BeanCopyUtils;
+import com.youyu.utils.BeanUtils;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -33,11 +43,20 @@ import java.util.stream.Collectors;
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
-    @Autowired
+    @Resource
     private UserFollowMapper userFollowMapper;
+
+    @Resource
+    private PostServiceClient postServiceClient;
+
+    @Resource
+    private MomentServiceClient momentServiceClient;
+
+    @Resource
+    private NoteServiceClient noteServiceClient;
 
     @Override
     public PageOutput<UserListOutput> list(UserListInput input) {
@@ -137,9 +156,48 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public com.youyu.entity.auth.UserFramework getUserById(Long id) {
+    public UserFramework getUserById(Long id) {
         UserFramework user = userMapper.getUserById(id);
         return user;
+    }
+
+    @Override
+    public PageInfo<Object> getUserDynamics(DynamicListInput input) {
+        PageHelper.startPage(input.getPageNum(), input.getPageSize());
+        List<DynamicInfo> dynamics = userMapper.getUserDynamics(input);
+        PageInfo<DynamicInfo> pageInfo = new PageInfo<>(dynamics);
+
+        Map<Integer, List<DynamicInfo>> collect = pageInfo.getList().stream().collect(Collectors.groupingBy(DynamicInfo::getType));
+        List<Object> resultList = new ArrayList<>();
+
+        collect.keySet().forEach(key -> {
+            if (key == 1) { // 文章
+                List<Long> postIds = collect.get(key).stream().map(DynamicInfo::getId).collect(Collectors.toList());
+                List<PostListOutput> postList = postServiceClient.postListByIds(postIds).getData();
+                resultList.addAll(postList);
+            } else if (key == 2) { // 时刻
+                List<Long> momentIds = collect.get(key).stream().map(DynamicInfo::getId).collect(Collectors.toList());
+                List<MomentListOutput> momentList = momentServiceClient.momentListByIds(momentIds).getData();
+                resultList.addAll(momentList);
+            } else if (key == 3) { // 笔记
+                List<Long> noteIds = collect.get(key).stream().map(DynamicInfo::getId).collect(Collectors.toList());
+                List<NoteListOutput> noteList = noteServiceClient.noteListByIds(noteIds).getData();
+                resultList.addAll(noteList);
+            } else if (key == 4) { // 章节
+                List<Long> chapterIds = collect.get(key).stream().map(DynamicInfo::getId).collect(Collectors.toList());
+                List<ChapterListOutput> chapterList = noteServiceClient.listChapterByIds(chapterIds).getData();
+                resultList.addAll(chapterList);
+            }
+        });
+
+        PageInfo<Object> resultPageInfo = BeanCopyUtils.copyBean(pageInfo, PageInfo.class);
+        resultList.sort((a, b) -> {
+            Long aTime = ((Date) Objects.requireNonNull(BeanUtils.getFieldValueByFieldName(a, "createTime"))).getTime();
+            Long bTime = ((Date) Objects.requireNonNull(BeanUtils.getFieldValueByFieldName(b, "createTime"))).getTime();
+            return bTime.compareTo(aTime);
+        });
+        resultPageInfo.setList(resultList);
+        return resultPageInfo;
     }
 
     private void setFollow(Long currentUserId, List<UserListOutput> list) {

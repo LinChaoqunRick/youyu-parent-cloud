@@ -34,9 +34,7 @@ public class SmsServiceImpl implements SmsService {
     @Override
     public boolean send(SmsSendInput input) {
         if (input.isRepeat()) {
-            LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-            lambdaQueryWrapper.eq(User::getUsername, input.getTelephone());
-            int count = userServiceClient.selectCount(lambdaQueryWrapper).getData();
+            int count = userServiceClient.selectCountByUsername(input.getTelephone()).getData();
             if (count > 0) {
                 throw new SystemException(ResultCode.TELEPHONE_CONFLICT);
             }

@@ -15,9 +15,9 @@ import com.youyu.service.PostCollectService;
 import com.youyu.service.PostLikeService;
 import com.youyu.service.PostService;
 import com.youyu.utils.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -31,28 +31,28 @@ import java.util.*;
 @RestController
 @RequestMapping("/post")
 public class PostController {
-    @Autowired
+    @Resource
     private PostService postService;
 
-    @Autowired
+    @Resource
     private PostLikeService postLikeService;
 
-    @Autowired
+    @Resource
     private PostCollectService postCollectService;
 
-    @RequestMapping("/getUserDetailById")
+    @RequestMapping("/open/getUserDetailById")
     ResponseResult<PostUserOutput> getUserById(Long userId) {
         PostUserOutput user = postService.getUserDetailById(userId, true);
         return ResponseResult.success(user);
     }
 
-    @RequestMapping("/list")
+    @RequestMapping("/open/list")
     public ResponseResult<PageOutput<PostListOutput>> list(PostListInput input) {
         PageOutput<PostListOutput> pageOutput = postService.postList(input);
         return ResponseResult.success(pageOutput);
     }
 
-    @RequestMapping("/get")
+    @RequestMapping("/open/get")
     public ResponseResult<PostDetailOutput> get(@RequestParam Long postId) {
         PostDetailOutput post = postService.get(postId);
         return ResponseResult.success(post);
@@ -121,12 +121,12 @@ public class PostController {
         return ResponseResult.success(remove);
     }
 
-    @RequestMapping("/getCreateTypes")
+    @RequestMapping("/open/getCreateTypes")
     public ResponseResult<List<HashMap<String, String>>> getCreateTypes() {
         List<HashMap<String, String>> list = new ArrayList<>();
         for (CreateType type : EnumSet.allOf(CreateType.class)) {
             HashMap<String, String> map = new HashMap<>();
-            map.put("code", type.getCode() + "");
+            map.put("code", type.getCode());
             map.put("desc", type.getDesc());
             list.add(map);
         }
@@ -163,7 +163,7 @@ public class PostController {
         return ResponseResult.success(collectList);
     }
 
-    @RequestMapping("/getLimitPost")
+    @RequestMapping("/open/getLimitPost")
     ResponseResult<List<Post>> getFivePosts(@RequestParam(name = "userId") Long userId,
                                             @RequestParam(name = "count", defaultValue = "10") int count,
                                             @RequestParam(name = "orderBy", defaultValue = "create_time") String orderBy,
@@ -180,6 +180,12 @@ public class PostController {
         queryWrapper.last("limit " + count);
         List<Post> list = postService.list(queryWrapper);
         return ResponseResult.success(list);
+    }
+
+    @RequestMapping("/open/postListByIds")
+    ResponseResult<List<PostListOutput>> postListByIds(@RequestParam List<Long> postIds) {
+        List<PostListOutput> postListOutputs = postService.postListByIds(postIds);
+        return ResponseResult.success(postListOutputs);
     }
 }
 

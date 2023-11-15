@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.youyu.mapper.UserMapper">
+
     <resultMap id="route" type="com.youyu.entity.auth.Route">
         <id column="id" property="id"></id>
         <result column="title" property="title"></result>
@@ -8,6 +9,13 @@
         <result column="pid" property="pid"></result>
         <result column="description" property="description"></result>
     </resultMap>
+
+    <resultMap type="com.youyu.entity.user.DynamicInfo" id="DynamicInfoMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+    </resultMap>
+
 
     <select id="getAuthRoutes" resultMap="route">
         SELECT * FROM bs_route WHERE id IN
@@ -21,5 +29,14 @@
 
     <select id="getUserById" resultType="com.youyu.entity.auth.UserFramework">
         SELECT * FROM bs_user where id = #{id}
+    </select>
+
+    <!--查询动态-->
+    <select id="getUserDynamics" resultMap="DynamicInfoMap">
+        (SELECT id, create_time, 1 AS type FROM bs_post WHERE user_id = #{userId} AND deleted = 0) UNION
+        (SELECT id, create_time, 2 AS type FROM bs_moment WHERE user_id = #{userId} AND deleted = 0) UNION
+        (SELECT id, create_time, 3 AS type FROM bs_note WHERE user_id = #{userId} AND deleted = 0) UNION
+        (SELECT id, create_time, 4 AS type FROM bs_note_chapter WHERE FIND_IN_SET(#{userId}, user_ids) AND deleted = 0)
+        ORDER BY create_time DESC
     </select>
 </mapper>

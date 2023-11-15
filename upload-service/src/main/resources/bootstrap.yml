@@ -1,0 +1,25 @@
+server:
+  port: 8160
+spring:
+  application:
+    name: upload-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos123
+aliyun:
+  oss:
+    endpoint: sts.cn-beijing.aliyuncs.com # oss对外服务的访问域名
+    accessKeyId: LTAI4GByNYLu8m45X7ciiHVP # 访问身份验证中用到用户标识
+    accessKeySecret: AGjk1izsAJl9OPPcUgC6CSlfZysXJT # 用户用于加密签名字符串和oss用来验证签名字符串的密钥
+    bucket: youyu-source # oss的存储空间
+    roleArn: acs:ram::1522211879603568:role/ramosstest
+    host: https://youyu-source.oss-cn-beijing.aliyuncs.com
+    endpointRAM: sts.cn-beijing.aliyuncs.com
+    accessKeyIdRAM: LTAI5tQ6oxmqs9vPvgYkkzsh
+    accessKeySecretRAM: hUSWofhYLsF7b1hPTQCgAeOtJqFmUR
+    policy:
+      expire: 300 # 签名有效期(S)
+      maxSize: 10 # 上传文件大小(M)

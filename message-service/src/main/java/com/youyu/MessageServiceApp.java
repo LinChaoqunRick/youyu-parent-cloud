@@ -6,10 +6,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
-@EnableAsync
 @EnableFeignClients
-public class YouYuServiceApp {
+@EnableAsync
+public class MessageServiceApp {
     public static void main(String[] args) {
-        SpringApplication.run(YouYuServiceApp.class, args);
+        SpringApplication.run(MessageServiceApp.class, args);
     }
 }

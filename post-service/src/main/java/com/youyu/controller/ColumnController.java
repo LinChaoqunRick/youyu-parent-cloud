@@ -30,13 +30,13 @@ public class ColumnController {
     @Resource
     private ColumnService columnService;
 
-    @RequestMapping("/list")
+    @RequestMapping("/open/list")
     public ResponseResult<List<ColumnListOutput>> getColumnList(Column column) {
         List<ColumnListOutput> columnList = columnService.getColumnList(column);
         return ResponseResult.success(columnList);
     }
 
-    @RequestMapping("/get")
+    @RequestMapping("/open/get")
     public ResponseResult<ColumnListOutput> getColumnDetail(@RequestParam Long columnId) {
         ColumnListOutput columnDetail = columnService.getColumnDetail(columnId);
         return ResponseResult.success(columnDetail);
@@ -62,7 +62,7 @@ public class ColumnController {
         return ResponseResult.success(true);
     }
 
-    @RequestMapping("/getColumnPosts")
+    @RequestMapping("/open/getColumnPosts")
     public ResponseResult<PageOutput<PostListOutput>> getColumnPosts(ColumnPostInput getColumnPosts) {
         PageOutput<PostListOutput> columnPosts = columnService.getColumnPosts(getColumnPosts);
         return ResponseResult.success(columnPosts);

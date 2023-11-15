@@ -2,11 +2,9 @@ package com.youyu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.pagehelper.PageInfo;
 import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.user.UserFansListInput;
-import com.youyu.dto.user.UserFollowListInput;
-import com.youyu.dto.user.UserListInput;
-import com.youyu.dto.user.UserListOutput;
+import com.youyu.dto.user.*;
 import com.youyu.entity.user.PositionInfo;
 import com.youyu.entity.user.ProfileMenu;
 import com.youyu.entity.user.User;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -71,6 +68,12 @@ public class UserOpenController {
         return ResponseResult.success(menu);
     }
 
+    @RequestMapping("/getDynamics")
+    ResponseResult<PageInfo<Object>> getDynamics(@Valid DynamicListInput input) {
+        PageInfo<Object> pageInfo = userService.getUserDynamics(input);
+        return ResponseResult.success(pageInfo);
+    }
+
     @RequestMapping("/followList")
     ResponseResult<PageOutput<UserListOutput>> followList(@Valid UserFollowListInput input) {
         return ResponseResult.success(userService.followList(input));
@@ -82,10 +85,24 @@ public class UserOpenController {
     }
 
     @RequestMapping("/selectCountByUserIdTo")
-    public ResponseResult<Integer> selectCountByUserIdTo(Long userId) {
+    public ResponseResult<Integer> selectCountByUserIdTo(@RequestParam Long userId) {
         LambdaQueryWrapper<UserFollow> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserFollow::getUserIdTo, userId);
         return ResponseResult.success(userFollowService.count(queryWrapper));
+    }
+
+    @RequestMapping("/selectCountByUsername")
+    public ResponseResult<Integer> selectCountByUsername(@RequestParam String username) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUsername, username);
+        return ResponseResult.success(userService.count(queryWrapper));
+    }
+
+    @RequestMapping("/selectCountByEmail")
+    public ResponseResult<Integer> selectCountByEmail(@RequestParam String email) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getEmail, email);
+        return ResponseResult.success(userService.count(queryWrapper));
     }
 
     @RequestMapping("/selectById")
@@ -102,7 +119,7 @@ public class UserOpenController {
     }
 
     @RequestMapping("/listByIds")
-    public ResponseResult<List<User>> listByIds(List<Long> userIds) {
+    public ResponseResult<List<User>> listByIds(@RequestParam("userIds") List<Long> userIds) {
         return ResponseResult.success(userService.listByIds(userIds));
     }
 

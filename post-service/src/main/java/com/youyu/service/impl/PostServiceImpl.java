@@ -234,9 +234,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
                 extraInfo.setLikeCount(likeCount);
 
                 // 粉丝数量
-                LambdaQueryWrapper<UserFollow> userFollowLambdaQueryWrapper = new LambdaQueryWrapper<>();
-                userFollowLambdaQueryWrapper.eq(UserFollow::getUserIdTo, userId);
-                long fansCount = userServiceClient.selectCount(userFollowLambdaQueryWrapper).getData();
+                long fansCount = userServiceClient.selectCount(userId).getData();
                 extraInfo.setFansCount(fansCount);
 
                 userDetailOutput.setExtraInfo(extraInfo);
@@ -244,10 +242,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
                 // 是否关注
                 Long currentUserId = SecurityUtils.getUserId();
                 if (!Objects.isNull(currentUserId)) {
-                    LambdaQueryWrapper<UserFollow> queryWrapper1 = new LambdaQueryWrapper<>();
-                    queryWrapper1.eq(UserFollow::getUserId, currentUserId);
-                    queryWrapper1.eq(UserFollow::getUserIdTo, userId);
-                    int count = userServiceClient.selectCount(queryWrapper1).getData();
+                    int count = userServiceClient.isFollow(currentUserId, userId).getData();
                     userDetailOutput.setFollow(count > 0);
                 }
             }

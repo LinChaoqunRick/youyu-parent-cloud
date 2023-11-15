@@ -6,6 +6,7 @@ import com.youyu.mapper.UserFollowMapper;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.UserFollowService;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -20,9 +21,19 @@ public class UserFollowController {
     @Resource
     private UserFollowService userFollowService;
 
-    @RequestMapping("/selectCount")
-    ResponseResult<Integer> followList(LambdaQueryWrapper<UserFollow> input) {
-        return ResponseResult.success(userFollowMapper.selectCount(input));
+    @RequestMapping("/getFansCount")
+    ResponseResult<Integer> getFansCount(@RequestParam Long userId) {
+        LambdaQueryWrapper<UserFollow> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserFollow::getUserIdTo, userId);
+        return ResponseResult.success(userFollowMapper.selectCount(queryWrapper));
+    }
+
+    @RequestMapping("/isFollow")
+    ResponseResult<Integer> isSubscribe(@RequestParam Long userId, @RequestParam Long userIdTo) {
+        LambdaQueryWrapper<UserFollow> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserFollow::getUserId, userId);
+        queryWrapper.eq(UserFollow::getUserIdTo, userIdTo);
+        return ResponseResult.success(userFollowMapper.selectCount(queryWrapper));
     }
 
     @RequestMapping("/getFollowUserIdList")

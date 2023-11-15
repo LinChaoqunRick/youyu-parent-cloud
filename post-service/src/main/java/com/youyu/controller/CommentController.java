@@ -11,7 +11,6 @@ import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.CommentLikeService;
 import com.youyu.service.CommentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -27,19 +26,19 @@ import javax.validation.Valid;
 @RequestMapping("/comment")
 public class CommentController {
 
-    @Autowired
+    @Resource
     private CommentService commentService;
 
     @Resource
     private CommentLikeService commentLikeService;
 
-    @RequestMapping("/getCommentsPage")
+    @RequestMapping("/open/getCommentsPage")
     ResponseResult<PageOutput<CommentListOutput>> getCommentsPage(@Valid CommentListInput input) {
         PageOutput<CommentListOutput> output = commentService.getCommentsPage(input);
         return ResponseResult.success(output);
     }
 
-    @RequestMapping("/getPostSubCommentsPage")
+    @RequestMapping("/open/getPostSubCommentsPage")
     ResponseResult<PageOutput<CommentListOutput>> getPostSubCommentsPage(PostReplyListInput input) {
         PageOutput<CommentListOutput> commentsPage = commentService.getPostSubCommentsPage(input);
         return ResponseResult.success(commentsPage);

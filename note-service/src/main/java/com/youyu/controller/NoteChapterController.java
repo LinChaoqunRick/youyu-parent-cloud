@@ -2,6 +2,7 @@ package com.youyu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.youyu.dto.note.detail.NoteChapterDetailOutput;
+import com.youyu.dto.note.list.ChapterListOutput;
 import com.youyu.entity.note.NoteChapter;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.NoteChapterService;
@@ -31,14 +32,14 @@ public class NoteChapterController {
     }
 
     @RequestMapping("/open/list")
-    public ResponseResult<List<NoteChapter>> listChapter(Long noteId) {
+    public ResponseResult<List<NoteChapter>> listChapter(@RequestParam Long noteId) {
         List<NoteChapter> list = noteChapterService.listChapter(noteId);
         return ResponseResult.success(list);
     }
 
-    @RequestMapping("/get")
-    public ResponseResult<NoteChapterDetailOutput> getChapter(Long id) {
-        NoteChapterDetailOutput chapter = noteChapterService.getChapter(id);
+    @RequestMapping("/open/get")
+    public ResponseResult<NoteChapterDetailOutput> getChapter(@RequestParam Long chapterId) {
+        NoteChapterDetailOutput chapter = noteChapterService.getChapter(chapterId);
         return ResponseResult.success(chapter);
     }
 
@@ -54,6 +55,12 @@ public class NoteChapterController {
     public ResponseResult<Boolean> deleteChapter(Long id) {
         boolean delete = noteChapterService.removeById(id);
         return ResponseResult.success(delete);
+    }
+
+    @RequestMapping("/open/listChapterByIds")
+    ResponseResult<List<ChapterListOutput>> listChapterByIds(@RequestParam List<Long> chapterIds) {
+        List<ChapterListOutput> chapterListOutputs = noteChapterService.listChapterByIds(chapterIds);
+        return ResponseResult.success(chapterListOutputs);
     }
 }
 

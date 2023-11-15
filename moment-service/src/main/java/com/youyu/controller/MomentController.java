@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.List;
 
 /**
  * (Moment)表控制层
@@ -74,6 +75,12 @@ public class MomentController {
     @RequestMapping("/open/selectById")
     public ResponseResult<Moment> selectById(Long momentId) {
         return ResponseResult.success(momentService.getById(momentId));
+    }
+
+    @RequestMapping("/open/momentListByIds")
+    ResponseResult<List<MomentListOutput>> momentListByIds(@RequestParam List<Long> momentIds) {
+        List<MomentListOutput> momentListOutputs = momentService.momentListByIds(momentIds);
+        return ResponseResult.success(momentListOutputs);
     }
 }
 
