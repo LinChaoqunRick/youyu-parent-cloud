@@ -6,9 +6,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
-        username: nacos
-        password: nacos123
+        server-addr: 192.168.69.159:8848
 aliyun:
   oss:
     endpoint: sts.cn-beijing.aliyuncs.com # oss对外服务的访问域名

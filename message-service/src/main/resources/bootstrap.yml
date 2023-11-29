@@ -6,9 +6,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
-        username: nacos
-        password: nacos123
+        server-addr: 192.168.69.159:8848
 aliyun:
   oss:
     accessKeyId: LTAI4GByNYLu8m45X7ciiHVP # 访问身份验证中用到用户标识

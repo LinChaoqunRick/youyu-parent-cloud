@@ -6,8 +6,6 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
-        username: nacos
-        password: nacos123
+        server-addr: 192.168.69.159:8848
 amap:
   key: 00cd7e52ba06ad96915822e2ba14aaf3

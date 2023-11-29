@@ -5,7 +5,7 @@ FROM openjdk:17
 WORKDIR /app
 
 # Copy the JAR file into the container at /app
-COPY ./target/auth-service.jar /app/auth-service.jar
+COPY ./target/mail-service.jar /app/mail-service.jar
 
 # Install iputils-ping
 #RUN apt-get update && \
@@ -13,7 +13,7 @@ COPY ./target/auth-service.jar /app/auth-service.jar
 #    rm -rf /var/lib/apt/lists/*
 
 # Make port 8080 available to the world outside this container
-EXPOSE 8090
+EXPOSE 8110
 
 # Run the JAR file
-ENTRYPOINT ["java", "-jar", "auth-service.jar"]
+ENTRYPOINT ["java", "-jar", "mail-service.jar"]

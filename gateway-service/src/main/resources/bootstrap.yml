@@ -6,9 +6,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
-        username: nacos
-        password: nacos123
+        server-addr: 192.168.69.159:8848
     gateway:
       routes:
       - id: youyu-service   # 路由名称
@@ -45,6 +43,11 @@ spring:
         uri: lb://upload-service
         predicates:
           - Path=/oss/**
+
+      - id: message-service
+        uri: lb://message-service
+        predicates:
+          - Path=/message/**
 
       - id: mail-service
         uri: lb://mail-service
