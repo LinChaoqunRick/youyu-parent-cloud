@@ -3,6 +3,7 @@ package com.youyu.exception;
 import com.youyu.enums.ResultCode;
 import com.youyu.result.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -48,6 +49,12 @@ public class GlobalHandleException {
         List<String> collect = constraintViolations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
         String message = String.join(",", collect);
         return ResponseResult.error(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), message);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseResult accessDeniedExceptionHandler(AccessDeniedException ex) {
+        log.error("出现异常!SystemException: {}", ex);
+        return ResponseResult.error(ResultCode.UNAUTHORIZED.getCode(), ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

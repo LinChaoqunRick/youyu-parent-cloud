@@ -4,14 +4,15 @@ import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
@@ -22,8 +23,6 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalHandleException {
 
-    @Resource
-    private HttpServletRequest request;
 
     @ExceptionHandler(SystemException.class)
     public ResponseResult systemExceptionHandler(SystemException ex) {
@@ -54,6 +53,13 @@ public class GlobalHandleException {
         List<String> collect = constraintViolations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
         String message = String.join(",", collect);
         return ResponseResult.error(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), message);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseResult accessDeniedExceptionHandler(AccessDeniedException ex, HttpServletResponse response) {
+        log.error("出现异常!SystemException: {}", ex);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        return ResponseResult.error(ResultCode.UNAUTHORIZED.getCode(), ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
