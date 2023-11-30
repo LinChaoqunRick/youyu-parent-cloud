@@ -1,0 +1,117 @@
+version: '3'
+services:
+  gateway-service:
+    container_name: gateway-service
+    build: # 服务的 Docker 构建文件位置
+      context: ./gateway-service
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - mynetwork
+
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+    networks:
+      - mynetwork
+    depends_on: # 本服务依赖的服务，控制启动先后顺序
+      - gateway-service
+
+  user-service:
+    container_name: user-service
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    ports:
+      - "8120:8120"
+    networks:
+      - mynetwork
+    depends_on:
+      - auth-service
+
+  post-service:
+    container_name: post-service
+    build:
+      context: ./post-service
+      dockerfile: Dockerfile
+    ports:
+      - "8150:8150"
+    networks:
+      - mynetwork
+    depends_on:
+      - gateway-service
+      - user-service
+
+  moment-service:
+    container_name: moment-service
+    build:
+      context: ./moment-service
+      dockerfile: Dockerfile
+    ports:
+      - "8130:8130"
+    networks:
+      - mynetwork
+    depends_on:
+      - gateway-service
+      - user-service
+
+  note-service:
+    container_name: note-service
+    build:
+      context: ./note-service
+      dockerfile: Dockerfile
+    ports:
+      - "8140:8140"
+    networks:
+      - mynetwork
+    depends_on:
+      - gateway-service
+      - user-service
+
+  mail-service:
+    container_name: mail-service
+    build:
+      context: ./mail-service
+      dockerfile: Dockerfile
+    ports:
+      - "8110:8110"
+    networks:
+      - mynetwork
+    depends_on:
+      - gateway-service
+      - user-service
+
+  upload-service:
+    container_name: upload-service
+    build:
+      context: ./upload-service
+      dockerfile: Dockerfile
+    ports:
+      - "8160:8160"
+    networks:
+      - mynetwork
+    depends_on:
+      - gateway-service
+      - user-service
+
+  message-service:
+    container_name: message-service
+    build:
+      context: ./message-service
+      dockerfile: Dockerfile
+    ports:
+      - "8170:8170"
+    networks:
+      - mynetwork
+    depends_on:
+      - gateway-service
+      - user-service
+
+# 网络，不定义的话就是默认网络
+networks:
+  mynetwork:
