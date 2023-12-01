@@ -34,3 +34,9 @@ build/
 
 ### log ###
 log/
+
+### Docker ###
+.mysql-data/
+.nacos-data/
+.rabbitmq-data/
+.redis-data/
