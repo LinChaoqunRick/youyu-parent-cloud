@@ -16,4 +16,4 @@ COPY ./target/gateway-service.jar /app/gateway-service.jar
 EXPOSE 8080
 
 # Run the JAR file
-ENTRYPOINT ["java", "-jar", "gateway-service.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "gateway-service.jar"]

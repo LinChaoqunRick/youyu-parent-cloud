@@ -16,4 +16,4 @@ COPY ./target/post-service.jar /app/post-service.jar
 EXPOSE 8150
 
 # Run the JAR file
-ENTRYPOINT ["java", "-jar", "post-service.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "post-service.jar"]

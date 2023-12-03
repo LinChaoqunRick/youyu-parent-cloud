@@ -16,4 +16,4 @@ COPY ./target/note-service.jar /app/note-service.jar
 EXPOSE 8140
 
 # Run the JAR file
-ENTRYPOINT ["java", "-jar", "note-service.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "note-service.jar"]

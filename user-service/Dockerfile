@@ -16,4 +16,4 @@ COPY ./target/user-service.jar /app/user-service.jar
 EXPOSE 8120
 
 # Run the JAR file
-ENTRYPOINT ["java", "-jar", "user-service.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "user-service.jar"]

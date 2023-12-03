@@ -16,4 +16,4 @@ COPY ./target/auth-service.jar /app/auth-service.jar
 EXPOSE 8090
 
 # Run the JAR file
-ENTRYPOINT ["java", "-jar", "auth-service.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "auth-service.jar"]

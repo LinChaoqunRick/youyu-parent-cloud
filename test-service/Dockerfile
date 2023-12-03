@@ -16,4 +16,4 @@ COPY ./target/test-service.jar /app/test-service.jar
 EXPOSE 8100
 
 # Run the JAR file
-ENTRYPOINT ["java", "-jar", "test-service.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "test-service.jar"]

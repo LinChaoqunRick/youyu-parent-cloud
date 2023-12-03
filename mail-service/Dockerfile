@@ -16,4 +16,4 @@ COPY ./target/mail-service.jar /app/mail-service.jar
 EXPOSE 8110
 
 # Run the JAR file
-ENTRYPOINT ["java", "-jar", "mail-service.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "mail-service.jar"]

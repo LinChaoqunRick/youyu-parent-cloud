@@ -16,4 +16,4 @@ COPY ./target/moment-service.jar /app/moment-service.jar
 EXPOSE 8130
 
 # Run the JAR file
-ENTRYPOINT ["java", "-jar", "moment-service.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "moment-service.jar"]

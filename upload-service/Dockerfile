@@ -16,4 +16,4 @@ COPY ./target/upload-service.jar /app/upload-service.jar
 EXPOSE 8160
 
 # Run the JAR file
-ENTRYPOINT ["java", "-jar", "upload-service.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "upload-service.jar"]
