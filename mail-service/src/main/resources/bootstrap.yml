@@ -6,7 +6,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.69.159:8848
+        server-addr: nacos:8848
   mail:
     host: smtp.163.com #发送邮件服务器
     username: harunayouyu@163.com #网易邮箱

@@ -6,6 +6,6 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.69.159:8848
+        server-addr: nacos:8848
 amap:
   key: 00cd7e52ba06ad96915822e2ba14aaf3
