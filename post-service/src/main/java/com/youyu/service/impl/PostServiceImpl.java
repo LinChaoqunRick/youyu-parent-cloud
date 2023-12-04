@@ -234,7 +234,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
                 extraInfo.setLikeCount(likeCount);
 
                 // 粉丝数量
-                long fansCount = userServiceClient.selectCount(userId).getData();
+                long fansCount = userServiceClient.getFansCount(userId).getData();
                 extraInfo.setFansCount(fansCount);
 
                 userDetailOutput.setExtraInfo(extraInfo);

@@ -55,7 +55,7 @@ public class MomentController {
         return ResponseResult.success(momentList);
     }
 
-    @RequestMapping("/open/list/following")
+    @RequestMapping("/list/following")
     public ResponseResult<PageOutput<MomentListOutput>> listFollowing(MomentListInput input) {
         PageOutput<MomentListOutput> momentList = momentService.momentListFollow(input);
         return ResponseResult.success(momentList);

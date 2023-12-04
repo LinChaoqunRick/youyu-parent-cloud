@@ -38,6 +38,17 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // /oauth/token接口在前端调用时必须携带Authorization：Basic样式的请求头，此处不拦截该接口
+        String prefix = request.getHeader("Authorization");
+        String requestURI = request.getRequestURI();
+        if (prefix != null && requestURI != null && requestURI.equals("/oauth/token")) {
+            prefix = prefix.split(" ")[0];
+            if (prefix.equals("Basic")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+        }
+
         String token = SecurityUtils.getAuthorizationToken(); //获取token
         if (!StringUtils.hasText(token)) {
             // 如果请求中不存在token，则放行，让后面的拦截器拦截它

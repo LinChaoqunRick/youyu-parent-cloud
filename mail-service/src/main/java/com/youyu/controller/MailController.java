@@ -17,7 +17,7 @@ public class MailController {
     @Resource
     private MailService mailService;
 
-    @RequestMapping("/sendRegisterCode")
+    @RequestMapping("/open/sendRegisterCode")
     public ResponseResult<Boolean> sendRegisterCode(@RequestParam String target,
                                                     @RequestParam(required = false, defaultValue = "false") boolean repeat)
             throws MessagingException {

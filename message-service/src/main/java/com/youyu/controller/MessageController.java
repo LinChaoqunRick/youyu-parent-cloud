@@ -16,13 +16,13 @@ public class MessageController {
     @Resource
     private SmsService smsService;
 
-    @RequestMapping(value = "/send")
+    @RequestMapping(value = "/open/send")
     public ResponseResult<Boolean> send(@Valid SmsSendInput input) {
         boolean send = smsService.send(input);
         return ResponseResult.success(send);
     }
 
-    @RequestMapping(value = "/verify")
+    @RequestMapping(value = "/open/verify")
     public ResponseResult<Boolean> verify(@Valid SmsVerifyInput input) {
         boolean verify = smsService.verify(input);
         return ResponseResult.success(verify);

@@ -177,7 +177,7 @@ public class UserController {
         return ResponseResult.success(user);
     }
 
-    @RequestMapping("/getAuthRoutes")
+    @RequestMapping("/open/getAuthRoutes")
     public ResponseResult<List<Route>> getAuthRoutes() {
         String token = SecurityUtils.getAuthorizationToken();
         if (StringUtils.hasText(token)) {
