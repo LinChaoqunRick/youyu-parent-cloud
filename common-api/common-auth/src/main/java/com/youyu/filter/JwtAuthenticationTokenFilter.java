@@ -39,14 +39,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // /oauth/token接口在前端调用时必须携带Authorization：Basic样式的请求头，此处不拦截该接口
-        String prefix = request.getHeader("Authorization");
         String requestURI = request.getRequestURI();
-        if (prefix != null && requestURI != null && requestURI.equals("/oauth/token")) {
-            prefix = prefix.split(" ")[0];
-            if (prefix.equals("Basic")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
+        if (requestURI != null && requestURI.equals("/oauth/token")) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
         String token = SecurityUtils.getAuthorizationToken(); //获取token
@@ -56,13 +52,13 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 解析token，这一部分可以注释掉，放在网关中统一校验
+        // 解析token，这一部分可以注释掉，放在网关中统一校验，但是一些白名单接口，如果携带错误的令牌如何处理，在此处拦截还是忽略？
         OAuth2AccessToken accessToken;
         try {
             accessToken = tokenStore.readAccessToken(token);
             boolean expired = accessToken.isExpired();
             if (expired) {
-                throw new RuntimeException("Token已过期");
+                throw new RuntimeException("认证令牌已过期");
             }
         } catch (Exception e) {
             // 如果存在token，但是非法的token（token格式不正确、已过期、假的token）
