@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -38,21 +39,21 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // /oauth/token接口在前端调用时必须携带Authorization：Basic样式的请求头，此处不拦截该接口
+        // 如果是/oauth/token，放行
         String requestURI = request.getRequestURI();
         if (requestURI != null && requestURI.equals("/oauth/token")) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        // 如果请求中不存在token，则放行，让后面的拦截器拦截它
         String token = SecurityUtils.getAuthorizationToken(); //获取token
         if (!StringUtils.hasText(token)) {
-            // 如果请求中不存在token，则放行，让后面的拦截器拦截它
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 解析token，这一部分可以注释掉，放在网关中统一校验，但是一些白名单接口，如果携带错误的令牌如何处理，在此处拦截还是忽略？
+        // 解析token，这一部分可以注释掉，放在网关中统一校验，但是一些白名单接口，如果不携带令牌，如何跳过封装下面的权限信息？
         OAuth2AccessToken accessToken;
         try {
             accessToken = tokenStore.readAccessToken(token);
@@ -81,10 +82,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
 
         //获取权限信息封装到Authentication中
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
-        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(
-                request));
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
+        authenticationToken.setDetails(new OAuth2AuthenticationDetails(request));
 
         //存入SecurityContextHolder
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
