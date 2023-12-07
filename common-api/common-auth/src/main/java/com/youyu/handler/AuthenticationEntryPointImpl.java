@@ -35,7 +35,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
             result = ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR.getCode(), "认证失败认证失败认证失败");
         }
         WebUtils.renderString(response, JSON.toJSONString(result));
-        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
     }
 }
 
