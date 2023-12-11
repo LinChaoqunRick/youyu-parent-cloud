@@ -34,6 +34,12 @@ public class Moment extends Model<Moment> {
     private Integer topicId;
     //图片
     private String images;
+    //经度
+    private String longitude;
+    //维度
+    private String latitude;
+    //地址
+    private String location;
     //点赞数
     private int supportCount;
     //反对数
