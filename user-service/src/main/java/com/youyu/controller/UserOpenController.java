@@ -123,7 +123,7 @@ public class UserOpenController {
         return ResponseResult.success(userService.listByIds(userIds));
     }
 
-    @RequestMapping("/getUserPositionInfo")
+    @RequestMapping("/ipLocation")
     public ResponseResult<PositionInfo> getUserPositionInfo() {
         PositionInfo positionInfo = restTemplate.getForObject("https://restapi.amap.com/v3/ip?key=" + amapKey + "&ip=" + RequestUtils.getClientIp(), PositionInfo.class);
         return ResponseResult.success(positionInfo);

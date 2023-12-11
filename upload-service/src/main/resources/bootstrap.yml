@@ -6,7 +6,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: nacos:8848
+        server-addr: 124.222.79.236:8848
 aliyun:
   oss:
     endpoint: sts.cn-beijing.aliyuncs.com # oss对外服务的访问域名
