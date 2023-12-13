@@ -13,7 +13,7 @@ import java.util.Date;
 public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
-        // createTime updateTime 字段与实体类中字段对应
+        // id createTime updateTime 字段与实体类中字段对应
         // this.setFieldValByName("id", UUID.randomUUID().toString().replaceAll("-", ""), metaObject);
         this.setFieldValByName("createTime", new Date(), metaObject);
         this.setFieldValByName("updateTime", new Date(), metaObject);
@@ -22,7 +22,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         // updateTime 字段与实体类中字段对应
-        this.setFieldValByName("updateTime", new Date(), metaObject);
+        // this.setFieldValByName("updateTime", new Date(), metaObject);
     }
 }
 

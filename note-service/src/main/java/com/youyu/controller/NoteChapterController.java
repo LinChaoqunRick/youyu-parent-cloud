@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,6 +46,7 @@ public class NoteChapterController {
 
     @RequestMapping("/update")
     public ResponseResult<Boolean> updateChapter(@Valid NoteChapter chapter) {
+        chapter.setUpdateTime(new Date());
         LambdaUpdateWrapper<NoteChapter> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(NoteChapter::getId, chapter.getId());
         boolean update = noteChapterService.update(chapter, updateWrapper);
