@@ -5,7 +5,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Objects;
 
 @Component
 public class RequestUtils {
@@ -22,6 +21,6 @@ public class RequestUtils {
         if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getRemoteAddr();
         }
-        return ipAddress;
+        return ipAddress.split(",")[0];
     }
 }

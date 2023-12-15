@@ -13,21 +13,17 @@ import com.youyu.dto.post.post.PostListOutput;
 import com.youyu.dto.user.*;
 import com.youyu.entity.auth.Route;
 import com.youyu.entity.auth.UserFramework;
-import com.youyu.entity.user.DynamicInfo;
-import com.youyu.entity.user.User;
-import com.youyu.entity.user.UserDetailOutput;
-import com.youyu.entity.user.UserFollow;
+import com.youyu.entity.user.*;
 import com.youyu.feign.MomentServiceClient;
 import com.youyu.feign.NoteServiceClient;
 import com.youyu.feign.PostServiceClient;
 import com.youyu.mapper.UserFollowMapper;
 import com.youyu.mapper.UserMapper;
 import com.youyu.service.UserService;
-import com.youyu.utils.BeanCopyUtils;
-import com.youyu.utils.BeanUtils;
-import com.youyu.utils.PageUtils;
-import com.youyu.utils.SecurityUtils;
+import com.youyu.utils.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -57,6 +53,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private NoteServiceClient noteServiceClient;
+
+    @Resource
+    private RestTemplate restTemplate;
+
+    @Value("${amap.key}")
+    private String amapKey;
 
     @Override
     public PageOutput<UserListOutput> list(UserListInput input) {
@@ -198,6 +200,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         });
         resultPageInfo.setList(resultList);
         return resultPageInfo;
+    }
+
+    @Override
+    public PositionInfo getUserPositionByIP() {
+        return restTemplate.getForObject("https://restapi.amap.com/v3/ip?key=" + amapKey + "&ip=" + RequestUtils.getClientIp(), PositionInfo.class);
     }
 
     private void setFollow(Long currentUserId, List<UserListOutput> list) {

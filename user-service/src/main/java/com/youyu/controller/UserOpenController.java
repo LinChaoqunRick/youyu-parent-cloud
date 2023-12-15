@@ -46,12 +46,6 @@ public class UserOpenController {
     @Resource
     private ProfileMenuService profileMenuService;
 
-    @Resource
-    private RestTemplate restTemplate;
-
-    @Value("${amap.key}")
-    private String amapKey;
-
     @RequestMapping("/list")
     ResponseResult<PageOutput<UserListOutput>> list(UserListInput input) {
         return ResponseResult.success(userService.list(input));
@@ -131,7 +125,7 @@ public class UserOpenController {
     @RequestMapping("/ipLocation")
     public ResponseResult<PositionInfo> getUserPositionInfo() {
         log.info("当前访问IP:" + RequestUtils.getClientIp());
-        PositionInfo positionInfo = restTemplate.getForObject("https://restapi.amap.com/v3/ip?key=" + amapKey + "&ip=" + RequestUtils.getClientIp(), PositionInfo.class);
+        PositionInfo positionInfo = userService.getUserPositionByIP();
         return ResponseResult.success(positionInfo);
     }
 }

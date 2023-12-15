@@ -1,6 +1,7 @@
 package com.youyu.entity.auth;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,8 @@ public class UserFramework implements Serializable {
     private String avatar;
     private int sex;
     private String email;
+    private Integer adcode;
+    private String adname;
     private String homepage;
     private int level;
     private Date registerDate;

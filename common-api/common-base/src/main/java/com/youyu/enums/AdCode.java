@@ -70,6 +70,9 @@ public enum AdCode {
     }
 
     public static String getDescByCode(Integer adcode) {
+        if (adcode == null) {
+            return null;
+        }
         String areaName = null;
         for (AdCode type : AdCode.values()) {
             if (type.getAdcode() < adcode) {

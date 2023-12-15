@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.youyu.entity.auth.Route;
 import com.youyu.entity.auth.UserFramework;
-import com.youyu.entity.user.ProfileMenu;
-import com.youyu.entity.user.User;
-import com.youyu.entity.user.UserDetailOutput;
-import com.youyu.entity.user.UserFollow;
+import com.youyu.entity.user.*;
+import com.youyu.enums.AdCode;
 import com.youyu.enums.ResultCode;
 import com.youyu.enums.RoleEnum;
 import com.youyu.exception.SystemException;
@@ -24,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -174,6 +173,15 @@ public class UserController {
         } else {
             throw new SystemException(ResultCode.USER_NOT_EXIST);
         }
+        PositionInfo position = userService.getUserPositionByIP();
+        if (!((ArrayList) position.getAdcode()).isEmpty()) {
+            // 更新用户adcode
+            LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+            updateWrapper.eq(User::getId, user.getId());
+            updateWrapper.set(User::getAdcode, ((ArrayList<?>) position.getAdcode()).get(0));
+            userService.update(updateWrapper);
+        }
+        user.setAdname(AdCode.getDescByCode(user.getAdcode()));
         return ResponseResult.success(user);
     }
 

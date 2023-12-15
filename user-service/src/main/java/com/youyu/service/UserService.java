@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.user.*;
 import com.youyu.entity.auth.Route;
+import com.youyu.entity.user.PositionInfo;
 import com.youyu.entity.user.User;
 import com.youyu.entity.user.UserDetailOutput;
 import com.youyu.entity.auth.UserFramework;
@@ -33,4 +34,6 @@ public interface UserService extends IService<User> {
     UserFramework getUserById(Long id);
 
     PageInfo<Object> getUserDynamics(DynamicListInput input);
+
+    PositionInfo getUserPositionByIP();
 }
