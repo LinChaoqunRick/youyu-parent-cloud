@@ -56,6 +56,15 @@ public class User extends Model<User> implements Serializable {
      */
     private String email;
     /**
+     * 地址编号
+     */
+    private Integer adcode;
+    /**
+     * 地址简称
+     */
+    @TableField(exist = false)
+    private String adname;
+    /**
      * 个人主页
      */
     private String homepage;

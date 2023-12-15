@@ -9,6 +9,7 @@ import com.youyu.entity.user.PositionInfo;
 import com.youyu.entity.user.ProfileMenu;
 import com.youyu.entity.user.User;
 import com.youyu.entity.user.UserFollow;
+import com.youyu.enums.AdCode;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
 import com.youyu.service.UserFollowService;
@@ -108,8 +109,10 @@ public class UserOpenController {
     }
 
     @RequestMapping("/selectById")
-    public ResponseResult<User> selectById(Long userId) {
-        return ResponseResult.success(userService.getById(userId));
+    public ResponseResult<User> selectById(@RequestParam Long userId) {
+        User user = userService.getById(userId);
+        user.setAdname(AdCode.getDescByCode(user.getAdcode()));
+        return ResponseResult.success(user);
     }
 
     @RequestMapping("/pageUserByUserIds")
