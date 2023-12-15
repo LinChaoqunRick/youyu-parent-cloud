@@ -174,11 +174,11 @@ public class UserController {
             throw new SystemException(ResultCode.USER_NOT_EXIST);
         }
         PositionInfo position = userService.getUserPositionByIP();
-        if (!((ArrayList) position.getAdcode()).isEmpty()) {
+        if (position.getAdcode() instanceof String) {
             // 更新用户adcode
             LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
             updateWrapper.eq(User::getId, user.getId());
-            updateWrapper.set(User::getAdcode, ((ArrayList<?>) position.getAdcode()).get(0));
+            updateWrapper.set(User::getAdcode, position.getAdcode());
             userService.update(updateWrapper);
         }
         user.setAdname(AdCode.getDescByCode(user.getAdcode()));
