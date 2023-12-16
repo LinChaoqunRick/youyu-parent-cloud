@@ -10,6 +10,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,12 +26,14 @@ public class GlobalHandleException {
 
 
     @ExceptionHandler(SystemException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseResult systemExceptionHandler(SystemException ex) {
         log.error("出现异常!SystemException: {}", ex);
         return ResponseResult.error(ex.getCode(), ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseResult argumentNotValidExceptionHandler(MethodArgumentNotValidException ex) {
         log.error("出现异常!SystemException: {}", ex);
         List<FieldError> fieldErrorList = ex.getBindingResult().getFieldErrors();
@@ -39,6 +42,7 @@ public class GlobalHandleException {
     }
 
     @ExceptionHandler(BindException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseResult bindExceptionHandler(BindException ex) {
         log.error("出现异常!SystemException: {}", ex);
         List<FieldError> fieldErrorList = ex.getBindingResult().getFieldErrors();
@@ -47,6 +51,7 @@ public class GlobalHandleException {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseResult bindExceptionHandler(ConstraintViolationException ex) {
         log.error("出现异常!SystemException: {}", ex);
         Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
@@ -56,6 +61,7 @@ public class GlobalHandleException {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseResult accessDeniedExceptionHandler(AccessDeniedException ex, HttpServletResponse response) {
         log.error("出现异常!SystemException: {}", ex);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -63,6 +69,7 @@ public class GlobalHandleException {
     }
 
     @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseResult exceptionHandler(Exception ex) {
         log.error("出现异常!Exception: {}", ex);
         return ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR.getCode(), ex.getMessage());
