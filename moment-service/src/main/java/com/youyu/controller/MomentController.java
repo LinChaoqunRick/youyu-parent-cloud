@@ -5,6 +5,8 @@ import com.youyu.dto.moment.MomentListOutput;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentUserOutput;
+import com.youyu.enums.AdCode;
+import com.youyu.feign.UserServiceClient;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.MomentService;
 import com.youyu.utils.SecurityUtils;
@@ -28,9 +30,14 @@ public class MomentController {
     @Resource
     private MomentService momentService;
 
+    @Resource
+    private UserServiceClient userServiceClient;
+
     @RequestMapping("/create")
     public ResponseResult<MomentListOutput> create(@Valid Moment input) {
         input.setUserId(SecurityUtils.getUserId());
+        input.setAdcode(userServiceClient.ipLocation().getData().getAdcode());
+        input.setAdname(AdCode.getDescByCode(input.getAdcode()));
         MomentListOutput output = momentService.create(input);
         return ResponseResult.success(output);
     }

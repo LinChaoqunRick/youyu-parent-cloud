@@ -13,6 +13,7 @@ import com.youyu.entity.moment.MomentUserExtraInfo;
 import com.youyu.entity.moment.MomentUserOutput;
 import com.youyu.entity.user.User;
 import com.youyu.entity.user.UserFollow;
+import com.youyu.enums.AdCode;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.feign.UserServiceClient;
@@ -180,6 +181,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
         moment.setUser(getMomentUserDetailById(moment.getUserId(), false));
         moment.setCommentCount(momentCommentService.getReplyCountByMomentId(moment.getId()));
         moment.setMomentLike(isMomentLike(moment.getId()));
+        moment.setAdname(AdCode.getDescByCode(moment.getAdcode()));
         // 设置点赞用户信息
         MomentLikeUserListInput likeUserListInput = new MomentLikeUserListInput(moment.getId());
         PageOutput<MomentUserOutput> output = momentLikeService.likeUsers(likeUserListInput);

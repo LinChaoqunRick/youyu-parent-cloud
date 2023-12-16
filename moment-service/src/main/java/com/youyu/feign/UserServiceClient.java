@@ -1,6 +1,7 @@
 package com.youyu.feign;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.youyu.entity.user.PositionInfo;
 import com.youyu.entity.user.User;
 import com.youyu.result.ResponseResult;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -26,4 +27,7 @@ public interface UserServiceClient {
 
     @RequestMapping("/user/open/pageUserByUserIds")
     ResponseResult<Page<User>> pageUserByUserIds(@RequestParam long current, @RequestParam long size, @RequestParam List<Long> userIds);
+
+    @RequestMapping("/user/open/ipLocation")
+    ResponseResult<PositionInfo> ipLocation();
 }

@@ -11,6 +11,7 @@ import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentComment;
 import com.youyu.entity.moment.MomentCommentLike;
 import com.youyu.entity.moment.MomentUserOutput;
+import com.youyu.enums.AdCode;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.feign.MailServiceClient;
@@ -185,6 +186,7 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
         list.forEach(item -> {
             item.setUser(userMap.get(item.getUserId()));
             item.setUserTo(userMap.get(item.getUserIdTo()));
+            item.setAdname(AdCode.getDescByCode(item.getAdcode()));
 
             // 是否点赞了
             if (!Objects.isNull(userId)) {

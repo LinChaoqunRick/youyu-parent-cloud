@@ -42,6 +42,11 @@ public class MomentComment extends Model<MomentComment> {
     @NotBlank(message = "内容不能为空")
     private String content;
     private String images;
+    //区域编号
+    private Integer adcode;
+    //区域名称
+    @TableField(exist = false)
+    private String adname;
     //支持数量
     private Integer supportCount;
     //反对数量

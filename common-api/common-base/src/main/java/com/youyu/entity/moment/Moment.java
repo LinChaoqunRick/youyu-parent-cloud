@@ -40,6 +40,11 @@ public class Moment extends Model<Moment> {
     private String latitude;
     //地址
     private String location;
+    //区域编号
+    private Integer adcode;
+    //区域名称
+    @TableField(exist = false)
+    private String adname;
     //点赞数
     private int supportCount;
     //反对数

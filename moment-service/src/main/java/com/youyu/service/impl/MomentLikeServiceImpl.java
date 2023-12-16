@@ -91,10 +91,8 @@ public class MomentLikeServiceImpl extends ServiceImpl<MomentLikeMapper, MomentL
         if (userIds.isEmpty()) {
             return null;
         }
-        log.info("123123123123");
         // 分页查询
         Page<User> postPage = userServiceClient.pageUserByUserIds(input.getPageNum(), input.getPageSize(), userIds).getData();
-        log.info("456456456456");
         // 封装查询结果
         return PageUtils.setPageResult(postPage, MomentUserOutput.class);
     }

@@ -6,8 +6,11 @@ import com.youyu.dto.moment.MomentCommentListOutput;
 import com.youyu.dto.moment.MomentReplyListInput;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.entity.moment.MomentComment;
+import com.youyu.enums.AdCode;
+import com.youyu.feign.UserServiceClient;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.MomentCommentService;
+import com.youyu.utils.SecurityUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -29,8 +32,14 @@ public class MomentCommentController {
     @Resource
     private MomentCommentService momentCommentService;
 
+    @Resource
+    private UserServiceClient userServiceClient;
+
     @RequestMapping("/create")
     public ResponseResult<MomentCommentListOutput> create(@Valid MomentComment input) {
+        input.setUserId(SecurityUtils.getUserId());
+        input.setAdcode(userServiceClient.ipLocation().getData().getAdcode());
+        input.setAdname(AdCode.getDescByCode(input.getAdcode()));
         MomentCommentListOutput detail = momentCommentService.createComment(input);
         return ResponseResult.success(detail);
     }
