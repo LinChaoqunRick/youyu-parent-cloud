@@ -1,0 +1,47 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 5MB
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.69.159:3306/youyu?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8
+    username: root
+    password: 1233
+    hikari:
+      minimum-idle: 3
+      maximum-pool-size: 20
+      max-lifetime: 30000 # 不能小于30秒，否则默认回到1800秒
+      connection-test-query: SELECT 1
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0 #操作的是0号数据库
+    timeout: 60s
+    lettuce:
+      shutdown-timeout: 100
+      # pool:
+      #   max-idle: 30
+      #   max-active: 8
+      #   max-wait: 10000
+      #   min-idle: 10
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      id-type: auto
+    banner: off # 关闭mybatisplus启动图标
+pagehelper:
+  helperDialect: mysql
+  supportMethodsArguments: true
+  params: count=countSql
+  page-size-zero: true
+logging:
+  level:
+    com.youyu.mapper: debug

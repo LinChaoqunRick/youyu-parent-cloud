@@ -16,4 +16,4 @@ COPY ./target/message-service.jar /app/message-service.jar
 EXPOSE 8170
 
 # Run the JAR file
-ENTRYPOINT ["java", "-Xmx256m", "-jar", "message-service.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "message-service.jar", "--spring."]
