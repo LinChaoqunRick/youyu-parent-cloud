@@ -55,7 +55,7 @@ public class PositionInfo {
 
     public Integer getAdcode() {
         if (adcode instanceof String) {
-            return (Integer) adcode;
+            return Integer.parseInt(adcode.toString());
         } else if (adcode instanceof List) {
             // 这里处理数组/列表的情况，例如返回空字符串或特定标志
             return null; // 或者其他逻辑
