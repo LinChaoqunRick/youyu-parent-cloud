@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy the JAR file into the container at /app
 COPY ./target/gateway-service.jar /app/gateway-service.jar
 
+ENV NACOS_SERVER_ADDR=nacos:8848
+ENV ACTIVE_ENV=dev
+
 # Install iputils-ping
 #RUN apt-get update && \
 #    apt-get install -y iputils-ping && \
