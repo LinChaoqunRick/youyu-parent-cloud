@@ -32,6 +32,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        <!--jwt依赖-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+        </dependency>
         <!--  OAuth2.0依赖，不再内置了，所以得我们自己指定一下版本  -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

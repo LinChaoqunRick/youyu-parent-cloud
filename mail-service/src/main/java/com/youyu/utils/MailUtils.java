@@ -1,7 +1,6 @@
 package com.youyu.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
@@ -15,9 +14,8 @@ import javax.mail.internet.MimeMessage;
 import java.io.File;
 
 @Component
+@Slf4j
 public class MailUtils {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${spring.mail.username}")
     private String from;
@@ -107,7 +105,7 @@ public class MailUtils {
      */
     public void sendInlinkResourceMail(String to, String subject, String content,
                                        String rscPath, String rscId) {
-        logger.info("发送静态邮件开始: {},{},{},{},{}", to, subject, content, rscPath, rscId);
+        log.info("发送静态邮件开始: {},{},{},{},{}", to, subject, content, rscPath, rscId);
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = null;
@@ -124,10 +122,10 @@ public class MailUtils {
             FileSystemResource res = new FileSystemResource(new File(rscPath));
             helper.addInline(rscId, res);
             mailSender.send(message);
-            logger.info("发送静态邮件成功!");
+            log.info("发送静态邮件成功!");
 
         } catch (MessagingException e) {
-            logger.info("发送静态邮件失败: ", e);
+            log.info("发送静态邮件失败: ", e);
         }
 
     }
