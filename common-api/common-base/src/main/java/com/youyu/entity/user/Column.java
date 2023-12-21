@@ -25,7 +25,6 @@ public class Column implements Serializable {
     /**
      * 归属的用户id
      */
-    @NotNull(message = "用户不能为空")
     private Long userId;
     /**
      * 专栏名称
