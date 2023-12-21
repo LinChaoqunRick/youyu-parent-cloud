@@ -30,27 +30,27 @@ public class GlobalHandleException {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseResult argumentNotValidExceptionHandler(MethodArgumentNotValidException ex) {
-        log.error("出现异常!SystemException: {}", ex);
+        log.error("出现异常!MethodArgumentNotValidException: {}", ex);
         List<FieldError> fieldErrorList = ex.getBindingResult().getFieldErrors();
         String specific = fieldErrorList.get(0).getDefaultMessage();
         return ResponseResult.error(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), specific);
     }
 
     @ExceptionHandler(BindException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseResult bindExceptionHandler(BindException ex) {
-        log.error("出现异常!SystemException: {}", ex);
+        log.error("出现异常!BindException: {}", ex);
         List<FieldError> fieldErrorList = ex.getBindingResult().getFieldErrors();
         String specific = fieldErrorList.get(0).getDefaultMessage();
         return ResponseResult.error(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), specific);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseResult bindExceptionHandler(ConstraintViolationException ex) {
-        log.error("出现异常!SystemException: {}", ex);
+        log.error("出现异常!ConstraintViolationException: {}", ex);
         Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
         List<String> collect = constraintViolations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
         String message = String.join(",", collect);
@@ -58,14 +58,14 @@ public class GlobalHandleException {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseResult accessDeniedExceptionHandler(AccessDeniedException ex) {
         log.error("出现异常!SystemException: {}", ex);
         return ResponseResult.error(ResultCode.UNAUTHORIZED.getCode(), ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseResult exceptionHandler(Exception ex) {
         log.error("出现异常!Exception: {}", ex);
         return ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR.getCode(), ex.getMessage());
