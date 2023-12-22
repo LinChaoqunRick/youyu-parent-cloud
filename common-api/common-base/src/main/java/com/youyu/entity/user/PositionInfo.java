@@ -1,5 +1,6 @@
 package com.youyu.entity.user;
 
+import com.youyu.enums.AdCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,10 @@ public class PositionInfo {
      */
     private Object adcode;
     /**
+     * 城市的adname, 此处自己转化
+     */
+    private String adname;
+    /**
      * 所在城市矩形区域范围
      * 所在城市范围的左下右上对标对
      */
@@ -56,8 +61,6 @@ public class PositionInfo {
     }
 
     public Integer getAdcode() {
-        Class<?> clazz = adcode.getClass();
-        log.info(clazz.getName());
         if (adcode instanceof String) {
             return Integer.parseInt(adcode.toString());
         } else if (adcode instanceof Integer) {
@@ -67,6 +70,14 @@ public class PositionInfo {
             return null; // 或者其他逻辑
         }
         return null; // 或抛出一个异常，根据你的业务逻辑决定
+    }
+
+    public String getAdname() {
+        Integer adcode = getAdcode();
+        if (adcode != null) {
+            return AdCode.getDescByCode(adcode);
+        }
+        return null;
     }
 
     public String getRectangle() {

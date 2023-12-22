@@ -204,7 +204,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public PositionInfo getUserPositionByIP() {
-        return restTemplate.getForObject("https://restapi.amap.com/v3/ip?key=" + amapKey + "&ip=" + "27.154.135.217", PositionInfo.class);
+        PositionInfo positionInfo = restTemplate.getForObject("https://restapi.amap.com/v3/ip?key=" + amapKey + "&ip=" + RequestUtils.getClientIp(), PositionInfo.class);
+        return positionInfo;
     }
 
     private void setFollow(Long currentUserId, List<UserListOutput> list) {

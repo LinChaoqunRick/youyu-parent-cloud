@@ -6,6 +6,7 @@ import com.youyu.dto.moment.MomentCommentListOutput;
 import com.youyu.dto.moment.MomentReplyListInput;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.entity.moment.MomentComment;
+import com.youyu.entity.user.PositionInfo;
 import com.youyu.enums.AdCode;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.result.ResponseResult;
@@ -38,9 +39,10 @@ public class MomentCommentController {
     @RequestMapping("/create")
     public ResponseResult<MomentCommentListOutput> create(@Valid MomentComment input) {
         input.setUserId(SecurityUtils.getUserId());
-        input.setAdcode(userServiceClient.ipLocation().getData().getAdcode());
-        input.setAdname(AdCode.getDescByCode(input.getAdcode()));
+        PositionInfo positionInfo = userServiceClient.ipLocation().getData();
+        input.setAdcode(positionInfo.getAdcode());
         MomentCommentListOutput detail = momentCommentService.createComment(input);
+        detail.setAdname(positionInfo.getAdname());
         return ResponseResult.success(detail);
     }
 

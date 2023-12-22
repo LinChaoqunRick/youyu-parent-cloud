@@ -40,10 +40,9 @@ public class MomentController {
     public ResponseResult<MomentListOutput> create(@Valid Moment input) {
         input.setUserId(SecurityUtils.getUserId());
         PositionInfo positionInfo = userServiceClient.ipLocation().getData();
-        log.info(positionInfo.toString());
         input.setAdcode(positionInfo.getAdcode());
-        input.setAdname(AdCode.getDescByCode(input.getAdcode()));
         MomentListOutput output = momentService.create(input);
+        output.setAdname(positionInfo.getAdname());
         return ResponseResult.success(output);
     }
 
