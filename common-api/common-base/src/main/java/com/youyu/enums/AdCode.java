@@ -37,7 +37,7 @@ public enum AdCode {
     ;
     private String name;
     private String fullName;
-    private int adcode;
+    private Integer adcode;
 
     AdCode(String name, String fullName, int adcode) {
         this.name = name;

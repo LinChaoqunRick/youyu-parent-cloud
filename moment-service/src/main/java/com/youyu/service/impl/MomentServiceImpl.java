@@ -102,7 +102,6 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
         // 查询用户信息, 评论数量, 点赞信息
         pageOutput.getList().forEach(this::setExtraData);
 
-        log.info("456456456");
         return pageOutput;
     }
 

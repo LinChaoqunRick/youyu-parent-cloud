@@ -3,6 +3,7 @@ package com.youyu.entity.user;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import java.util.Optional;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 public class PositionInfo {
     /**
      * 若为直辖市则显示直辖市名称；
@@ -54,8 +56,12 @@ public class PositionInfo {
     }
 
     public Integer getAdcode() {
+        Class<?> clazz = adcode.getClass();
+        log.info(clazz.getName());
         if (adcode instanceof String) {
             return Integer.parseInt(adcode.toString());
+        } else if (adcode instanceof Integer) {
+            return (Integer) adcode;
         } else if (adcode instanceof List) {
             // 这里处理数组/列表的情况，例如返回空字符串或特定标志
             return null; // 或者其他逻辑

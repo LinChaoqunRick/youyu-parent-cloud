@@ -1,6 +1,7 @@
 package com.youyu.aspect;
 
 import com.youyu.entity.auth.ActionLog;
+import com.youyu.utils.RequestUtils;
 import com.youyu.utils.SecurityUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +57,7 @@ public class LogAspect {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
         // 获取ip
-        actionLog.setIp(request.getRemoteHost());
+        actionLog.setIp(RequestUtils.getClientIp());
         // 获取URI
         actionLog.setPath(request.getRequestURI());
         // 获取API信息

@@ -5,11 +5,13 @@ import com.youyu.dto.moment.MomentListOutput;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentUserOutput;
+import com.youyu.entity.user.PositionInfo;
 import com.youyu.enums.AdCode;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.MomentService;
 import com.youyu.utils.SecurityUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -24,6 +26,7 @@ import java.util.List;
  * @since 2023-05-21 23:22:07
  */
 @RestController
+@Slf4j
 @RequestMapping("/moment")
 public class MomentController {
 
@@ -36,7 +39,9 @@ public class MomentController {
     @RequestMapping("/create")
     public ResponseResult<MomentListOutput> create(@Valid Moment input) {
         input.setUserId(SecurityUtils.getUserId());
-        input.setAdcode(userServiceClient.ipLocation().getData().getAdcode());
+        PositionInfo positionInfo = userServiceClient.ipLocation().getData();
+        log.info(positionInfo.toString());
+        input.setAdcode(positionInfo.getAdcode());
         input.setAdname(AdCode.getDescByCode(input.getAdcode()));
         MomentListOutput output = momentService.create(input);
         return ResponseResult.success(output);

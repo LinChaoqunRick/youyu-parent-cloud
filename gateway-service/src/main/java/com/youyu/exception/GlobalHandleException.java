@@ -65,7 +65,7 @@ public class GlobalHandleException {
     }
 
     @ExceptionHandler(Exception.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseResult exceptionHandler(Exception ex) {
         log.error("出现异常!Exception: {}", ex);
         return ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR.getCode(), ex.getMessage());

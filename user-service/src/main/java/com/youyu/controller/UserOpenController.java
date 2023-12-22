@@ -124,8 +124,8 @@ public class UserOpenController {
 
     @RequestMapping("/ipLocation")
     public ResponseResult<PositionInfo> getUserPositionInfo() {
-        log.info("当前访问IP:" + RequestUtils.getClientIp());
         PositionInfo positionInfo = userService.getUserPositionByIP();
+        log.info("当前访问IP:" + RequestUtils.getClientIp() + positionInfo.toString());
         return ResponseResult.success(positionInfo);
     }
 }
