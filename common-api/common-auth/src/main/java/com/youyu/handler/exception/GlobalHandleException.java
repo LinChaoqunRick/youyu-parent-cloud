@@ -26,7 +26,7 @@ public class GlobalHandleException {
 
 
     @ExceptionHandler(SystemException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseResult systemExceptionHandler(SystemException ex) {
         log.error("出现异常!SystemException: {}", ex);
         return ResponseResult.error(ex.getCode(), ex.getMessage());
