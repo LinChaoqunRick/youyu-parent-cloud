@@ -1,6 +1,7 @@
 package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.youyu.dto.RegisterInput;
 import com.youyu.entity.LoginUser;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.auth.UserRole;
@@ -62,47 +63,47 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public int register(String nickname, String username, String email, String password, String code, int type) {
+    public int register(RegisterInput input) {
         UserFramework newUser = new UserFramework();
         LambdaQueryWrapper<UserFramework> queryWrapper = new LambdaQueryWrapper<>();
 
-        if (type == 0) { // 手机号
-            queryWrapper.eq(UserFramework::getUsername, username);
+        if (input.getType() == 0) { // 手机号
+            queryWrapper.eq(UserFramework::getUsername, input.getUsername());
             if (userFrameworkMapper.selectCount(queryWrapper) > 0) { // 存在相应邮箱
                 throw new SystemException(ResultCode.TELEPHONE_CONFLICT);
             }
             //从redis中获取用户信息
-            String redisKey = SMSTemplate.REGISTER_TEMP.getLabel() + ":" + username;
+            String redisKey = SMSTemplate.REGISTER_TEMP.getLabel() + ":" + input.getUsername();
             String redisCode = redisCache.getCacheObject(redisKey);
-            if (Objects.isNull(redisCode) || !redisCode.equals(code)) {
+            if (Objects.isNull(redisCode) || !redisCode.equals(input.getCode())) {
                 throw new SystemException(700, "验证码错误或已过期");
             }
-            newUser.setUsername(username);
+            newUser.setUsername(input.getUsername());
         } else { // 邮箱
-            queryWrapper.eq(UserFramework::getEmail, email);
+            queryWrapper.eq(UserFramework::getEmail, input.getEmail());
             if (userFrameworkMapper.selectCount(queryWrapper) > 0) { // 存在相应邮箱
                 throw new SystemException(ResultCode.EMAIL_CONFLICT);
             }
             //从redis中获取用户信息
-            String redisKey = "emailCode:" + email;
+            String redisKey = "emailCode:" + input.getEmail();
             String redisCode = redisCache.getCacheObject(redisKey);
-            if (Objects.isNull(redisCode) || !redisCode.equals(code)) {
+            if (Objects.isNull(redisCode) || !redisCode.equals(input.getCode())) {
                 throw new SystemException(700, "验证码错误或已过期");
             }
-            newUser.setEmail(email);
+            newUser.setEmail(input.getEmail());
         }
 
         // 昵称校验
         LambdaQueryWrapper<UserFramework> nicknameQueryWrapper = new LambdaQueryWrapper<>();
-        nicknameQueryWrapper.eq(UserFramework::getNickname, nickname);
+        nicknameQueryWrapper.eq(UserFramework::getNickname, input.getNickname());
 
         Integer count = userFrameworkMapper.selectCount(nicknameQueryWrapper);
         if (count > 0) {
-            throw new SystemException(700, "昵称“" + nickname + "”已存在");
+            throw new SystemException(700, "昵称“" + input.getNickname() + "”已存在");
         }
 
-        newUser.setNickname(nickname);
-        newUser.setPassword(passwordEncoder.encode(password));
+        newUser.setNickname(input.getNickname());
+        newUser.setPassword(passwordEncoder.encode(input.getPassword()));
 
         int insert = userFrameworkMapper.insert(newUser);
 
