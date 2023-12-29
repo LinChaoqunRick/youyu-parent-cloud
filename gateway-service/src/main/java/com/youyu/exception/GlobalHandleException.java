@@ -5,6 +5,7 @@ import com.youyu.result.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -27,6 +28,12 @@ public class GlobalHandleException {
     public ResponseResult systemExceptionHandler(SystemException ex) {
         log.error("出现异常!SystemException: {}", ex);
         return ResponseResult.error(ex.getCode(), ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseResult authenticationExceptionHandler(AuthenticationException ex) {
+        log.error("出现异常!AuthenticationException: {}", ex);
+        return ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR.getCode(), ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
