@@ -83,7 +83,7 @@ public class LoginController {
         String url = "";
         String authorizeURL = "";
         String redirectUri = "";
-        // String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
 
         if (input.getType().equals("qq")) {
             authorizeURL = qqConstants.getAuthorizeURL();
@@ -100,7 +100,8 @@ public class LoginController {
                     "?response_type=code" +
                     "&client_id=" + githubConstants.getClientId() +
                     "&redirect_uri=" + redirectUri +
-                    "&connect_type=" + input.getType();
+                    "&connect_type=" + input.getType() +
+                    "&stamp=" + uuid;
         }
         return ResponseResult.success(url);
     }
@@ -152,7 +153,6 @@ public class LoginController {
         }
         return tokenResponse;
     }
-
 
 
     public static void main(String[] args) throws JsonProcessingException {
