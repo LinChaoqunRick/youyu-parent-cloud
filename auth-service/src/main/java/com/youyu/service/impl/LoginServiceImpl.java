@@ -1,6 +1,7 @@
 package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.youyu.dto.ConnectRegisterInput;
 import com.youyu.dto.RegisterInput;
 import com.youyu.entity.LoginUser;
 import com.youyu.entity.auth.UserFramework;
@@ -9,20 +10,18 @@ import com.youyu.enums.ResultCode;
 import com.youyu.enums.RoleEnum;
 import com.youyu.enums.SMSTemplate;
 import com.youyu.exception.SystemException;
-import com.youyu.mapper.LoginMapper;
 import com.youyu.mapper.UserFrameworkMapper;
 import com.youyu.mapper.UserRoleMapper;
 import com.youyu.service.LoginService;
+import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.RedisCache;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 @Service
@@ -32,12 +31,6 @@ public class LoginServiceImpl implements LoginService {
     private RedisCache redisCache;
 
     @Resource
-    private AuthenticationManager authenticationManager;
-
-    @Resource
-    private LoginMapper loginMapper;
-
-    @Resource
     private UserFrameworkMapper userFrameworkMapper;
 
     @Resource
@@ -45,12 +38,6 @@ public class LoginServiceImpl implements LoginService {
 
     @Resource
     private UserRoleMapper userRoleMapper;
-
-    @Resource
-    private HttpServletRequest request;
-
-    @Resource
-    private HttpServletResponse response;
 
     @Override
     public void logout() {
@@ -63,6 +50,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
+    @Transactional
     public int register(RegisterInput input) {
         UserFramework newUser = new UserFramework();
         LambdaQueryWrapper<UserFramework> queryWrapper = new LambdaQueryWrapper<>();
@@ -114,5 +102,20 @@ public class LoginServiceImpl implements LoginService {
         userRoleMapper.insert(userRole);
 
         return insert;
+    }
+
+    @Override
+    @Transactional
+    public UserFramework connectRegister(ConnectRegisterInput input) {
+        UserFramework newUser = BeanCopyUtils.copyBean(input, UserFramework.class);
+        userFrameworkMapper.insert(newUser);
+
+        Long userId = newUser.getId();
+
+        // 为用户添加角色
+        UserRole userRole = new UserRole(userId, RoleEnum.GENERAL_USER.getId());
+        userRoleMapper.insert(userRole);
+
+        return newUser;
     }
 }

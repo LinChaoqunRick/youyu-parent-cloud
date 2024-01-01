@@ -23,4 +23,8 @@
     <select id="getUserByEmail" resultType="com.youyu.entity.auth.UserFramework">
         SELECT * FROM bs_user where email = #{email}
     </select>
+
+    <select id="getUserByGithubId" resultType="com.youyu.entity.auth.UserFramework">
+        SELECT * FROM bs_user where github_id = #{githubId}
+    </select>
 </mapper>

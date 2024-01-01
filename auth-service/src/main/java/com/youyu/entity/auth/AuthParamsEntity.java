@@ -19,6 +19,7 @@ public class AuthParamsEntity {
     private String password; // 密码
     private String refresh_token; // refresh_token
     private String smsCode; // 短信验证码
+    private String githubCode; // github授权的code
     private String authType; // 认证的类型   password:用户名密码模式类型    sms:短信模式类型
 
 }
