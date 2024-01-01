@@ -107,7 +107,7 @@ public class LoginController {
     }
 
     @GetMapping("/connect/githubLogin")
-    public ResponseResult<GithubUserInfoResult> githubLogin(@RequestParam String code) throws JsonProcessingException {
+    public ResponseResult<GithubUserInfoResult> githubLogin(@RequestParam String code) {
         String accessTokenURL = githubConstants.getAccessTokenURL();
         String userInfoURL = githubConstants.getUserInfoURL();
         String clientId = githubConstants.getClientId();

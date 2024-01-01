@@ -33,6 +33,8 @@ public class UserFramework implements Serializable {
     private Integer adcode;
     private String adname;
     private String homepage;
+    private String githubId;
+    private String qqId;
     private int level;
     private Date registerDate;
     private Date birthday;
