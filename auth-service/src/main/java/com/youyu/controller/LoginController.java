@@ -92,7 +92,7 @@ public class LoginController {
                     "&client_id=" + githubConstants.getClientId() +
                     "&redirect_uri=" + redirectUri +
                     "&connect_type=" + input.getType() +
-                    "&stamp=" + uuid;
+                    "&state=" + "github";
         }
         return ResponseResult.success(url);
     }
