@@ -41,7 +41,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private UserFrameworkMapper userFrameworkMapper;
 
     @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         Map<String, String[]> map = request.getParameterMap();
         UserFramework user = null;
@@ -54,7 +54,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         if (Objects.nonNull(authParamsEntity.getRefresh_token())) { // 如果是refresh_token
-            user = userFrameworkMapper.getUserByUsername(s);
+            user = userFrameworkMapper.getUserByUsername(username);
         } else {
             String authType = authParamsEntity.getAuthType() != null ? authParamsEntity.getAuthType() : "password"; // 获取认证类型，beanName就是 认证类型 + 后缀，例如 password + _authService = password_authService
             AuthService authService = null;
@@ -65,6 +65,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     throw new RuntimeException("无效的authType：" + authType);
                 }
             }
+            assert authService != null;
             user = authService.execute(authParamsEntity);
         }
 
