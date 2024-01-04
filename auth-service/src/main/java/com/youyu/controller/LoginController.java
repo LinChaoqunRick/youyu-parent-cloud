@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,10 +81,9 @@ public class LoginController {
             authorizeURL = qqConstants.getAuthorizeURL();
             redirectUri = qqConstants.getRedirectURI();
             url = authorizeURL +
-                    "?response_type=code" +
-                    "&client_id=" + qqConstants.getAppID() +
-                    "&redirect_uri=" + redirectUri +
-                    "&connect_type=" + input.getType();
+                    "?client_id=" + qqConstants.getAppID() +
+                    "&redirect_uri=" + URLEncoder.encode(redirectUri) +
+                    "&state=" + input.getType();
         } else if (input.getType().equals("github")) {
             authorizeURL = githubConstants.getAuthorizeURL();
             redirectUri = githubConstants.getRedirectURI();
@@ -95,17 +95,6 @@ public class LoginController {
                     "&state=" + "github";
         }
         return ResponseResult.success(url);
-    }
-
-    @PostMapping("/connect/githubLogin")
-    public ResponseResult<OAuth2AccessToken> githubLogin(Principal principal, @RequestParam String code) throws HttpRequestMethodNotSupportedException {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("client_id", "web");
-        parameters.put("client_secret", "654321");
-        parameters.put("auth_type", "github");
-        parameters.put("github_code", code);
-        OAuth2AccessToken body = tokenEndpoint.postAccessToken(principal, parameters).getBody();
-        return ResponseResult.success(body);
     }
 
     @RequestMapping("/testAccess")

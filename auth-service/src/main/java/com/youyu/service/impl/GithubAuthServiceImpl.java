@@ -18,6 +18,10 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 
+/**
+ * github授权登录
+ * 文档地址: https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
+ */
 @Slf4j
 @Service("github_authService")
 public class GithubAuthServiceImpl implements AuthService {

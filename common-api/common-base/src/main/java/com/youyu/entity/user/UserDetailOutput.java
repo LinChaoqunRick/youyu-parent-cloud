@@ -15,6 +15,8 @@ public class UserDetailOutput {
     private Integer sex;
     private String email;
     private String homepage;
+    private String githubId;
+    private String qqId;
     private Integer level;
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")

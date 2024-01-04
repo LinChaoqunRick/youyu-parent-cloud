@@ -69,6 +69,14 @@ public class User extends Model<User> implements Serializable {
      */
     private String homepage;
     /**
+     * github用户Id
+     */
+    private String githubId;
+    /**
+     * qq用户Id
+     */
+    private String qqId;
+    /**
      * 等级
      */
     private Integer level;

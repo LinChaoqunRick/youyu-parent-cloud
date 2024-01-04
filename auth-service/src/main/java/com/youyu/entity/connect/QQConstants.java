@@ -11,9 +11,11 @@ public class QQConstants {
 
 	private String appKey;
 
-	private String redirectURI;
+	private String scope;
 
 	private String authorizeURL;
+
+	private String redirectURI;
 
 	private String accessTokenURL;
 
