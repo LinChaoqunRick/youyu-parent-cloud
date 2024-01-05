@@ -88,11 +88,9 @@ public class LoginController {
             authorizeURL = githubConstants.getAuthorizeURL();
             redirectUri = githubConstants.getRedirectURI();
             url = authorizeURL +
-                    "?response_type=code" +
                     "&client_id=" + githubConstants.getClientId() +
                     "&redirect_uri=" + redirectUri +
-                    "&connect_type=" + input.getType() +
-                    "&state=" + "github";
+                    "&state=" + input.getType();
         }
         return ResponseResult.success(url);
     }
