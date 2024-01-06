@@ -7,8 +7,8 @@ spring:
     nacos:
       discovery:
         server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:}
       config:
         server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
         file-extension: yaml
-amap:
-  key: 00cd7e52ba06ad96915822e2ba14aaf3
+        namespace: ${NACOS_NAMESPACE:}

@@ -8,7 +8,8 @@ WORKDIR /app
 COPY ./target/mail-service.jar /app/mail-service.jar
 
 ENV NACOS_SERVER_ADDR=nacos:8848
-ENV ACTIVE_ENV=dev
+ENV NACOS_NAMESPACE=""
+ENV ACTIVE_ENV=prod
 
 # Install iputils-ping
 #RUN apt-get update && \
