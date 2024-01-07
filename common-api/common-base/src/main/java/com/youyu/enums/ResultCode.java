@@ -20,6 +20,7 @@ public enum ResultCode implements HttpStatus {
     OPERATION_FAIL(510, "操作失败"),
     USER_NOT_EXIST(512, "用户不存在"),
     CODE_INCORRECT(514, "验证码错误"),
+    OTHER_ERROR(530, "其它错误"),
     MESSAGE_SEND_FAILED(600, "短信发送失败"),
     ;
 

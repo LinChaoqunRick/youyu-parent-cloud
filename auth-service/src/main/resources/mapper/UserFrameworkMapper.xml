@@ -31,4 +31,13 @@
     <select id="getUserByQQId" resultType="com.youyu.entity.auth.UserFramework">
         SELECT * FROM bs_user where qq_id = #{qqId} and deleted = 0
     </select>
+
+    <update id="updateUser" parameterType="com.youyu.entity.auth.UserFramework">
+        UPDATE bs_user
+        <set>
+            <if test="githubId != null">github_id = #{githubId},</if>
+            <if test="qqId != null">qq_id = #{qqId},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
 </mapper>

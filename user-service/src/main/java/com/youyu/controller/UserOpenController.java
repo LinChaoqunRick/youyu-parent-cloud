@@ -5,18 +5,22 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageInfo;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.user.*;
+import com.youyu.entity.auth.Route;
 import com.youyu.entity.user.PositionInfo;
 import com.youyu.entity.user.ProfileMenu;
 import com.youyu.entity.user.User;
 import com.youyu.entity.user.UserFollow;
 import com.youyu.enums.AdCode;
+import com.youyu.enums.RoleEnum;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
 import com.youyu.service.UserFollowService;
 import com.youyu.service.UserService;
 import com.youyu.utils.RequestUtils;
+import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -127,6 +131,16 @@ public class UserOpenController {
         PositionInfo positionInfo = userService.getUserPositionByIP();
         log.info("当前访问IP:" + RequestUtils.getClientIp() + positionInfo.toString());
         return ResponseResult.success(positionInfo);
+    }
+
+    @RequestMapping("/open/getAuthRoutes")
+    public ResponseResult<List<Route>> getAuthRoutes() {
+        String token = SecurityUtils.getAuthorizationToken();
+        if (StringUtils.hasText(token)) {
+            return ResponseResult.success(userService.getAuthRoutes(SecurityUtils.getUserId()));
+        } else {
+            return ResponseResult.success(userService.getRoutesByRoleId(RoleEnum.NO_LOGGED_USER.getId()));
+        }
     }
 }
 

@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class QQUserInfoResult {
+    String openId; // 没返回，自己定义一个
     Integer ret; // 0,
     String msg; // "",
     Integer is_lost; // 0,

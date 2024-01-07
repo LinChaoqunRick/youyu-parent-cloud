@@ -40,34 +40,8 @@ public class GithubAuthServiceImpl implements AuthService {
 
     @Override
     public UserFramework execute(AuthParamsEntity authParamsEntity) {
-        String accessTokenURL = githubConstants.getAccessTokenURL();
-        String userInfoURL = githubConstants.getUserInfoURL();
-        String clientId = githubConstants.getClientId();
-        String clientSecret = githubConstants.getClientSecret();
-
-        // 获取AccessToken
-        String fullAccessTokenURL = accessTokenURL + "?client_id=" + clientId + "&client_secret=" + clientSecret + "&code=" + authParamsEntity.getGithubCode();
-        String accessTokenResponse = restTemplate.getForObject(fullAccessTokenURL, String.class);
-
-        GithubAccessTokenResult accessTokenResult;
-        GithubUserInfoResult userInfoResult;
-        UserFramework githubUser;
-
-        if (accessTokenResponse != null) {
-            accessTokenResult = parseAccessTokenResponse(accessTokenResponse);
-        } else {
-            return null;
-        }
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessTokenResult.getAccessToken());
-        userInfoResult = restTemplate.exchange(userInfoURL, HttpMethod.GET, new HttpEntity<>(headers), GithubUserInfoResult.class).getBody();
-
-        if (userInfoResult != null) {
-            githubUser = getUserByGithubId(userInfoResult.getId());
-        } else {
-            return null;
-        }
+        GithubUserInfoResult userInfoResult = getGithubUserByCode(authParamsEntity.getGithubCode());
+        UserFramework githubUser = getUserByGithubId(userInfoResult.getId());
 
         if (githubUser == null) {
             // 用户不存在，注册
@@ -81,7 +55,37 @@ public class GithubAuthServiceImpl implements AuthService {
         return githubUser;
     }
 
-    public static GithubAccessTokenResult parseAccessTokenResponse(String response) {
+    /**
+     * 根据code远程调用获取用户信息
+     * @param code 请求回来的code
+     * @return github用户信息
+     */
+    public GithubUserInfoResult getGithubUserByCode(String code) {
+        String accessTokenURL = githubConstants.getAccessTokenURL();
+        String userInfoURL = githubConstants.getUserInfoURL();
+        String clientId = githubConstants.getClientId();
+        String clientSecret = githubConstants.getClientSecret();
+
+        // 获取AccessToken
+        String fullAccessTokenURL = accessTokenURL + "?client_id=" + clientId + "&client_secret=" + clientSecret + "&code=" + code;
+        String accessTokenResponse = restTemplate.getForObject(fullAccessTokenURL, String.class);
+
+        GithubAccessTokenResult accessTokenResult;
+        GithubUserInfoResult userInfoResult;
+
+        if (accessTokenResponse != null) {
+            accessTokenResult = parseAccessTokenResponse(accessTokenResponse);
+        } else {
+            return null;
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessTokenResult.getAccessToken());
+        userInfoResult = restTemplate.exchange(userInfoURL, HttpMethod.GET, new HttpEntity<>(headers), GithubUserInfoResult.class).getBody();
+        return userInfoResult;
+    }
+
+    public GithubAccessTokenResult parseAccessTokenResponse(String response) {
         GithubAccessTokenResult tokenResponse = new GithubAccessTokenResult();
         String[] pairs = response.split("&");
         for (String pair : pairs) {

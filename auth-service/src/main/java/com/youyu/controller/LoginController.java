@@ -1,13 +1,18 @@
 package com.youyu.controller;
 
-import com.youyu.dto.ConnectUrlInput;
-import com.youyu.dto.RegisterInput;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.youyu.dto.*;
+import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.connect.GithubConstants;
 import com.youyu.entity.connect.QQConstants;
+import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.mapper.UserFrameworkMapper;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.LoginService;
+import com.youyu.service.impl.GithubAuthServiceImpl;
+import com.youyu.service.impl.QQAuthServiceImpl;
+import com.youyu.utils.SecurityUtils;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +43,12 @@ public class LoginController {
 
     @Resource
     private GithubConstants githubConstants;
+
+    @Resource
+    private GithubAuthServiceImpl githubAuthService;
+
+    @Resource
+    private QQAuthServiceImpl qqAuthService;
 
     @Resource
     private UserFrameworkMapper userFrameworkMapper;
@@ -84,7 +95,7 @@ public class LoginController {
                     "?response_type=code" +
                     "&client_id=" + qqConstants.getAppID() +
                     "&redirect_uri=" + URLEncoder.encode(redirectUri) +
-                    "&state=" + input.getType();
+                    "&state=" + input.getState();
         } else if (input.getType().equals("github")) {
             authorizeURL = githubConstants.getAuthorizeURL();
             redirectUri = githubConstants.getRedirectURI();
@@ -92,9 +103,43 @@ public class LoginController {
                     "?response_type=code" +
                     "&client_id=" + githubConstants.getClientId() +
                     "&redirect_uri=" + redirectUri +
-                    "&state=" + input.getType();
+                    "&state=" + input.getState();
         }
         return ResponseResult.success(url);
+    }
+
+    @RequestMapping("/connect/bind")
+    public ResponseResult<Integer> connectBind(@Valid ConnectBindInput input) {
+        Integer result = null;
+        String type = input.getType();
+        Long userId = SecurityUtils.getUserId();
+
+        if (type.equals("github")) {
+            GithubUserInfoResult githubUserInfo = githubAuthService.getGithubUserByCode(input.getCode());
+            String githubUserId = githubUserInfo.getId();
+            UserFramework githubUser = githubAuthService.getUserByGithubId(githubUserId);
+            if (githubUser != null) {
+                throw new SystemException(ResultCode.OTHER_ERROR.getCode(), "此用户已绑定其它账号");
+            } else {
+                UserFramework userFramework = new UserFramework();
+                userFramework.setId(userId);
+                userFramework.setGithubId(githubUserId);
+                result = userFrameworkMapper.updateById(userFramework);
+            }
+        } else if (type.equals("qq")) {
+            QQUserInfoResult qqUserInfo = qqAuthService.getQQUserByCode(input.getCode());
+            String openId = qqUserInfo.getOpenId();
+            UserFramework qqUser = qqAuthService.getUserByQQId(openId);
+            if (qqUser != null) {
+                throw new SystemException(ResultCode.OTHER_ERROR.getCode(), "此用户已绑定其它账号");
+            } else {
+                UserFramework userFramework = new UserFramework();
+                userFramework.setId(userId);
+                userFramework.setQqId(openId);
+                result = userFrameworkMapper.updateById(userFramework);
+            }
+        }
+        return ResponseResult.success(result);
     }
 
     @RequestMapping("/testAccess")

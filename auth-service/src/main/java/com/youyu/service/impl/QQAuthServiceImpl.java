@@ -17,6 +17,10 @@ import javax.annotation.Resource;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * qq授权登录
+ * 文档地址: https://wiki.connect.qq.com/%e5%bc%80%e5%8f%91%e6%94%bb%e7%95%a5_server-side
+ */
 @Slf4j
 @Service("qq_authService")
 public class QQAuthServiceImpl implements AuthService {
@@ -35,6 +39,23 @@ public class QQAuthServiceImpl implements AuthService {
 
     @Override
     public UserFramework execute(AuthParamsEntity authParamsEntity) {
+        QQUserInfoResult userInfoResult = getQQUserByCode(authParamsEntity.getQqCode());
+        UserFramework qqUser = getUserByQQId(userInfoResult.getOpenId());
+
+        if (qqUser == null) {
+            // 用户不存在，注册
+            ConnectRegisterInput input = new ConnectRegisterInput();
+            input.setNickname(userInfoResult.getNickname());
+            input.setAvatar(userInfoResult.getFigureurl_qq());
+            input.setQqId(userInfoResult.getOpenId());
+            input.setSex(transformGender(userInfoResult.getGender_type()));
+            qqUser = loginService.connectRegister(input);
+        }
+
+        return qqUser;
+    }
+
+    public QQUserInfoResult getQQUserByCode(String code) {
         String accessTokenURL = qqConstants.getAccessTokenURL();
         String openIDURL = qqConstants.getOpenIDURL();
         String appID = qqConstants.getAppID();
@@ -47,7 +68,7 @@ public class QQAuthServiceImpl implements AuthService {
                 .append("?grant_type=").append("authorization_code")
                 .append("&client_id=").append(appID)
                 .append("&client_secret=").append(appKey)
-                .append("&code=").append(authParamsEntity.getQqCode())
+                .append("&code=").append(code)
                 .append("&redirect_uri=").append(redirectURI);
         String accessTokenResponse = restTemplate.getForObject(fullAccessTokenURL.toString(), String.class);
 
@@ -70,28 +91,11 @@ public class QQAuthServiceImpl implements AuthService {
                 .append("&oauth_consumer_key=").append(appID)
                 .append("&openid=").append(openId);
         QQUserInfoResult userInfoResult = restTemplate.getForObject(fullUserInfoURL.toString(), QQUserInfoResult.class);
-
-        UserFramework qqUser;
-        if (userInfoResult != null) {
-            qqUser = getUserByQQId(openId);
-        } else {
-            return null;
-        }
-
-        if (qqUser == null) {
-            // 用户不存在，注册
-            ConnectRegisterInput input = new ConnectRegisterInput();
-            input.setNickname(userInfoResult.getNickname());
-            input.setAvatar(userInfoResult.getFigureurl_qq());
-            input.setQqId(openId);
-            input.setSex(transformGender(userInfoResult.getGender_type()));
-            qqUser = loginService.connectRegister(input);
-        }
-
-        return qqUser;
+        userInfoResult.setOpenId(openId);
+        return userInfoResult;
     }
 
-    public static QQAccessTokenResult parseAccessTokenResponse(String response) {
+    public QQAccessTokenResult parseAccessTokenResponse(String response) {
         QQAccessTokenResult tokenResponse = new QQAccessTokenResult();
         String[] pairs = response.split("&");
         for (String pair : pairs) {
@@ -109,7 +113,7 @@ public class QQAuthServiceImpl implements AuthService {
         return tokenResponse;
     }
 
-    public static String getOpenId(String resultString) {
+    public String getOpenId(String resultString) {
         String pattern = "\"openid\":\"(.*?)\"";
 
         Pattern regex = Pattern.compile(pattern);

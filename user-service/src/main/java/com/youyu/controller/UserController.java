@@ -184,15 +184,5 @@ public class UserController {
         user.setAdname(AdCode.getDescByCode(user.getAdcode()));
         return ResponseResult.success(user);
     }
-
-    @RequestMapping("/open/getAuthRoutes")
-    public ResponseResult<List<Route>> getAuthRoutes() {
-        String token = SecurityUtils.getAuthorizationToken();
-        if (StringUtils.hasText(token)) {
-            return ResponseResult.success(userService.getAuthRoutes(SecurityUtils.getUserId()));
-        } else {
-            return ResponseResult.success(userService.getRoutesByRoleId(RoleEnum.NO_LOGGED_USER.getId()));
-        }
-    }
 }
 
