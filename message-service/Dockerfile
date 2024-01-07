@@ -8,7 +8,7 @@ WORKDIR /app
 COPY ./target/message-service.jar /app/message-service.jar
 
 ENV NACOS_SERVER_ADDR=nacos:8848
-ENV NACOS_NAMESPACE=""
+ENV NACOS_NAMESPACE=prod
 ENV ACTIVE_ENV=prod
 
 # Install iputils-ping
