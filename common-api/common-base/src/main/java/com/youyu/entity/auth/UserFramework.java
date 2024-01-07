@@ -28,14 +28,14 @@ public class UserFramework implements Serializable {
     private String password;
     private String nickname;
     private String avatar;
-    private int sex;
+    private Integer sex;
     private String email;
     private Integer adcode;
     private String adname;
     private String homepage;
     private String githubId;
     private String qqId;
-    private int level;
+    private Integer level;
     private Date registerDate;
     private Date birthday;
     private String signature;

@@ -7,4 +7,6 @@ public class ConnectRegisterInput {
     public String nickname;
     public String avatar;
     public String githubId;
+    public String qqId;
+    public Integer sex;
 }

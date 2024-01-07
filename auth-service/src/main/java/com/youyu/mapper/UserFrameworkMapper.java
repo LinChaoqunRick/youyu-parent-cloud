@@ -13,4 +13,5 @@ public interface UserFrameworkMapper extends BaseMapper<UserFramework> {
     UserFramework getUserByUsername(@Param("username") String username);
     UserFramework getUserByEmail(@Param("email") String email);
     UserFramework getUserByGithubId(@Param("githubId") String githubId);
+    UserFramework getUserByQQId(@Param("qqId") String qqId);
 }

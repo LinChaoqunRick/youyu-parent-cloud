@@ -17,14 +17,18 @@
     </select>
 
     <select id="getUserByUsername" resultType="com.youyu.entity.auth.UserFramework">
-        SELECT * FROM bs_user where username = #{username}
+        SELECT * FROM bs_user where username = #{username} and deleted = 0
     </select>
 
     <select id="getUserByEmail" resultType="com.youyu.entity.auth.UserFramework">
-        SELECT * FROM bs_user where email = #{email}
+        SELECT * FROM bs_user where email = #{email} and deleted = 0
     </select>
 
     <select id="getUserByGithubId" resultType="com.youyu.entity.auth.UserFramework">
-        SELECT * FROM bs_user where github_id = #{githubId}
+        SELECT * FROM bs_user where github_id = #{githubId} and deleted = 0
+    </select>
+
+    <select id="getUserByQQId" resultType="com.youyu.entity.auth.UserFramework">
+        SELECT * FROM bs_user where qq_id = #{qqId} and deleted = 0
     </select>
 </mapper>

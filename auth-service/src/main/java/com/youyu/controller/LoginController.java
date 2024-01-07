@@ -81,7 +81,8 @@ public class LoginController {
             authorizeURL = qqConstants.getAuthorizeURL();
             redirectUri = qqConstants.getRedirectURI();
             url = authorizeURL +
-                    "?client_id=" + qqConstants.getAppID() +
+                    "?response_type=code" +
+                    "&client_id=" + qqConstants.getAppID() +
                     "&redirect_uri=" + URLEncoder.encode(redirectUri) +
                     "&state=" + input.getType();
         } else if (input.getType().equals("github")) {
