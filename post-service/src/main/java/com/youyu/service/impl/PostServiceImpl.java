@@ -182,7 +182,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     @Override
     public Integer getCommentCount(Long postId) {
         int commentCount = 0;
-        List<CommentListOutput> commentList = commentMapper.getCommentCount(postId);
+        List<CommentListOutput> commentList = commentMapper.getCommentCountByPostId(postId);
         commentCount += commentList.size();
         int subRepliesCount = commentList.stream()
                 .mapToInt(CommentListOutput::getReplyCount)

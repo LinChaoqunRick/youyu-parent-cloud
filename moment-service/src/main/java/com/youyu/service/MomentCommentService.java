@@ -20,7 +20,7 @@ public interface MomentCommentService extends IService<MomentComment> {
     PageOutput<MomentCommentListOutput> listMomentCommentPage(MomentCommentListInput input);
     List<MomentCommentListOutput> listMomentCommentAll(MomentCommentListInput input);
     MomentCommentListOutput getCommentDetailByCommentId(Long commentId);
-    int getReplyCountByMomentId(Long momentId);
+    int getCommentCountByMomentId(Long momentId);
     boolean deleteComment(Long momentId);
     PageOutput<MomentCommentListOutput> listMomentReplyPage(MomentReplyListInput input);
 }

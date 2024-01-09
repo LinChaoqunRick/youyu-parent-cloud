@@ -178,7 +178,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
 
     public void setExtraData(MomentListOutput moment) {
         moment.setUser(getMomentUserDetailById(moment.getUserId(), false));
-        moment.setCommentCount(momentCommentService.getReplyCountByMomentId(moment.getId()));
+        moment.setCommentCount(momentCommentService.getCommentCountByMomentId(moment.getId()));
         moment.setMomentLike(isMomentLike(moment.getId()));
         moment.setAdname(AdCode.getDescByCode(moment.getAdcode()));
         // 设置点赞用户信息

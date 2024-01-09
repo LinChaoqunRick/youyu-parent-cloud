@@ -18,7 +18,6 @@ import java.util.List;
 @Mapper
 @Repository
 public interface CommentMapper extends BaseMapper<Comment> {
-    List<CommentListOutput> getCommentsByPostId(@Param("postId") Long postId);
-    List<CommentListOutput> getCommentCount(@Param("postId") Long postId);
+    List<CommentListOutput> getCommentCountByPostId(@Param("postId") Long postId);
 }
 

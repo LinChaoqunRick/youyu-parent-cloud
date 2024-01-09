@@ -115,10 +115,15 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
     }
 
     @Override
-    public int getReplyCountByMomentId(Long momentId) {
-        LambdaQueryWrapper<MomentComment> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(MomentComment::getMomentId, momentId);
-        return momentCommentMapper.selectCount(lambdaQueryWrapper);
+    public int getCommentCountByMomentId(Long momentId) {
+        int commentCount = 0;
+        List<MomentCommentListOutput> commentList = momentCommentMapper.getCommentCountByMomentId(momentId);
+        commentCount += commentList.size();
+        int subRepliesCount = commentList.stream()
+                .mapToInt(MomentCommentListOutput::getReplyCount)
+                .sum();
+        commentCount += subRepliesCount;
+        return commentCount;
     }
 
     @Override

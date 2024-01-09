@@ -133,7 +133,7 @@ public class UserOpenController {
         return ResponseResult.success(positionInfo);
     }
 
-    @RequestMapping("/open/getAuthRoutes")
+    @RequestMapping("/getAuthRoutes")
     public ResponseResult<List<Route>> getAuthRoutes() {
         String token = SecurityUtils.getAuthorizationToken();
         if (StringUtils.hasText(token)) {
