@@ -20,9 +20,9 @@ public interface MomentService extends IService<Moment> {
 
     boolean delete(Long momentId);
 
-    PageOutput<MomentListOutput> momentList(MomentListInput input);
+    PageOutput<MomentListOutput> getMomentList(MomentListInput input);
 
-    PageOutput<MomentListOutput> momentListFollow(MomentListInput input);
+    PageOutput<MomentListOutput> getMomentListFollow(MomentListInput input);
 
     MomentListOutput getMoment(Long momentId);
 

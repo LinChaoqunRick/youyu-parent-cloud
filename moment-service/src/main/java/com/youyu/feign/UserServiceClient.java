@@ -16,8 +16,8 @@ public interface UserServiceClient {
     @PostMapping(value = "/user/open/selectById")
     ResponseResult<User> selectById(@RequestParam Long userId);
 
-    @PostMapping(value = "/user/follow/selectCountByUserIdTo")
-    ResponseResult<Integer> selectCountByUserIdTo(@RequestParam Long userIdTo);
+    @PostMapping(value = "/user/follow/getUserFollowCount")
+    ResponseResult<Integer> getUserFollowCount(@RequestParam Long userIdTo);
 
     @PostMapping(value = "/user/follow/getFollowUserIdList")
     ResponseResult<List<Long>> getFollowUserIdList(@RequestParam Long userId);

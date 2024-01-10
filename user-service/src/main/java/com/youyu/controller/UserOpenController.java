@@ -85,13 +85,6 @@ public class UserOpenController {
         return ResponseResult.success(userService.fansList(input));
     }
 
-    @RequestMapping("/selectCountByUserIdTo")
-    public ResponseResult<Integer> selectCountByUserIdTo(@RequestParam Long userId) {
-        LambdaQueryWrapper<UserFollow> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(UserFollow::getUserIdTo, userId);
-        return ResponseResult.success(userFollowService.count(queryWrapper));
-    }
-
     @RequestMapping("/selectCountByUsername")
     public ResponseResult<Integer> selectCountByUsername(@RequestParam String username) {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();

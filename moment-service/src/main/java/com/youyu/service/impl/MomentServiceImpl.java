@@ -84,7 +84,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
     }
 
     @Override
-    public PageOutput<MomentListOutput> momentList(MomentListInput input) {
+    public PageOutput<MomentListOutput> getMomentList(MomentListInput input) {
         LambdaQueryWrapper<Moment> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         if (Objects.nonNull(input.getUserIds())) {
             String[] userIds = input.getUserIds().split(",");
@@ -106,11 +106,11 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
     }
 
     @Override
-    public PageOutput<MomentListOutput> momentListFollow(MomentListInput input) {
+    public PageOutput<MomentListOutput> getMomentListFollow(MomentListInput input) {
         List<Long> userIdList = userServiceClient.getFollowUserIdList(null).getData();
         String idsString = userIdList.stream().map(String::valueOf).collect(Collectors.joining(","));
         input.setUserIds(idsString);
-        return momentList(input);
+        return getMomentList(input);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
             // todo.. 查询点赞数量
 
             // 查询粉丝数量
-            int fansCount = userServiceClient.selectCountByUserIdTo(userId).getData();
+            int fansCount = userServiceClient.getUserFollowCount(userId).getData();
             extraInfo.setFansCount(fansCount);
 
             momentUserOutput.setExtraInfo(extraInfo);
