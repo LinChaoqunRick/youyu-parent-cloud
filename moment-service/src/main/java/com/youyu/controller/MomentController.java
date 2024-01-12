@@ -62,13 +62,13 @@ public class MomentController {
 
     @RequestMapping("/open/list")
     public ResponseResult<PageOutput<MomentListOutput>> list(MomentListInput input) {
-        PageOutput<MomentListOutput> momentList = momentService.momentList(input);
+        PageOutput<MomentListOutput> momentList = momentService.getMomentList(input);
         return ResponseResult.success(momentList);
     }
 
     @RequestMapping("/list/following")
     public ResponseResult<PageOutput<MomentListOutput>> listFollowing(MomentListInput input) {
-        PageOutput<MomentListOutput> momentList = momentService.momentListFollow(input);
+        PageOutput<MomentListOutput> momentList = momentService.getMomentListFollow(input);
         return ResponseResult.success(momentList);
     }
 

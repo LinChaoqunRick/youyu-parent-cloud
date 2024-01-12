@@ -37,17 +37,17 @@ public class UserFollowController {
     }
 
     @RequestMapping("/getFollowUserIdList")
-    ResponseResult<List<Long>> getFollowUserIdList(Long userId) {
+    ResponseResult<List<Long>> getFollowUserIdList(@RequestParam Long userId) {
         return ResponseResult.success(userFollowService.getFollowUserIdList(userId));
     }
 
     @RequestMapping("/isCurrentUserFollow")
-    ResponseResult<Boolean> isCurrentUserFollow(Long userId) {
+    ResponseResult<Boolean> isCurrentUserFollow(@RequestParam Long userId) {
         return ResponseResult.success(userFollowService.isCurrentUserFollow(userId));
     }
 
     @RequestMapping("/getUserFollowCount")
-    public ResponseResult<Integer> getUserFollowCount(Long userId) {
+    public ResponseResult<Integer> getUserFollowCount(@RequestParam Long userId) {
         return ResponseResult.success(userFollowService.getUserFollowCount(userId));
     }
 }
