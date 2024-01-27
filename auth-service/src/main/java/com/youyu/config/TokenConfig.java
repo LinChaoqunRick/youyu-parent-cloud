@@ -38,6 +38,7 @@ public class TokenConfig {
         service.setAuthenticationManager(authenticationManagerBean);
         service.setSupportRefreshToken(true);//支持刷新令牌
         service.setTokenStore(tokenStore);//令牌存储策略
+        service.setReuseRefreshToken(false);//每次都刷新refresh_token
 
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
         tokenEnhancerChain.setTokenEnhancers(Arrays.asList(customTokenEnhancer, jwtAccessTokenConverter));
