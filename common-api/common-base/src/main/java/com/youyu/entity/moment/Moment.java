@@ -46,9 +46,9 @@ public class Moment extends Model<Moment> {
     @TableField(exist = false)
     private String adname;
     //点赞数
-    private int supportCount;
+    private Long supportCount;
     //反对数
-    private int opposeCount;
+    private Long opposeCount;
 
     @TableField(fill = FieldFill.INSERT)
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")

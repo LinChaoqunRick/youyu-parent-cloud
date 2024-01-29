@@ -160,13 +160,13 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
         // 设置收录的文章数量
         LambdaQueryWrapper<Post> postQueryWrapper = new LambdaQueryWrapper<>();
         postQueryWrapper.like(Post::getColumnIds, item.getId());
-        Integer postNum = postMapper.selectCount(postQueryWrapper);
+        Long postNum = postMapper.selectCount(postQueryWrapper);
         item.setPostNum(postNum);
 
         // 设置订阅数量
         LambdaQueryWrapper<ColumnSubscribe> subscribeQueryWrapper = new LambdaQueryWrapper<>();
         subscribeQueryWrapper.eq(ColumnSubscribe::getColumnId, item.getId());
-        Integer subscriberNum = subscribeMapper.selectCount(subscribeQueryWrapper);
+        Long subscriberNum = subscribeMapper.selectCount(subscribeQueryWrapper);
         item.setSubscriberNum(subscriberNum);
 
         // 设置所属用户信息

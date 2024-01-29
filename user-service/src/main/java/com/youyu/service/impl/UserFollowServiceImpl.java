@@ -30,7 +30,7 @@ public class UserFollowServiceImpl extends ServiceImpl<UserFollowMapper, UserFol
         LambdaQueryWrapper<UserFollow> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserFollow::getUserId, SecurityUtils.getUserId());
         queryWrapper.eq(UserFollow::getUserIdTo, userId);
-        Integer count = userFollowMapper.selectCount(queryWrapper);
+        Long count = userFollowMapper.selectCount(queryWrapper);
         return count > 0;
     }
 
@@ -49,10 +49,10 @@ public class UserFollowServiceImpl extends ServiceImpl<UserFollowMapper, UserFol
     }
 
     @Override
-    public int getUserFollowCount(Long userId) {
+    public Long getUserFollowCount(Long userId) {
         LambdaQueryWrapper<UserFollow> userFollowLambdaQueryWrapper = new LambdaQueryWrapper<>();
         userFollowLambdaQueryWrapper.eq(UserFollow::getUserIdTo, userId);
-        int fansCount = userFollowMapper.selectCount(userFollowLambdaQueryWrapper);
+        Long fansCount = userFollowMapper.selectCount(userFollowLambdaQueryWrapper);
         return fansCount;
     }
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class MomentCommentListOutput extends MomentComment {
-    private Integer replyCount = 0;
+    private Long replyCount = 0L;
 
     private MomentUserOutput user;
 

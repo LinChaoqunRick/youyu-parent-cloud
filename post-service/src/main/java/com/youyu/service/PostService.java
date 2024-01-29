@@ -22,9 +22,9 @@ public interface PostService extends IService<Post> {
     PageOutput<PostListOutput> postList(PostListInput input);
     List<PostListOutput> postListByIds(List<Long> ids);
     PostDetailOutput get(Long postId);
-    Integer getCommentCount(Long postId);
-    Integer getLikeCount(Long postId);
-    Integer getCollectCount(Long postId);
+    Long getCommentCount(Long postId);
+    Long getLikeCount(Long postId);
+    Long getCollectCount(Long postId);
     void setPostListData(PostListOutput post);
 }
 

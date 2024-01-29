@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class ColumnListOutput extends Column {
-    private Integer postNum = 0;
-    private Integer subscriberNum = 0;
+    private Long postNum = 0L;
+    private Long subscriberNum = 0L;
     private PostUserOutput user;
 }

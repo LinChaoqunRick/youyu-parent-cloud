@@ -119,8 +119,8 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
         int commentCount = 0;
         List<MomentCommentListOutput> commentList = momentCommentMapper.getCommentCountByMomentId(momentId);
         commentCount += commentList.size();
-        int subRepliesCount = commentList.stream()
-                .mapToInt(MomentCommentListOutput::getReplyCount)
+        Long subRepliesCount = commentList.stream()
+                .mapToLong(MomentCommentListOutput::getReplyCount)
                 .sum();
         commentCount += subRepliesCount;
         return commentCount;

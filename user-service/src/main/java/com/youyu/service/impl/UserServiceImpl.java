@@ -214,7 +214,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 LambdaQueryWrapper<UserFollow> queryWrapper = new LambdaQueryWrapper<>();
                 queryWrapper.eq(UserFollow::getUserId, currentUserId);
                 queryWrapper.eq(UserFollow::getUserIdTo, item.getId());
-                Integer count = userFollowMapper.selectCount(queryWrapper);
+                Long count = userFollowMapper.selectCount(queryWrapper);
                 item.setFollow(count > 0);
             });
         }

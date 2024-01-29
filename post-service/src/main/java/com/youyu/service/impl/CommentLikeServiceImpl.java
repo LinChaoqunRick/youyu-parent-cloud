@@ -54,7 +54,7 @@ public class CommentLikeServiceImpl extends ServiceImpl<CommentLikeMapper, Comme
         LambdaQueryWrapper<CommentLike> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(CommentLike::getUserId, SecurityUtils.getUserId());
         lambdaQueryWrapper.eq(CommentLike::getCommentId, commentLike.getCommentId());
-        Integer count = commentLikeMapper.selectCount(lambdaQueryWrapper);
+        Long count = commentLikeMapper.selectCount(lambdaQueryWrapper);
         return count > 0;
     }
 
@@ -76,7 +76,7 @@ public class CommentLikeServiceImpl extends ServiceImpl<CommentLikeMapper, Comme
     }
 
     @Override
-    public int getSupportCount(Long commentId) {
+    public Long getSupportCount(Long commentId) {
         LambdaQueryWrapper<CommentLike> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(CommentLike::getCommentId, commentId);
         return commentLikeMapper.selectCount(lambdaQueryWrapper);
@@ -88,7 +88,7 @@ public class CommentLikeServiceImpl extends ServiceImpl<CommentLikeMapper, Comme
         commentList.forEach(comment -> {
             LambdaQueryWrapper<CommentLike> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(CommentLike::getCommentId, comment.getId());
-            Integer count = commentLikeMapper.selectCount(queryWrapper);
+            Long count = commentLikeMapper.selectCount(queryWrapper);
             comment.setSupportCount(count);
             commentMapper.updateById(comment);
         });

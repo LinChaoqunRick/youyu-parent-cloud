@@ -85,7 +85,7 @@ public class LoginServiceImpl implements LoginService {
         LambdaQueryWrapper<UserFramework> nicknameQueryWrapper = new LambdaQueryWrapper<>();
         nicknameQueryWrapper.eq(UserFramework::getNickname, input.getNickname());
 
-        Integer count = userFrameworkMapper.selectCount(nicknameQueryWrapper);
+        Long count = userFrameworkMapper.selectCount(nicknameQueryWrapper);
         if (count > 0) {
             throw new SystemException(700, "昵称“" + input.getNickname() + "”已存在");
         }

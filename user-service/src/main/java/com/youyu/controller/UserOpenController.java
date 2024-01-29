@@ -86,14 +86,14 @@ public class UserOpenController {
     }
 
     @RequestMapping("/selectCountByUsername")
-    public ResponseResult<Integer> selectCountByUsername(@RequestParam String username) {
+    public ResponseResult<Long> selectCountByUsername(@RequestParam String username) {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUsername, username);
         return ResponseResult.success(userService.count(queryWrapper));
     }
 
     @RequestMapping("/selectCountByEmail")
-    public ResponseResult<Integer> selectCountByEmail(@RequestParam String email) {
+    public ResponseResult<Long> selectCountByEmail(@RequestParam String email) {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getEmail, email);
         return ResponseResult.success(userService.count(queryWrapper));

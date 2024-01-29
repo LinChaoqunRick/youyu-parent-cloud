@@ -78,7 +78,7 @@ public class UserController {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getNickname, user.getNickname());
         queryWrapper.ne(User::getId, user.getId());
-        int count = userService.count(queryWrapper);
+        Long count = userService.count(queryWrapper);
         if (count > 0) {
             throw new SystemException(ResultCode.NICKNAME_CONFLICT);
         }
@@ -109,7 +109,7 @@ public class UserController {
     ResponseResult<Boolean> saveHomepage(@RequestParam String oldTel, @RequestParam String newTel) {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUsername, newTel);
-        int count = userService.count(queryWrapper);
+        Long count = userService.count(queryWrapper);
         if (count > 0) {
             throw new SystemException(ResultCode.TELEPHONE_CONFLICT);
         }

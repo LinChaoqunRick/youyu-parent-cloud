@@ -10,8 +10,8 @@ import java.util.List;
 public class PostDetailOutput extends Post {
     private boolean postLike;
     private boolean postCollect;
-    private Integer likeCount;
-    private Integer commentCount;
-    private Integer collectCount;
+    private Long likeCount;
+    private Long commentCount;
+    private Long collectCount;
     private List<ColumnListOutput> columns;
 }

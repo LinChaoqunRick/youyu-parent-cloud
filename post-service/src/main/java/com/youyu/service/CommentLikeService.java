@@ -13,6 +13,6 @@ public interface CommentLikeService extends IService<CommentLike> {
     boolean setPostCommentLike(CommentLike commentLike);
     boolean isPostCommentLike(CommentLike commentLike);
     boolean cancelPostCommentLike(CommentLike commentLike);
-    int getSupportCount(Long commentId);
+    Long getSupportCount(Long commentId);
     void rectifySupportCount();
 }

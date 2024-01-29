@@ -22,14 +22,14 @@ public class UserFollowController {
     private UserFollowService userFollowService;
 
     @RequestMapping("/getFansCount")
-    ResponseResult<Integer> getFansCount(@RequestParam Long userId) {
+    ResponseResult<Long> getFansCount(@RequestParam Long userId) {
         LambdaQueryWrapper<UserFollow> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserFollow::getUserIdTo, userId);
         return ResponseResult.success(userFollowMapper.selectCount(queryWrapper));
     }
 
     @RequestMapping("/isFollow")
-    ResponseResult<Integer> isSubscribe(@RequestParam Long userId, @RequestParam Long userIdTo) {
+    ResponseResult<Long> isSubscribe(@RequestParam Long userId, @RequestParam Long userIdTo) {
         LambdaQueryWrapper<UserFollow> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserFollow::getUserId, userId);
         queryWrapper.eq(UserFollow::getUserIdTo, userIdTo);
@@ -47,7 +47,7 @@ public class UserFollowController {
     }
 
     @RequestMapping("/getUserFollowCount")
-    public ResponseResult<Integer> getUserFollowCount(@RequestParam Long userId) {
+    public ResponseResult<Long> getUserFollowCount(@RequestParam Long userId) {
         return ResponseResult.success(userFollowService.getUserFollowCount(userId));
     }
 }

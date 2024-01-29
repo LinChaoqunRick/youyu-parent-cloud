@@ -14,5 +14,5 @@ import java.util.List;
 public interface UserFollowService extends IService<UserFollow> {
     boolean isCurrentUserFollow(Long userId);
     List<Long> getFollowUserIdList(Long userId);
-    int getUserFollowCount(Long userId);
+    Long getUserFollowCount(Long userId);
 }

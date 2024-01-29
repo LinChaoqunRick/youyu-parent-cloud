@@ -61,7 +61,7 @@ public class MomentLikeServiceImpl extends ServiceImpl<MomentLikeMapper, MomentL
         LambdaQueryWrapper<MomentLike> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(MomentLike::getMomentId, input.getMomentId());
         queryWrapper.eq(MomentLike::getUserId, SecurityUtils.getUserId());
-        int count = momentLikeMapper.selectCount(queryWrapper);
+        Long count = momentLikeMapper.selectCount(queryWrapper);
         return count > 0;
     }
 
@@ -103,7 +103,7 @@ public class MomentLikeServiceImpl extends ServiceImpl<MomentLikeMapper, MomentL
         commentList.forEach(moment -> {
             LambdaQueryWrapper<MomentLike> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(MomentLike::getMomentId, moment.getId());
-            Integer count = momentLikeMapper.selectCount(queryWrapper);
+            Long count = momentLikeMapper.selectCount(queryWrapper);
             moment.setSupportCount(count);
             momentMapper.updateById(moment);
         });

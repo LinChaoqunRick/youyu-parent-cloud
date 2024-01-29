@@ -12,7 +12,6 @@ import com.youyu.entity.moment.MomentLike;
 import com.youyu.entity.moment.MomentUserExtraInfo;
 import com.youyu.entity.moment.MomentUserOutput;
 import com.youyu.entity.user.User;
-import com.youyu.entity.user.UserFollow;
 import com.youyu.enums.AdCode;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -29,6 +28,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -87,17 +88,17 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
     public PageOutput<MomentListOutput> getMomentList(MomentListInput input) {
         LambdaQueryWrapper<Moment> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         if (Objects.nonNull(input.getUserIds())) {
-            String[] userIds = input.getUserIds().split(",");
-            log.info(String.valueOf(userIds));
+            List<Long> userIds = Arrays.stream(input.getUserIds().split(",")).map(Long::parseLong).toList();
             lambdaQueryWrapper.in(Moment::getUserId, userIds);
         }
         lambdaQueryWrapper.last("order by" + " " + input.getOrderBy() + " " + (input.isAsc() ? "asc" : "desc"));
+
         // 分页查询
         Page<Moment> page = new Page<>(input.getPageNum(), input.getPageSize());
-        page(page, lambdaQueryWrapper);
+        Page<Moment> postPage = momentMapper.selectPage(page, lambdaQueryWrapper);
 
         // 封装查询结果
-        PageOutput<MomentListOutput> pageOutput = PageUtils.setPageResult(page, MomentListOutput.class);
+        PageOutput<MomentListOutput> pageOutput = PageUtils.setPageResult(postPage, MomentListOutput.class);
 
         // 查询用户信息, 评论数量, 点赞信息
         pageOutput.getList().forEach(this::setExtraData);
@@ -107,7 +108,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
 
     @Override
     public PageOutput<MomentListOutput> getMomentListFollow(MomentListInput input) {
-        List<Long> userIdList = userServiceClient.getFollowUserIdList(null).getData();
+        List<Long> userIdList = userServiceClient.getFollowUserIdList(SecurityUtils.getUserId()).getData();
         String idsString = userIdList.stream().map(String::valueOf).collect(Collectors.joining(","));
         input.setUserIds(idsString);
         return getMomentList(input);
@@ -162,7 +163,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
         LambdaQueryWrapper<MomentLike> likeLambdaQueryWrapper = new LambdaQueryWrapper<>();
         likeLambdaQueryWrapper.eq(MomentLike::getUserId, SecurityUtils.getUserId());
         likeLambdaQueryWrapper.eq(MomentLike::getMomentId, momentId);
-        Integer count = momentLikeMapper.selectCount(likeLambdaQueryWrapper);
+        Long count = momentLikeMapper.selectCount(likeLambdaQueryWrapper);
         return count > 0;
     }
 

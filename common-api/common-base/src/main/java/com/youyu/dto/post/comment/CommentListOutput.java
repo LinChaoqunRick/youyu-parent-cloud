@@ -13,7 +13,7 @@ public class CommentListOutput extends Comment {
      * 子评论数量
      */
     @TableField(exist = false)
-    private Integer replyCount;
+    private Long replyCount;
 
     /**
      * 发布人

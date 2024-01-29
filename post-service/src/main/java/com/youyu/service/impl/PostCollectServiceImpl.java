@@ -79,7 +79,7 @@ public class PostCollectServiceImpl extends ServiceImpl<PostCollectMapper, PostC
             // 查询评论数量
             LambdaQueryWrapper<Comment> commentQueryWrapper = new LambdaQueryWrapper<>();
             commentQueryWrapper.eq(Comment::getPostId, output.getId());
-            int commentCount = commentMapper.selectCount(commentQueryWrapper);
+            Long commentCount = commentMapper.selectCount(commentQueryWrapper);
             output.setCommentCount(commentCount);
         });
         return pageOutput;

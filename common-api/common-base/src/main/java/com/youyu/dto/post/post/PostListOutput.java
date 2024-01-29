@@ -28,7 +28,7 @@ public class PostListOutput implements Serializable {
     //缩略图地址
     private String thumbnail;
     //评论数量
-    private Integer commentCount;
+    private Long commentCount;
     //访问量
     private Integer viewCount;
     //专栏Ids

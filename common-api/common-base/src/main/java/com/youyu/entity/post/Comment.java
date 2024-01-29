@@ -55,11 +55,11 @@ public class Comment implements Serializable {
     /**
      * 支持数量
      */
-    private Integer supportCount;
+    private Long supportCount;
     /**
      * 反对数量
      */
-    private Integer opposeCount;
+    private Long opposeCount;
     /**
      * 创建时间
      */

@@ -104,11 +104,11 @@ public class PostController {
     }
 
     @RequestMapping("/isPostLike")
-    public ResponseResult<Integer> isPostLike(@Valid PostLike postLike) {
+    public ResponseResult<Long> isPostLike(@Valid PostLike postLike) {
         LambdaQueryWrapper<PostLike> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PostLike::getPostId, postLike.getPostId());
         queryWrapper.eq(PostLike::getUserId, postLike.getUserId());
-        int count = postLikeService.count(queryWrapper);
+        Long count = postLikeService.count(queryWrapper);
         return ResponseResult.success(count);
     }
 
@@ -140,11 +140,11 @@ public class PostController {
     }
 
     @RequestMapping("/isPostCollect")
-    public ResponseResult<Integer> isPostCollect(@Valid PostCollect postCollect) {
+    public ResponseResult<Long> isPostCollect(@Valid PostCollect postCollect) {
         LambdaQueryWrapper<PostCollect> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PostCollect::getPostId, postCollect.getPostId());
         queryWrapper.eq(PostCollect::getUserId, postCollect.getUserId());
-        int count = postCollectService.count(queryWrapper);
+        Long count = postCollectService.count(queryWrapper);
         return ResponseResult.success(count);
     }
 

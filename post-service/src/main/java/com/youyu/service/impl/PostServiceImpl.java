@@ -13,7 +13,6 @@ import com.youyu.entity.post.Post;
 import com.youyu.entity.post.PostCollect;
 import com.youyu.entity.post.PostLike;
 import com.youyu.entity.user.User;
-import com.youyu.entity.user.UserFollow;
 import com.youyu.enums.CreateType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -133,15 +132,15 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         }
 
         // 查询评论数量
-        Integer commentCount = getCommentCount(postId);
+        Long commentCount = getCommentCount(postId);
         postDetail.setCommentCount(commentCount);
 
         // 查询点赞数量
-        Integer likeCount = getLikeCount(postId);
+        Long likeCount = getLikeCount(postId);
         postDetail.setLikeCount(likeCount);
 
         // 查询收藏数量
-        Integer collectCount = getCollectCount(postId);
+        Long collectCount = getCollectCount(postId);
         postDetail.setCollectCount(collectCount);
 
         // 查询专栏信息
@@ -157,7 +156,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
             LambdaQueryWrapper<PostLike> likeQueryWrapper = new LambdaQueryWrapper<>();
             likeQueryWrapper.eq(PostLike::getPostId, postDetail.getId());
             likeQueryWrapper.eq(PostLike::getUserId, userId);
-            int count = postLikeMapper.selectCount(likeQueryWrapper);
+            Long count = postLikeMapper.selectCount(likeQueryWrapper);
             if (count > 0) {
                 postDetail.setPostLike(true);
             }
@@ -166,7 +165,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
             LambdaQueryWrapper<PostCollect> collectQueryWrapper = new LambdaQueryWrapper<>();
             collectQueryWrapper.eq(PostCollect::getPostId, postDetail.getId());
             collectQueryWrapper.eq(PostCollect::getUserId, userId);
-            int count2 = postCollectMapper.selectCount(collectQueryWrapper);
+            Long count2 = postCollectMapper.selectCount(collectQueryWrapper);
             if (count2 > 0) {
                 postDetail.setPostCollect(true);
             }
@@ -180,26 +179,26 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     }
 
     @Override
-    public Integer getCommentCount(Long postId) {
+    public Long getCommentCount(Long postId) {
         int commentCount = 0;
         List<CommentListOutput> commentList = commentMapper.getCommentCountByPostId(postId);
         commentCount += commentList.size();
-        int subRepliesCount = commentList.stream()
-                .mapToInt(CommentListOutput::getReplyCount)
+        Long subRepliesCount = commentList.stream()
+                .mapToLong(CommentListOutput::getReplyCount)
                 .sum();
         commentCount += subRepliesCount;
-        return commentCount;
+        return (long) commentCount;
     }
 
     @Override
-    public Integer getLikeCount(Long postId) {
+    public Long getLikeCount(Long postId) {
         LambdaQueryWrapper<PostLike> postLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
         postLikeLambdaQueryWrapper.eq(PostLike::getPostId, postId);
         return postLikeMapper.selectCount(postLikeLambdaQueryWrapper);
     }
 
     @Override
-    public Integer getCollectCount(Long postId) {
+    public Long getCollectCount(Long postId) {
         LambdaQueryWrapper<PostCollect> postLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
         postLikeLambdaQueryWrapper.eq(PostCollect::getPostId, postId);
         return postCollectMapper.selectCount(postLikeLambdaQueryWrapper);
@@ -260,7 +259,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         }
 
         // 查询评论数量
-        Integer commentCount = getCommentCount(post.getId());
+        Long commentCount = getCommentCount(post.getId());
         post.setCommentCount(commentCount);
 
         // 查询用户信息
