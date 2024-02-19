@@ -8,7 +8,7 @@
         <module>note-service</module>
         <module>post-service</module>
         <module>user-service</module>
-        <module>message-service</module>
+        <module>sms-service</module>
         <module>mail-service</module>
         <module>moment-service</module>
         <module>gateway-service</module>

@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @EnableFeignClients
 @EnableAsync
-public class MessageServiceApp {
+public class SmsServiceApp {
     public static void main(String[] args) {
-        SpringApplication.run(MessageServiceApp.class, args);
+        SpringApplication.run(SmsServiceApp.class, args);
     }
 }

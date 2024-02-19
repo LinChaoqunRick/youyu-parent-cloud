@@ -2,7 +2,7 @@ server:
   port: 8170
 spring:
   application:
-    name: message-service
+    name: sms-service
   cloud:
     nacos:
       discovery:

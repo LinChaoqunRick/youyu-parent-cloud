@@ -101,10 +101,10 @@ services:
       - gateway-service
       - user-service
 
-  message-service:
-    container_name: message-service
+  sms-service:
+    container_name: sms-service
     build:
-      context: ./message-service
+      context: ./sms-service
       dockerfile: Dockerfile
 #    ports:
 #      - "8170:8170"

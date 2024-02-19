@@ -5,7 +5,7 @@ FROM openjdk:17
 WORKDIR /app
 
 # Copy the JAR file into the container at /app
-COPY ./target/message-service.jar /app/message-service.jar
+COPY ./target/sms-service.jar /app/sms-service.jar
 
 ENV NACOS_SERVER_ADDR=nacos:8848
 ENV NACOS_NAMESPACE=prod
@@ -20,4 +20,4 @@ ENV ACTIVE_ENV=prod
 EXPOSE 8170
 
 # Run the JAR file
-ENTRYPOINT ["java", "-Xmx256m", "-jar", "message-service.jar", "--spring."]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "sms-service.jar", "--spring."]
