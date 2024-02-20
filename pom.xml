@@ -25,9 +25,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.youyu</groupId>
-    <artifactId>youyu-parent</artifactId>
+    <artifactId>youyu-parent-cloud</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>youyu-parent</name>
+    <name>youyu-parent-cloud</name>
     <description>YouYu Service 2.0</description>
     <properties>
         <springboot.version>2.7.7</springboot.version>
