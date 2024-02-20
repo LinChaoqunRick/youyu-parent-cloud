@@ -10,8 +10,8 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/message")
-public class MessageController {
+@RequestMapping("/sms")
+public class SmsController {
 
     @Resource
     private SmsService smsService;
