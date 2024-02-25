@@ -3,6 +3,7 @@ package com.youyu.entity.user;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotBlank;
  * @since 2024-02-20 22:04:01
  */
 @SuppressWarnings("serial")
+@TableName("bs_message")
 @Data
 public class Message extends Model<Message> {
     //留言主键
