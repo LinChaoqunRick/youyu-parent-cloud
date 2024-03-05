@@ -6,4 +6,5 @@ import lombok.Data;
 @Data
 public class MessageListOutput extends Message {
     private String adname;
+    private MessageUserOutput userInfo;
 }

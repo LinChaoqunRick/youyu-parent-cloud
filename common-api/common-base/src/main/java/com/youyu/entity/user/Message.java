@@ -34,6 +34,8 @@ public class Message extends Model<Message> {
 
     private String email;
 
+    private String avatar;
+
     @NotBlank(message = "内容不能为空")
     private String content;
     //省份编号

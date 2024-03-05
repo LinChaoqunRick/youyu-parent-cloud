@@ -1,6 +1,7 @@
 package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.youyu.dto.message.MessageUserOutput;
 import com.youyu.entity.user.Message;
 
 /**
@@ -10,6 +11,6 @@ import com.youyu.entity.user.Message;
  * @since 2024-02-20 22:04:04
  */
 public interface MessageService extends IService<Message> {
-
+    MessageUserOutput getUserDetail(Long userId);
 }
 
