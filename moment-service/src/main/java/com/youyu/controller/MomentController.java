@@ -37,7 +37,7 @@ public class MomentController {
     private UserServiceClient userServiceClient;
 
     @RequestMapping("/create")
-    public ResponseResult<MomentListOutput> create(@Valid Moment input) {
+    public ResponseResult<MomentListOutput> create(@Valid @RequestBody Moment input) {
         input.setUserId(SecurityUtils.getUserId());
         PositionInfo positionInfo = userServiceClient.ipLocation().getData();
         input.setAdcode(positionInfo.getAdcode());
@@ -47,7 +47,7 @@ public class MomentController {
     }
 
     @RequestMapping("/update")
-    public ResponseResult<MomentListOutput> update(@Valid Moment input) {
+    public ResponseResult<MomentListOutput> update(@Valid @RequestBody Moment input) {
         input.setUpdateTime(new Date());
         momentService.updateById(input);
         MomentListOutput moment = momentService.getMoment(input.getId());
