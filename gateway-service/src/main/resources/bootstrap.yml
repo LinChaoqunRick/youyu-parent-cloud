@@ -47,7 +47,7 @@ spring:
       - id: sms-service
         uri: lb://sms-service
         predicates:
-          - Path=/message/**
+          - Path=/sms/**
 
       - id: mail-service
         uri: lb://mail-service
