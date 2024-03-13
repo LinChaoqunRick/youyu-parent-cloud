@@ -1,13 +1,17 @@
 package com.youyu.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.youyu.dto.post.column.ColumnListOutput;
 import com.youyu.dto.post.column.ColumnPostInput;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.post.post.PostListOutput;
 import com.youyu.entity.user.Column;
+import com.youyu.enums.ResultCode;
+import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ColumnService;
 import com.youyu.utils.SecurityUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -30,6 +34,9 @@ public class ColumnController {
     @Resource
     private ColumnService columnService;
 
+    @Value("${column.columnMaxNum}")
+    private Long columnMaxNum;
+
     @RequestMapping("/open/list")
     public ResponseResult<List<ColumnListOutput>> getColumnList(Column column) {
         List<ColumnListOutput> columnList = columnService.getColumnList(column);
@@ -42,8 +49,14 @@ public class ColumnController {
         return ResponseResult.success(columnDetail);
     }
 
-    @RequestMapping("/add")
-    public ResponseResult<Column> addColumn(@Valid Column column) {
+    @RequestMapping("/create")
+    public ResponseResult<Column> createColumn(@Valid Column column) {
+        LambdaQueryWrapper<Column> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Column::getUserId, SecurityUtils.getUserId());
+        long count = columnService.count(queryWrapper);
+        if (count >= columnMaxNum) {
+            throw new SystemException(ResultCode.OTHER_ERROR.getCode(), "专栏数目已达上限" + columnMaxNum + "个");
+        }
         column.setUserId(SecurityUtils.getUserId());
         columnService.save(column);
         return ResponseResult.success(column);
