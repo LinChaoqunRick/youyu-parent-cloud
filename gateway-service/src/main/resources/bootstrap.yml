@@ -39,8 +39,8 @@ spring:
         predicates:
           - Path=/noteChapter/**,/note/**
 
-      - id: upload-service
-        uri: lb://upload-service
+      - id: file-service
+        uri: lb://file-service
         predicates:
           - Path=/oss/**
 

@@ -88,10 +88,10 @@ services:
       - gateway-service
       - user-service
 
-  upload-service:
-    container_name: upload-service
+  file-service:
+    container_name: file-service
     build:
-      context: ./upload-service
+      context: ./file-service
       dockerfile: Dockerfile
 #    ports:
 #      - "8160:8160"

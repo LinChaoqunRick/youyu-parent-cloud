@@ -2,7 +2,7 @@ server:
   port: 8160
 spring:
   application:
-    name: upload-service
+    name: file-service
   cloud:
     nacos:
       discovery:

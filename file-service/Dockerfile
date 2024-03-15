@@ -5,7 +5,7 @@ FROM openjdk:17
 WORKDIR /app
 
 # Copy the JAR file into the container at /app
-COPY ./target/upload-service.jar /app/upload-service.jar
+COPY ./target/file-service.jar /app/file-service.jar
 
 ENV NACOS_SERVER_ADDR=nacos:8848
 ENV NACOS_NAMESPACE=prod
@@ -20,4 +20,4 @@ ENV ACTIVE_ENV=prod
 EXPOSE 8160
 
 # Run the JAR file
-ENTRYPOINT ["java", "-Xmx256m", "-jar", "upload-service.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "file-service.jar"]

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>upload-service</module>
+        <module>file-service</module>
         <module>note-service</module>
         <module>post-service</module>
         <module>user-service</module>
