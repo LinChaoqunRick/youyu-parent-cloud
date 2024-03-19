@@ -2,6 +2,7 @@ package com.youyu.controller;
 
 import com.youyu.dto.SmsSendInput;
 import com.youyu.dto.SmsVerifyInput;
+import com.youyu.enums.SMSTemplate;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.SmsService;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,10 @@ public class SmsController {
     @RequestMapping(value = "/open/verify")
     public ResponseResult<Boolean> verify(@Valid SmsVerifyInput input) {
         boolean verify = smsService.verify(input);
+        if (verify) {
+            String redisKey = SMSTemplate.getLabelById(input.getType()) + ":" + input.getTelephone();
+            boolean remove = smsService.remove(redisKey);
+        }
         return ResponseResult.success(verify);
     }
 }

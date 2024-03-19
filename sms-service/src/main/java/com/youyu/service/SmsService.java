@@ -7,4 +7,6 @@ public interface SmsService {
     boolean send(SmsSendInput input);
 
     boolean verify(SmsVerifyInput input);
+
+    boolean remove(String key);
 }

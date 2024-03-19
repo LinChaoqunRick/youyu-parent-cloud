@@ -66,4 +66,9 @@ public class SmsServiceImpl implements SmsService {
         }
         return redisCode.equals(input.getCode());
     }
+
+    @Override
+    public boolean remove(String key) {
+        return redisCache.deleteObject(key);
+    }
 }
