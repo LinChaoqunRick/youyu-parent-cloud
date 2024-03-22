@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @EnableFeignClients
 @EnableAsync
-public class UploadServiceApp {
+public class FileServiceApp {
     public static void main(String[] args) {
-        SpringApplication.run(UploadServiceApp.class, args);
+        SpringApplication.run(FileServiceApp.class, args);
     }
 }
