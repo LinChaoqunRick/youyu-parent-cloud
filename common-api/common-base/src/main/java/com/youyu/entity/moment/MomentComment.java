@@ -34,7 +34,6 @@ public class MomentComment extends Model<MomentComment> {
     @NotNull(message = "回复人id不能为空")
     private Long userId;
     //被回复人id
-    @NotNull(message = "被回复人id不能为空")
     private Long userIdTo;
     //回复了哪条子评论
     private Long replyId;
