@@ -10,6 +10,7 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
@@ -22,10 +23,7 @@ import reactor.core.publisher.Mono;
 import javax.annotation.Resource;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Mr.M
@@ -60,39 +58,48 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        String requestUrl = exchange.getRequest().getPath().value();
-        AntPathMatcher pathMatcher = new AntPathMatcher();
-        //白名单放行
-        for (String url : whitelist) {
-            if (pathMatcher.match(url, requestUrl)) {
+        String token = getHeaderToken(exchange);
+
+        String uri = exchange.getRequest().getPath().toString();
+        if (Objects.nonNull(token) && !uri.equals("/oauth/token")) {
+            OAuth2AccessToken accessToken = getAccessToken(token);
+            Long authenticateUserId = getSecurityUserId(accessToken);
+
+            if (Objects.isNull(authenticateUserId)) {
+                return buildReturnMono(HttpStatus.UNAUTHORIZED, ResultCode.UNAUTHORIZED.getMessage(), exchange);
+            }
+
+            //判断是否是有效的token
+            try {
+                boolean expired = accessToken.isExpired();
+                if (expired) {
+                    return buildReturnMono(HttpStatus.UNAUTHORIZED, "认证令牌已过期", exchange);
+                }
+                // 将userId存储到HTTP请求的Header中
+                exchange.getRequest().mutate().headers(httpHeaders -> httpHeaders.add("AuthenticateUserId", String.valueOf(authenticateUserId)));
                 return chain.filter(exchange);
+            } catch (InvalidTokenException e) {
+                log.info("认证令牌无效: {}", token);
+                return buildReturnMono(HttpStatus.UNAUTHORIZED, "认证令牌无效", exchange);
             }
-        }
+        } else {
+            String requestUrl = exchange.getRequest().getPath().value();
+            AntPathMatcher pathMatcher = new AntPathMatcher();
+            //白名单放行
+            for (String url : whitelist) {
+                if (pathMatcher.match(url, requestUrl)) {
+                    return chain.filter(exchange);
+                }
+            }
 
-        String token = getToken(exchange);
-        if (StringUtils.isBlank(token)) {
             return buildReturnMono(HttpStatus.UNAUTHORIZED, ResultCode.UNAUTHORIZED.getMessage(), exchange);
-        }
-
-        //判断是否是有效的token
-        OAuth2AccessToken oAuth2AccessToken;
-        try {
-            oAuth2AccessToken = tokenStore.readAccessToken(token);
-            boolean expired = oAuth2AccessToken.isExpired();
-            if (expired) {
-                return buildReturnMono(HttpStatus.UNAUTHORIZED, "认证令牌已过期", exchange);
-            }
-            return chain.filter(exchange);
-        } catch (InvalidTokenException e) {
-            log.info("认证令牌无效: {}", token);
-            return buildReturnMono(HttpStatus.UNAUTHORIZED, "认证令牌无效", exchange);
         }
     }
 
     /**
      * 获取token
      */
-    private String getToken(ServerWebExchange exchange) {
+    private String getHeaderToken(ServerWebExchange exchange) {
         String tokenStr = exchange.getRequest().getHeaders().getFirst("Authorization");
         if (StringUtils.isBlank(tokenStr)) {
             return null;
@@ -102,6 +109,26 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
             return null;
         }
         return token;
+    }
+
+    private OAuth2AccessToken getAccessToken(String token) {
+        return tokenStore.readAccessToken(token);
+    }
+
+    private String getSecurityUserId(String token) {
+        OAuth2AccessToken accessToken = getAccessToken(token);
+        return (String) accessToken.getAdditionalInformation().get("user_id");
+    }
+
+    private Long getSecurityUserId(OAuth2AccessToken accessToken) {
+        Object userIdObject = accessToken.getAdditionalInformation().get("user_id");
+        if (userIdObject instanceof Long) {
+            return (Long) userIdObject;
+        } else if (userIdObject instanceof Integer) {
+            return Long.valueOf((Integer) userIdObject);
+        }
+        // 处理其他情况，如返回 null 或抛出异常
+        return null;
     }
 
     private Mono<Void> buildReturnMono(HttpStatus status, String errorMessage, ServerWebExchange exchange) {

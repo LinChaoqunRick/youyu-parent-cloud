@@ -128,11 +128,11 @@ public class UserOpenController {
 
     @RequestMapping("/getAuthRoutes")
     public ResponseResult<List<Route>> getAuthRoutes() {
-        String token = SecurityUtils.getAuthorizationToken();
-        if (StringUtils.hasText(token)) {
-            return ResponseResult.success(userService.getAuthRoutes(SecurityUtils.getUserId()));
-        } else {
+        Long authenticateUserId = SecurityUtils.parseTokenUserId();
+        if (Objects.isNull(authenticateUserId)) {
             return ResponseResult.success(userService.getRoutesByRoleId(RoleEnum.NO_LOGGED_USER.getId()));
+        } else {
+            return ResponseResult.success(userService.getAuthRoutes(authenticateUserId));
         }
     }
 }

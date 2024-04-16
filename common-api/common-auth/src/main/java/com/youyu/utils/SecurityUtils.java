@@ -64,4 +64,14 @@ public class SecurityUtils {
             return null;
         }
     }
+
+    public static Long parseTokenUserId() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String authenticateUserId = request.getHeader("AuthenticateUserId");
+        if (Objects.nonNull(authenticateUserId)) {
+            return Long.valueOf(authenticateUserId);
+        } else {
+            return null;
+        }
+    }
 }
