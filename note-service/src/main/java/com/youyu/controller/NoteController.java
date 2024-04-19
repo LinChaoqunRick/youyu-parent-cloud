@@ -10,6 +10,7 @@ import com.youyu.entity.note.Note;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.NoteChapterService;
 import com.youyu.service.NoteService;
+import com.youyu.utils.SecurityUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -56,6 +57,14 @@ public class NoteController {
         note.setUpdateTime(new Date());
         boolean update = noteService.updateById(note);
         return ResponseResult.success(update);
+    }
+
+    @RequestMapping("/delete")
+    public ResponseResult<Boolean> deleteNote(@RequestParam Long noteId) {
+        Note note = noteService.getById(noteId);
+        SecurityUtils.authAuthorizationUser(note.getUserId());
+        boolean b = noteService.removeById(noteId);
+        return ResponseResult.success(b);
     }
 
     @RequestMapping("/open/noteListByIds")

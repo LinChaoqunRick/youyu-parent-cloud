@@ -70,7 +70,7 @@ public class ColumnController {
     }
 
     @RequestMapping("/delete")
-    public ResponseResult<Boolean> updateColumn(@RequestParam Long columnId) {
+    public ResponseResult<Boolean> deleteColumn(@RequestParam Long columnId) {
         columnService.removeById(columnId);
         return ResponseResult.success(true);
     }
