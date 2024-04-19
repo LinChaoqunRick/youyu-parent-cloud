@@ -68,7 +68,7 @@ public class UserController {
 
     @RequestMapping("/detail")
     ResponseResult<UserDetailOutput> detail(@RequestParam Long userId) {
-        SecurityUtils.authContextUser(userId);
+        SecurityUtils.authAuthorizationUser(userId);
         UserDetailOutput detail = userService.detail(userId);
         return ResponseResult.success(detail);
     }

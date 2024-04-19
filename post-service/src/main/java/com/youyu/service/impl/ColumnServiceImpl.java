@@ -61,9 +61,7 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
         List<Column> list = columnMapper.selectList(queryWrapper);
         List<ColumnListOutput> columnListOutputs = BeanCopyUtils.copyBeanList(list, ColumnListOutput.class);
 
-        columnListOutputs.forEach(item -> {
-            setExtraData(item);
-        });
+        columnListOutputs.forEach(this::setExtraData);
         return columnListOutputs;
     }
 
@@ -139,21 +137,16 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
 
         // 封装查询结果
         PageOutput<PostListOutput> pageOutput = PageUtils.setPageResult(postPage, PostListOutput.class);
-        pageOutput.getList().forEach(post -> {
-            postService.setPostListData(post);
-        });
+        pageOutput.getList().forEach(post -> postService.setPostListData(post));
         return pageOutput;
     }
 
     @Override
     public int setColumnIsTop(Long columnId, Boolean isTop) {
         Column column = columnMapper.selectById(columnId);
-        if (SecurityUtils.isContentUser(column.getUserId())) {
-            column.setIsTop(isTop ? "1" : "0");
-            return columnMapper.updateById(column);
-        } else {
-            return 0;
-        }
+        SecurityUtils.authAuthorizationUser(column.getUserId());
+        column.setIsTop(isTop ? "1" : "0");
+        return columnMapper.updateById(column);
     }
 
     public void setExtraData(ColumnListOutput item) {

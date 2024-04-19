@@ -37,24 +37,35 @@ public class SecurityUtils {
         return getLoginUser().getUser().getId();
     }
 
-    public static boolean isContentUser(Long userId) {
-        if (Objects.equals(getUserId(), userId)) {
-            return true;
-        } else {
-            throw new SystemException(ResultCode.FORBIDDEN);
-        }
+    /**
+     * 水平越权检验，
+     *
+     * @param userId 用户id，将与认证的用户id进行比较
+     */
+    public static boolean isAuthorizationUser(Long userId) {
+        return Objects.equals(getUserId(), userId);
     }
 
     public static boolean isContextUser(Long userId) {
         return Objects.equals(getUserId(), userId);
     }
 
-    public static void authContextUser(Long userId) {
+    /**
+     * 水平越权检验
+     *
+     * @param userId 用户id，将与认证的用户id进行比较
+     */
+    public static void authAuthorizationUser(Long userId) {
         if (!isContextUser(userId)) {
             throw new SystemException(ResultCode.FORBIDDEN);
         }
     }
 
+    /**
+     * 获取请求中的JWT Token
+     *
+     * @return
+     */
     public static String getAuthorizationToken() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String authorization = request.getHeader("Authorization");
@@ -65,7 +76,12 @@ public class SecurityUtils {
         }
     }
 
-    public static Long parseTokenUserId() {
+    /**
+     * 获取请求中的AuthenticateUserId
+     *
+     * @return
+     */
+    public static Long getRequestAuthenticateUserId() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String authenticateUserId = request.getHeader("AuthenticateUserId");
         if (Objects.nonNull(authenticateUserId)) {

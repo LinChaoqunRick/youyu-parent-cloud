@@ -128,7 +128,7 @@ public class UserOpenController {
 
     @RequestMapping("/getAuthRoutes")
     public ResponseResult<List<Route>> getAuthRoutes() {
-        Long authenticateUserId = SecurityUtils.parseTokenUserId();
+        Long authenticateUserId = SecurityUtils.getRequestAuthenticateUserId();
         if (Objects.isNull(authenticateUserId)) {
             return ResponseResult.success(userService.getRoutesByRoleId(RoleEnum.NO_LOGGED_USER.getId()));
         } else {
