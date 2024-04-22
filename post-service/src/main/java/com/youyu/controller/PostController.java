@@ -55,6 +55,7 @@ public class PostController {
     @RequestMapping("/open/get")
     public ResponseResult<PostDetailOutput> get(@RequestParam Long postId) {
         PostDetailOutput post = postService.get(postId);
+        post.setUser(postService.getUserDetailById(post.getUserId(), false));
         return ResponseResult.success(post);
     }
 

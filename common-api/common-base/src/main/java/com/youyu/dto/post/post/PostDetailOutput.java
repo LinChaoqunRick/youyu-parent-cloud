@@ -13,5 +13,6 @@ public class PostDetailOutput extends Post {
     private Long likeCount;
     private Long commentCount;
     private Long collectCount;
+    private PostUserOutput user;
     private List<ColumnListOutput> columns;
 }
