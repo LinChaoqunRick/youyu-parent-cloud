@@ -54,10 +54,15 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
     private ColumnSubscribeMapper subscribeMapper;
 
     @Override
-    public List<ColumnListOutput> getColumnList(Column column) {
+    public List<ColumnListOutput> getColumnList(Long userId, Integer count) {
         LambdaQueryWrapper<Column> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Column::getUserId, column.getUserId());
+        queryWrapper.eq(Column::getUserId, userId);
         queryWrapper.orderByDesc(Column::getIsTop);
+        // 限制条数
+        if (Objects.nonNull(count)) {
+            queryWrapper.last("LIMIT " + count);
+        }
+
         List<Column> list = columnMapper.selectList(queryWrapper);
         List<ColumnListOutput> columnListOutputs = BeanCopyUtils.copyBeanList(list, ColumnListOutput.class);
 

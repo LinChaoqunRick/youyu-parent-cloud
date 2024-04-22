@@ -38,8 +38,8 @@ public class ColumnController {
     private Long columnMaxNum;
 
     @RequestMapping("/open/list")
-    public ResponseResult<List<ColumnListOutput>> getColumnList(Column column) {
-        List<ColumnListOutput> columnList = columnService.getColumnList(column);
+    public ResponseResult<List<ColumnListOutput>> getColumnList(@RequestParam Long userId, Integer count) {
+        List<ColumnListOutput> columnList = columnService.getColumnList(userId, count);
         return ResponseResult.success(columnList);
     }
 

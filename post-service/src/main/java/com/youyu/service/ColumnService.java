@@ -16,7 +16,7 @@ import java.util.List;
  * @since 2023-03-13 22:02:30
  */
 public interface ColumnService extends IService<Column> {
-    List<ColumnListOutput> getColumnList(Column column);
+    List<ColumnListOutput> getColumnList(Long userId, Integer count);
 
     List<ColumnListOutput> getColumnListByIds(String[] columnIds);
 
