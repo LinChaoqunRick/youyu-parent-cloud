@@ -16,6 +16,7 @@ import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
 import com.youyu.service.UserFollowService;
 import com.youyu.service.UserService;
+import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.RequestUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -104,6 +105,13 @@ public class UserOpenController {
         User user = userService.getById(userId);
         user.setAdname(AdCode.getDescByCode(user.getAdcode()));
         return ResponseResult.success(user);
+    }
+
+    @RequestMapping("/getUserBasicById")
+    public ResponseResult<UserListOutput> getUserBasic(@RequestParam Long userId) {
+        User user = userService.getById(userId);
+        UserListOutput output = BeanCopyUtils.copyBean(user, UserListOutput.class);
+        return ResponseResult.success(output);
     }
 
     @RequestMapping("/pageUserByUserIds")
