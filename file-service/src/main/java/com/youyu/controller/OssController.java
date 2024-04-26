@@ -12,8 +12,12 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.aliyuncs.sts.model.v20150401.AssumeRoleRequest;
 import com.aliyuncs.sts.model.v20150401.AssumeRoleResponse;
+import com.youyu.enums.ResultCode;
+import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,29 +28,23 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 
+@RefreshScope
+@Data
+@ConfigurationProperties(prefix = "aliyun.oss")
 @RestController
 @RequestMapping("/oss")
 public class OssController {
 
-    @Value("${aliyun.oss.bucket}")
     private String bucket;
     // 签名方式
-    @Value("${aliyun.oss.accessKeyId}")
     private String accessKeyId;
-    @Value("${aliyun.oss.accessKeySecret}")
     private String accessKeySecret;
-    @Value("${aliyun.oss.endpoint}")
     private String endPoint;
-    @Value("${aliyun.oss.host}")
     private String host;
     //STS方式
-    @Value("${aliyun.oss.roleArn}")
     private String roleArn;
-    @Value("${aliyun.oss.accessKeyIdRAM}")
     private String accessKeyIdRAM;
-    @Value("${aliyun.oss.accessKeySecretRAM}")
     private String accessKeySecretRAM;
-    @Value("${aliyun.oss.endpointRAM}")
     private String endPointRAM;
 
     /**
@@ -140,6 +138,7 @@ public class OssController {
             credentials = response.getCredentials();
         } catch (ClientException e) {
             e.printStackTrace();
+            throw new SystemException(ResultCode.OTHER_ERROR_SILENT.getCode(), e.getErrMsg());
         }
         return ResponseResult.success(credentials);
     }
