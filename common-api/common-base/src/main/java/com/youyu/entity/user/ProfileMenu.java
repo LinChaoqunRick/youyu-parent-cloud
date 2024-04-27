@@ -36,8 +36,8 @@ public class ProfileMenu implements Serializable {
     private Integer showNote = 1;
     @NotNull(message = "showColumn不能为空")
     private Integer showColumn = 1;
-    @NotNull(message = "showCollect不能为空")
-    private Integer showCollect = 1;
+    @NotNull(message = "showFavorites不能为空")
+    private Integer showFavorites = 1;
     @NotNull(message = "showFollow不能为空")
     private Integer showFollow = 1;
     @NotNull(message = "showFans不能为空")
