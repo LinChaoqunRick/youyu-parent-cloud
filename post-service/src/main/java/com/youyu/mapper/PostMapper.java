@@ -1,9 +1,13 @@
 package com.youyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.youyu.dto.post.post.PostListOutput;
 import com.youyu.entity.post.Post;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 
 /**
@@ -15,6 +19,6 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface PostMapper extends BaseMapper<Post> {
-
+    List<PostListOutput> listPostByIds(@Param("post_ids") String postIds);
 }
 
