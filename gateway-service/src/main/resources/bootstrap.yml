@@ -27,7 +27,7 @@ spring:
       - id: post-service
         uri: lb://post-service
         predicates:
-          - Path=/category/**,/column/**,/comment/**,/post/**
+          - Path=/category/**,/column/**,/comment/**,/post/**,/favorites/**
 
       - id: moment-service
         uri: lb://moment-service

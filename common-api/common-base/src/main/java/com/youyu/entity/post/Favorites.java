@@ -2,8 +2,9 @@ package com.youyu.entity.post;
 
 import java.util.Date;
 
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotBlank;
  */
 @SuppressWarnings("serial")
 @Data
+@TableName("bs_favorites")
 public class Favorites extends Model<Favorites> {
     //主键
     @TableId
@@ -27,17 +29,23 @@ public class Favorites extends Model<Favorites> {
     private String name;
     //收藏的博客id
     private String postIds;
+    //封面地址
+    private String cover = "";
     //是否公开，1：是，0否
-    private Integer open;
+    private Integer open = 0;
     //是否置顶
-    private Integer isTop;
+    private Integer isTop = 0;
     //点赞数量
-    private Long likeCount;
+    private Long likeCount = 0L;
     //创建时间
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
     //更新时间
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(fill = FieldFill.INSERT_UPDATE, updateStrategy = FieldStrategy.NOT_EMPTY)
     private Date updateTime;
     //删除标志
-    private Integer deleted;
+    private Integer deleted = 0;
 }
 

@@ -1,15 +1,29 @@
 package com.youyu.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.favorites.FavoritesPageInput;
 import com.youyu.dto.post.post.PostListOutput;
 import com.youyu.entity.post.Favorites;
+import com.youyu.entity.post.Post;
+import com.youyu.entity.user.ProfileMenu;
+import com.youyu.enums.ResultCode;
+import com.youyu.exception.SystemException;
+import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.PostMapper;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.FavoritesService;
+import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * (Favorites)表控制层
@@ -27,32 +41,108 @@ public class FavoritesController {
     @Resource
     private PostMapper postMapper;
 
+    @Resource
+    private UserServiceClient userServiceClient;
+
+    @Value("${favorites.favoritesMaxNum}")
+    private Long favoritesMaxNum;
+
     @RequestMapping("/create")
-    public ResponseResult<Boolean> create(@RequestBody Favorites input) {
+    public ResponseResult<Favorites> create(@Valid @RequestBody Favorites input) {
+        LambdaQueryWrapper<Favorites> queryWrapper = new LambdaQueryWrapper<>();
         Long userId = SecurityUtils.getUserId();
+        queryWrapper.eq(Favorites::getUserId, userId);
+        long count = favoritesService.count(queryWrapper);
+        if (count >= favoritesMaxNum) {
+            throw new SystemException(ResultCode.OTHER_ERROR.getCode(), "专栏数目已达上限" + favoritesMaxNum + "个");
+        }
         input.setUserId(userId);
         boolean save = favoritesService.save(input);
-        return ResponseResult.success(save);
+        if (save) {
+            return ResponseResult.success(input);
+        } else {
+            throw new SystemException(ResultCode.OPERATION_FAIL);
+        }
     }
 
     @RequestMapping("/update")
-    public ResponseResult<Boolean> update(@RequestBody Favorites input) {
+    public ResponseResult<Favorites> update(@RequestBody Favorites input) {
+        Favorites favorites = favoritesService.getById(input.getId());
+        SecurityUtils.authAuthorizationUser(favorites.getUserId());
         boolean update = favoritesService.updateById(input);
-        return ResponseResult.success(update);
+        if (update) {
+            return ResponseResult.success(input);
+        } else {
+            throw new SystemException(ResultCode.OPERATION_FAIL);
+        }
     }
 
     @RequestMapping("/delete")
     public ResponseResult<Boolean> delete(@RequestParam Long id) {
+        Favorites favorites = favoritesService.getById(id);
+        SecurityUtils.authAuthorizationUser(favorites.getUserId());
         boolean remove = favoritesService.removeById(id);
         return ResponseResult.success(remove);
     }
 
-    @RequestMapping("/page")
-    public ResponseResult<Boolean> page(@RequestParam Long id) {
-        Favorites favorites = favoritesService.getById(id);
-        List<PostListOutput> outputs = postMapper.listPostByIds(favorites.getPostIds());
-        boolean remove = favoritesService.removeById(id);
-        return ResponseResult.success(remove);
+    @RequestMapping("/open/list")
+    public ResponseResult<List<Favorites>> list(Long userId) {
+        Long authUserId = SecurityUtils.getUserId();
+        if (null == userId) {
+            userId = authUserId;
+        }
+        // 查询是否开放展示
+        checkFavoritesShow(userId);
+
+        LambdaQueryWrapper<Favorites> favoritesLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        favoritesLambdaQueryWrapper.eq(Favorites::getUserId, userId);
+        List<Favorites> favoritesList = favoritesService.list(favoritesLambdaQueryWrapper);
+        if (favoritesList.isEmpty() && SecurityUtils.isContextUser(userId)) { // 如果没有收藏夹，并且是作者自己访问，创建一个默认的
+            Favorites defaultFavorites = new Favorites();
+            defaultFavorites.setName("默认收藏夹");
+            defaultFavorites.setUserId(authUserId);
+            favoritesService.save(defaultFavorites);
+            favoritesList.add(defaultFavorites);
+        }
+        return ResponseResult.success(favoritesList);
+    }
+
+
+    public void checkFavoritesShow(Long userId) {
+        Long authUserId = SecurityUtils.getUserId();
+        ProfileMenu profileMenu = userServiceClient.getProfileMenu(userId).getData();
+        if (profileMenu.getShowFavorites() != 1 && !Objects.equals(userId, authUserId)) { // 私密，且不是主人
+            throw new SystemException(ResultCode.FORBIDDEN);
+        }
+    }
+
+    @RequestMapping("/open/postPage")
+    public ResponseResult<PageOutput<PostListOutput>> page(@Valid FavoritesPageInput input) {
+        Favorites favorites = favoritesService.getById(input.getId());
+        // 查询是否开放展示
+        checkFavoritesShow(favorites.getUserId());
+
+        // 水平越权检测
+        Integer open = favorites.getOpen();
+        if (open == 0) { // 私有
+            SecurityUtils.authAuthorizationUser(favorites.getUserId());
+        }
+
+        String postIds = favorites.getPostIds();
+        if (Objects.isNull(postIds)) {
+            postIds = "";
+        }
+        String[] ids = postIds.split(",");
+
+        LambdaQueryWrapper<Post> postLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        postLambdaQueryWrapper.in(Post::getId, Arrays.asList(ids));
+
+        Page<Post> page = new Page<>(input.getPageNum(), input.getPageSize());
+        Page<Post> postPage = postMapper.selectPage(page, postLambdaQueryWrapper);
+
+        // 封装查询结果
+        PageOutput<PostListOutput> pageOutput = PageUtils.setPageResult(postPage, PostListOutput.class);
+        return ResponseResult.success(pageOutput);
     }
 }
 
