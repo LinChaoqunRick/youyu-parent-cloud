@@ -22,7 +22,7 @@ public class TokenConfig {
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey("youyul");
+        converter.setSigningKey("MtR6UDKvOg7IBcpW7o4j0UK2pVAf1geB14VXicSOm92quFmDhtOjo9nDTxajysqyWlfXKIqqGcsTHBGnBeZLZ0aQfHJS8a22P2UgYJ47vrNesKZ7UGSCnLeKELunVt6lSz3KZ5F1rA11XHZgoLXsTjwEtHPylkISG75Q7L9jeKbAoDGRgYEl2r8V8ijvAqmg3OyxOXaMS6IwgLTBFZJfpiQQJ4I1lO5oqpQ5gqK7aLk5SgdU1xPPyfeNyseMaxkY");
         return converter;
     }
 }
