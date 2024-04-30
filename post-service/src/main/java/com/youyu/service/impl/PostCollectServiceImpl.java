@@ -84,4 +84,13 @@ public class PostCollectServiceImpl extends ServiceImpl<PostCollectMapper, PostC
         });
         return pageOutput;
     }
+
+    @Override
+    public List<Long> getPostIdsByFavoriteId(Long favoriteId) {
+        LambdaQueryWrapper<PostCollect> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(PostCollect::getPostId).eq(PostCollect::getFavoritesId, favoriteId);
+        List<PostCollect> collectList = postCollectMapper.selectList(queryWrapper);
+        List<Long> postIds = collectList.stream().map(PostCollect::getPostId).collect(Collectors.toList());
+        return postIds;
+    }
 }

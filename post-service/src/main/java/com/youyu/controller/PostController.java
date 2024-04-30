@@ -11,6 +11,7 @@ import com.youyu.enums.CreateType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
+import com.youyu.service.FavoritesService;
 import com.youyu.service.PostCollectService;
 import com.youyu.service.PostLikeService;
 import com.youyu.service.PostService;
@@ -39,6 +40,9 @@ public class PostController {
 
     @Resource
     private PostCollectService postCollectService;
+
+    @Resource
+    private FavoritesService favoritesService;
 
     @RequestMapping("/open/getUserDetailById")
     ResponseResult<PostUserOutput> getUserById(Long userId) {
@@ -136,6 +140,13 @@ public class PostController {
 
     @RequestMapping("/postCollect")
     public ResponseResult<Boolean> postCollect(@Valid PostCollect postCollect) {
+        Long userId = SecurityUtils.getUserId();
+        postCollect.setUserId(userId);
+
+        // 水平越权检测
+        long ownerId = favoritesService.getFavoriteUserId(postCollect.getFavoritesId());
+        SecurityUtils.authAuthorizationUser(ownerId);
+
         boolean result = postCollectService.save(postCollect);
         return ResponseResult.success(result);
     }
@@ -151,9 +162,13 @@ public class PostController {
 
     @RequestMapping("/cancelPostCollect")
     public ResponseResult<Boolean> cancelPostCollect(@Valid PostCollect postCollect) {
+        SecurityUtils.authAuthorizationUser(postCollect.getUserId());
+
         LambdaQueryWrapper<PostCollect> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(PostCollect::getPostId, postCollect.getPostId());
-        queryWrapper.eq(PostCollect::getUserId, postCollect.getUserId());
+        queryWrapper.eq(PostCollect::getPostId, postCollect.getPostId())
+                .eq(PostCollect::getUserId, postCollect.getUserId())
+                .eq(PostCollect::getFavoritesId, postCollect.getFavoritesId());
+
         boolean remove = postCollectService.remove(queryWrapper);
         return ResponseResult.success(remove);
     }

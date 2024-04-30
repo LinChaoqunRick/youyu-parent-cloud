@@ -27,8 +27,6 @@ public class Favorites extends Model<Favorites> {
     //收藏夹名称
     @NotBlank(message = "收藏夹名称不能为空")
     private String name;
-    //收藏的博客id
-    private String postIds;
     //封面地址
     private String cover = "";
     //是否公开，1：是，0否

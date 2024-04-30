@@ -14,6 +14,7 @@ import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.PostMapper;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.FavoritesService;
+import com.youyu.service.PostCollectService;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +44,9 @@ public class FavoritesController {
 
     @Resource
     private UserServiceClient userServiceClient;
+
+    @Resource
+    private PostCollectService postCollectService;
 
     @Value("${favorites.favoritesMaxNum}")
     private Long favoritesMaxNum;
@@ -119,6 +123,9 @@ public class FavoritesController {
     @RequestMapping("/open/postPage")
     public ResponseResult<PageOutput<PostListOutput>> page(@Valid FavoritesPageInput input) {
         Favorites favorites = favoritesService.getById(input.getId());
+        if (Objects.isNull(favorites)) {
+            return ResponseResult.success(null);
+        }
         // 查询是否开放展示
         checkFavoritesShow(favorites.getUserId());
 
@@ -128,14 +135,9 @@ public class FavoritesController {
             SecurityUtils.authAuthorizationUser(favorites.getUserId());
         }
 
-        String postIds = favorites.getPostIds();
-        if (Objects.isNull(postIds)) {
-            postIds = "";
-        }
-        String[] ids = postIds.split(",");
-
+        List<Long> postIds = postCollectService.getPostIdsByFavoriteId(input.getId());
         LambdaQueryWrapper<Post> postLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        postLambdaQueryWrapper.in(Post::getId, Arrays.asList(ids));
+        postLambdaQueryWrapper.in(Post::getId, postIds);
 
         Page<Post> page = new Page<>(input.getPageNum(), input.getPageSize());
         Page<Post> postPage = postMapper.selectPage(page, postLambdaQueryWrapper);
