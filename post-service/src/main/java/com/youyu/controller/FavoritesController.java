@@ -8,6 +8,7 @@ import com.youyu.dto.post.favorites.FavoritesListOutput;
 import com.youyu.dto.post.post.PostListOutput;
 import com.youyu.entity.post.Favorites;
 import com.youyu.entity.post.Post;
+import com.youyu.entity.post.PostCollect;
 import com.youyu.entity.user.ProfileMenu;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -115,16 +116,18 @@ public class FavoritesController {
 
         // 构造输出
         List<FavoritesListOutput> resultList = BeanCopyUtils.copyBeanList(favoritesList, FavoritesListOutput.class);
-        resultList.forEach(this::setFavoritePreviewPosts);
+        resultList.forEach(this::setEnhanceData);
 
         return ResponseResult.success(resultList);
     }
 
     /**
      * 设置收藏夹预览文章信息
+     *
      * @param favorite 收藏夹
      */
-    public void setFavoritePreviewPosts(FavoritesListOutput favorite) {
+    public void setEnhanceData(FavoritesListOutput favorite) {
+        // 设置预览文章信息
         List<Long> postIds = postCollectService.getPostIdsByFavoriteId(favorite.getId());
         List<PostListOutput> previewPosts = new ArrayList<>();
         if (!postIds.isEmpty()) {
@@ -132,10 +135,16 @@ public class FavoritesController {
             previewPosts.add(BeanCopyUtils.copyBean(post, PostListOutput.class));
         }
         favorite.setPreviewPosts(previewPosts);
+
+        LambdaQueryWrapper<PostCollect> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(PostCollect::getFavoritesId, favorite.getId());
+        long count = postCollectService.count(queryWrapper);
+        favorite.setCount(count);
     }
 
     /**
      * 检查指定用户是否有权限查看收藏夹
+     *
      * @param userId 指定用户id
      */
     public void checkFavoritesShow(Long userId) {
