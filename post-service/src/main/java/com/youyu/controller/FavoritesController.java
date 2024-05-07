@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.favorites.FavoritesPageInput;
+import com.youyu.dto.post.favorites.FavoritesListOutput;
 import com.youyu.dto.post.post.PostListOutput;
 import com.youyu.entity.post.Favorites;
 import com.youyu.entity.post.Post;
@@ -15,6 +16,7 @@ import com.youyu.mapper.PostMapper;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.FavoritesService;
 import com.youyu.service.PostCollectService;
+import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -90,7 +92,7 @@ public class FavoritesController {
     }
 
     @RequestMapping("/open/list")
-    public ResponseResult<List<Favorites>> list(Long userId) {
+    public ResponseResult<List<FavoritesListOutput>> list(Long userId) {
         Long authUserId = SecurityUtils.getUserId();
         if (null == userId) {
             userId = authUserId;
@@ -101,17 +103,41 @@ public class FavoritesController {
         LambdaQueryWrapper<Favorites> favoritesLambdaQueryWrapper = new LambdaQueryWrapper<>();
         favoritesLambdaQueryWrapper.eq(Favorites::getUserId, userId);
         List<Favorites> favoritesList = favoritesService.list(favoritesLambdaQueryWrapper);
+
         if (favoritesList.isEmpty() && SecurityUtils.isContextUser(userId)) { // 如果没有收藏夹，并且是作者自己访问，创建一个默认的
             Favorites defaultFavorites = new Favorites();
             defaultFavorites.setName("默认收藏夹");
             defaultFavorites.setUserId(authUserId);
+            defaultFavorites.setCover("https://youyu-source.oss-cn-beijing.aliyuncs.com/firstImages/default/defaultFirstPic.png");
             favoritesService.save(defaultFavorites);
             favoritesList.add(defaultFavorites);
         }
-        return ResponseResult.success(favoritesList);
+
+        // 构造输出
+        List<FavoritesListOutput> resultList = BeanCopyUtils.copyBeanList(favoritesList, FavoritesListOutput.class);
+        resultList.forEach(this::setFavoritePreviewPosts);
+
+        return ResponseResult.success(resultList);
     }
 
+    /**
+     * 设置收藏夹预览文章信息
+     * @param favorite 收藏夹
+     */
+    public void setFavoritePreviewPosts(FavoritesListOutput favorite) {
+        List<Long> postIds = postCollectService.getPostIdsByFavoriteId(favorite.getId());
+        List<PostListOutput> previewPosts = new ArrayList<>();
+        if (!postIds.isEmpty()) {
+            Post post = postMapper.selectById(postIds.get(0));
+            previewPosts.add(BeanCopyUtils.copyBean(post, PostListOutput.class));
+        }
+        favorite.setPreviewPosts(previewPosts);
+    }
 
+    /**
+     * 检查指定用户是否有权限查看收藏夹
+     * @param userId 指定用户id
+     */
     public void checkFavoritesShow(Long userId) {
         Long authUserId = SecurityUtils.getUserId();
         ProfileMenu profileMenu = userServiceClient.getProfileMenu(userId).getData();
