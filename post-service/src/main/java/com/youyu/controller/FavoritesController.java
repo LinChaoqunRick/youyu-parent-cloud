@@ -64,6 +64,7 @@ public class FavoritesController {
             throw new SystemException(ResultCode.OTHER_ERROR.getCode(), "专栏数目已达上限" + favoritesMaxNum + "个");
         }
         input.setUserId(userId);
+        input.setCover("https://youyu-source.oss-cn-beijing.aliyuncs.com/firstImages/default/defaultFirstPic.png");
         boolean save = favoritesService.save(input);
         if (save) {
             return ResponseResult.success(input);
