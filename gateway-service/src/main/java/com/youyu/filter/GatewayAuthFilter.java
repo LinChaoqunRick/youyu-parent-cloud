@@ -62,15 +62,15 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
 
         String uri = exchange.getRequest().getPath().toString();
         if (Objects.nonNull(token) && !uri.equals("/oauth/token")) {
-            OAuth2AccessToken accessToken = getAccessToken(token);
-            Long authenticateUserId = getSecurityUserId(accessToken);
-
-            if (Objects.isNull(authenticateUserId)) {
-                return buildReturnMono(HttpStatus.UNAUTHORIZED, ResultCode.UNAUTHORIZED.getMessage(), exchange);
-            }
-
             //判断是否是有效的token
             try {
+                OAuth2AccessToken accessToken = getAccessToken(token);
+                Long authenticateUserId = getSecurityUserId(accessToken);
+
+                if (Objects.isNull(authenticateUserId)) {
+                    return buildReturnMono(HttpStatus.UNAUTHORIZED, ResultCode.UNAUTHORIZED.getMessage(), exchange);
+                }
+
                 boolean expired = accessToken.isExpired();
                 if (expired) {
                     return buildReturnMono(HttpStatus.UNAUTHORIZED, "认证令牌已过期", exchange);
