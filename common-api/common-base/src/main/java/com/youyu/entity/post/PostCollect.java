@@ -1,9 +1,6 @@
 package com.youyu.entity.post;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.FieldStrategy;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -24,6 +21,7 @@ public class PostCollect implements Serializable {
     /**
      * 主键
      */
+    @TableId
     private Long id;
     /**
      * 文章编号
@@ -33,7 +31,7 @@ public class PostCollect implements Serializable {
     /**
      * 收藏夹编号
      */
-    @NotNull(message = "收藏夹id不能为空")
+    //@NotNull(message = "收藏夹id不能为空")
     private Long favoritesId;
     /**
      * 收藏人id

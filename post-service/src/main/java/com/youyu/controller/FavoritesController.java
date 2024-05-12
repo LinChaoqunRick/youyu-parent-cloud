@@ -158,7 +158,7 @@ public class FavoritesController {
 
     @RequestMapping("/open/postPage")
     public ResponseResult<PageOutput<PostListOutput>> page(@Valid FavoritesPageInput input) {
-        Favorites favorites = favoritesService.getById(input.getId());
+        Favorites favorites = favoritesService.getById(input.getFavoritesId());
         if (Objects.isNull(favorites)) {
             return ResponseResult.success(null);
         }
@@ -171,7 +171,7 @@ public class FavoritesController {
             SecurityUtils.authAuthorizationUser(favorites.getUserId());
         }
 
-        List<Long> postIds = postCollectService.getPostIdsByFavoriteId(input.getId());
+        List<Long> postIds = postCollectService.getPostIdsByFavoriteId(input.getFavoritesId());
         LambdaQueryWrapper<Post> postLambdaQueryWrapper = new LambdaQueryWrapper<>();
         postLambdaQueryWrapper.in(Post::getId, postIds);
 

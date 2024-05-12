@@ -143,21 +143,40 @@ public class PostController {
         Long userId = SecurityUtils.getUserId();
         postCollect.setUserId(userId);
 
-        // 水平越权检测
-        long ownerId = favoritesService.getFavoriteUserId(postCollect.getFavoritesId());
-        SecurityUtils.authAuthorizationUser(ownerId);
-
-        boolean result = postCollectService.save(postCollect);
+        LambdaQueryWrapper<PostCollect> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper
+                .eq(PostCollect::getPostId, postCollect.getPostId())
+                .eq(PostCollect::getUserId, postCollect.getUserId());
+        PostCollect collect = postCollectService.getOne(queryWrapper);
+        boolean result;
+        // 收藏夹水平越权检测，只有收藏夹的主人才能添加到此收藏
+        if (Objects.nonNull(postCollect.getFavoritesId())) {
+            long ownerId = favoritesService.getFavoriteUserId(postCollect.getFavoritesId());
+            SecurityUtils.authAuthorizationUser(ownerId);
+            if (Objects.nonNull(collect)) { // 已经收藏了，那就更新
+                collect.setFavoritesId(postCollect.getFavoritesId());
+                result = postCollectService.updateById(collect);
+            } else {
+                result = postCollectService.save(postCollect);
+            }
+        } else { // 如果是取消收藏，水平越权检测，只有收藏人才能取消收藏
+            if (Objects.nonNull(collect)) {  // 已经收藏了，那就删除
+                SecurityUtils.authAuthorizationUser(collect.getUserId());
+                result = postCollectService.removeById(collect.getId());
+            } else {
+                throw new SystemException(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), "收藏夹Id不能为空");
+            }
+        }
         return ResponseResult.success(result);
     }
 
-    @RequestMapping("/isPostCollect")
-    public ResponseResult<Long> isPostCollect(@Valid PostCollect postCollect) {
+    @RequestMapping("/getPostCollectInfo")
+    public ResponseResult<PostCollect> isPostCollect(@RequestParam Long postId, @RequestParam Long userId) {
         LambdaQueryWrapper<PostCollect> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(PostCollect::getPostId, postCollect.getPostId());
-        queryWrapper.eq(PostCollect::getUserId, postCollect.getUserId());
-        Long count = postCollectService.count(queryWrapper);
-        return ResponseResult.success(count);
+        queryWrapper.eq(PostCollect::getPostId, postId);
+        queryWrapper.eq(PostCollect::getUserId, userId);
+        PostCollect collect = postCollectService.getOne(queryWrapper);
+        return ResponseResult.success(collect);
     }
 
     @RequestMapping("/cancelPostCollect")
