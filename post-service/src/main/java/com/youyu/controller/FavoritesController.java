@@ -132,7 +132,7 @@ public class FavoritesController {
         List<Long> postIds = postCollectService.getPostIdsByFavoriteId(favorite.getId());
         List<PostListOutput> previewPosts = new ArrayList<>();
         if (!postIds.isEmpty()) {
-            Post post = postMapper.selectById(postIds.get(0));
+            Post post = postMapper.selectById(postIds.get(postIds.size() - 1));
             previewPosts.add(BeanCopyUtils.copyBean(post, PostListOutput.class));
         }
         favorite.setPreviewPosts(previewPosts);
