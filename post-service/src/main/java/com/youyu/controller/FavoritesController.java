@@ -85,6 +85,12 @@ public class FavoritesController {
         }
     }
 
+    @RequestMapping("/detail")
+    public ResponseResult<Favorites> detail(@RequestParam Long id) {
+        Favorites favorite = favoritesService.getById(id);
+        return ResponseResult.success(favorite);
+    }
+
     @RequestMapping("/delete")
     public ResponseResult<Boolean> delete(@RequestParam Long id) {
         Favorites favorites = favoritesService.getById(id);
