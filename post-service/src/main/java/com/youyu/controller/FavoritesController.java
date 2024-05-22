@@ -110,6 +110,9 @@ public class FavoritesController {
 
         LambdaQueryWrapper<Favorites> favoritesLambdaQueryWrapper = new LambdaQueryWrapper<>();
         favoritesLambdaQueryWrapper.eq(Favorites::getUserId, userId);
+        if (!SecurityUtils.isAuthorizationUser(userId)){ // 不是自己的页面，需要过滤隐藏的收藏夹
+            favoritesLambdaQueryWrapper.eq(Favorites::getOpen, 1);
+        }
         List<Favorites> favoritesList = favoritesService.list(favoritesLambdaQueryWrapper);
 
         if (favoritesList.isEmpty() && SecurityUtils.isContextUser(userId)) { // 如果没有收藏夹，并且是作者自己访问，创建一个默认的
