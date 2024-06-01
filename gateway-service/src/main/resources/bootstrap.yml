@@ -54,6 +54,11 @@ spring:
         predicates:
           - Path=/mail/**
 
+      - id: album-service
+        uri: lb://album-service
+        predicates:
+          - Path=/album/**
+
       - id: test-service
         uri: lb://test-service
         predicates:

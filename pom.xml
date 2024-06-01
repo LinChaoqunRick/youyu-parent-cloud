@@ -17,6 +17,7 @@
         <module>common-api/common-base</module>
         <module>auth-service</module>
         <module>test-service</module>
+        <module>album-service</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

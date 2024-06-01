@@ -1,0 +1,14 @@
+server:
+  port: 8180
+spring:
+  application:
+    name: album-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:}
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        file-extension: yaml
+        namespace: ${NACOS_NAMESPACE:}
