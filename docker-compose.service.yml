@@ -114,6 +114,20 @@ services:
       - gateway-service
       - user-service
 
+  album-service:
+    container_name: album-service
+    build:
+      context: ./album-service
+      dockerfile: Dockerfile
+    #    ports:
+    #      - "8160:8160"
+    networks:
+      - mynetwork
+    depends_on:
+      - gateway-service
+      - user-service
+      - file-service
+
 # 网络，不定义的话就是默认网络
 networks:
   mynetwork:
