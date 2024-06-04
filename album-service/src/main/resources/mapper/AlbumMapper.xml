@@ -22,7 +22,7 @@
         SELECT c1.*,
         (SELECT COUNT(*) FROM bs_album_image AS c2 WHERE c2.album_id = c1.id AND deleted = 0) AS image_count
         FROM bs_album AS c1
-        WHERE c1.deleted = 0 AND c1.open = 1
+        WHERE c1.deleted = 0
         <if test="name != null and name != ''">
             AND c1.name LIKE CONCAT('%', #{name}, '%')
         </if>
