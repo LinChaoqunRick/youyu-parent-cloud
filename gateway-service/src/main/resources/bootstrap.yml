@@ -57,7 +57,7 @@ spring:
       - id: album-service
         uri: lb://album-service
         predicates:
-          - Path=/album/**
+          - Path=/album/**,/albumImage/**
 
       - id: test-service
         uri: lb://test-service
