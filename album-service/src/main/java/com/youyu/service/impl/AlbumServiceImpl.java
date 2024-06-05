@@ -30,6 +30,12 @@ public class AlbumServiceImpl extends ServiceImpl<AlbumMapper, Album> implements
 
         // 封装查询结果
         PageOutput<AlbumListOutput> pageOutput = PageUtils.setPageResult(albumPage, AlbumListOutput.class);
+
+        // 清除授权信息
+        pageOutput.getList().forEach(item -> {
+            item.setAuthorizedUserList(null);
+            item.setAuthorizedUsers(null);
+        });
         return pageOutput;
     }
 }

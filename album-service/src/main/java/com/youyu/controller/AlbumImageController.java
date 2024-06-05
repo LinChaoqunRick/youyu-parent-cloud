@@ -4,18 +4,10 @@ import com.aliyun.oss.HttpMethod;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.GeneratePresignedUrlRequest;
-import com.aliyuncs.DefaultAcsClient;
-import com.aliyuncs.exceptions.ClientException;
-import com.aliyuncs.http.MethodType;
-import com.aliyuncs.profile.DefaultProfile;
-import com.aliyuncs.profile.IClientProfile;
-import com.aliyuncs.sts.model.v20150401.AssumeRoleRequest;
-import com.aliyuncs.sts.model.v20150401.AssumeRoleResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.dto.AlbumImageListInput;
 import com.youyu.dto.AlbumImageListOutput;
-import com.youyu.dto.AlbumListOutput;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.entity.Album;
 import com.youyu.entity.AlbumImage;
@@ -90,6 +82,12 @@ public class AlbumImageController {
         return ResponseResult.success(pageOutput);
     }
 
+    @RequestMapping("/detail")
+    public ResponseResult<AlbumImage> save(@RequestParam Long id) {
+        AlbumImage albumImage = albumImageService.getById(id);
+        return ResponseResult.success(albumImage);
+    }
+
     @RequestMapping("/save")
     public ResponseResult<Boolean> save(List<AlbumImage> inputs) {
         boolean save = albumImageService.saveBatch(inputs);
@@ -102,8 +100,8 @@ public class AlbumImageController {
         return ResponseResult.success(update);
     }
 
-    @RequestMapping("/delete")
-    public ResponseResult<Boolean> delete(List<Long> ids) {
+    @RequestMapping("/remove")
+    public ResponseResult<Boolean> remove(List<Long> ids) {
         boolean removed = albumImageService.removeBatchByIds(ids);
         return ResponseResult.success(removed);
     }
