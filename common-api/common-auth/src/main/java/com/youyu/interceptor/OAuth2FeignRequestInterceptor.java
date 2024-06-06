@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 public class OAuth2FeignRequestInterceptor implements RequestInterceptor {
 
-    private static final String AUTHORIZATION_USERID = "AuthorizationUserId";
+    private static final String AUTHENTICATED_USERID = "AuthenticateUserId";
     private static final String X_FORWARDED_FOR = "X-FORWARDED-FOR";
 
     @Override
@@ -22,7 +22,7 @@ public class OAuth2FeignRequestInterceptor implements RequestInterceptor {
         // 服务间调用携带AuthorizationUserId
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getDetails() instanceof OAuth2AuthenticationDetails) {
-            template.header(AUTHORIZATION_USERID, String.valueOf(SecurityUtils.getRequestAuthenticateUserId()));
+            template.header(AUTHENTICATED_USERID, String.valueOf(SecurityUtils.getRequestAuthenticateUserId()));
         }
 
         // 传递真实调用者ip地址信息
