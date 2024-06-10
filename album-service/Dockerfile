@@ -5,7 +5,7 @@ FROM openjdk:17
 WORKDIR /app
 
 # Copy the JAR file into the container at /app
-COPY ./target/auth-service.jar /app/auth-service.jar
+COPY ./target/album-service.jar /app/album-service.jar
 
 ENV NACOS_SERVER_ADDR=nacos:8848
 ENV NACOS_NAMESPACE=prod
