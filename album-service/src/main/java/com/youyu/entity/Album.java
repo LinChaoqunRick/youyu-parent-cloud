@@ -31,13 +31,11 @@ public class Album extends Model<Album> {
     @NotBlank(message = "相册名称不能为空")
     private String name;
     //所属用户
-    @NotBlank(message = "所属用户不能为空")
     private Long userId;
     // 授权用户
     private String authorizedUsers;
     //封面
-    @NotBlank(message = "封面不能为空")
-    private String cover;
+        private String cover;
     //相册描述
     @NotBlank(message = "相册描述不能为空")
     private String content;

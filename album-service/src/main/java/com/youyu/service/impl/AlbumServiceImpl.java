@@ -61,6 +61,7 @@ public class AlbumServiceImpl extends ServiceImpl<AlbumMapper, Album> implements
      * @param userId 用户id
      * @return 用户信息
      */
+    @Override
     public PostUserOutput getUserDetailById(Long userId) {
         if (Objects.isNull(userId)) {
             return null;

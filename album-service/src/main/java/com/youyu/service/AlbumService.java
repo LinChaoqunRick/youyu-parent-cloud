@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.youyu.dto.AlbumListInput;
 import com.youyu.dto.AlbumListOutput;
 import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.post.post.PostUserOutput;
 import com.youyu.entity.Album;
 
 /**
@@ -16,5 +17,6 @@ import com.youyu.entity.Album;
  */
 public interface AlbumService extends IService<Album> {
     PageOutput<AlbumListOutput> selectPage(Page<Album> page, String name);
+    PostUserOutput getUserDetailById(Long userId);
 }
 

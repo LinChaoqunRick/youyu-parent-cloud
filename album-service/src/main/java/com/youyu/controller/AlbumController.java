@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.dto.AlbumListInput;
 import com.youyu.dto.AlbumListOutput;
 import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.post.post.PostUserOutput;
 import com.youyu.entity.Album;
 import com.youyu.entity.AlbumImage;
 import com.youyu.entity.user.User;
@@ -14,7 +15,6 @@ import com.youyu.service.AlbumImageService;
 import com.youyu.service.AlbumService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.SecurityUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -61,6 +61,9 @@ public class AlbumController {
 
         AlbumListOutput output = BeanCopyUtils.copyBean(album, AlbumListOutput.class);
 
+        PostUserOutput detail = albumService.getUserDetailById(output.getUserId());
+        output.setUserInfo(detail);
+
         // 如果是所有者，查询授权用户
         if (Objects.equals(SecurityUtils.getUserId(), album.getUserId())) {
             List<User> users = userServiceClient.listByIds(userIds).getData();
@@ -78,6 +81,7 @@ public class AlbumController {
 
     @RequestMapping("/create")
     public ResponseResult<Boolean> create(@Valid Album input) {
+        input.setUserId(SecurityUtils.getUserId());
         boolean save = albumService.save(input);
         return ResponseResult.success(save);
     }
