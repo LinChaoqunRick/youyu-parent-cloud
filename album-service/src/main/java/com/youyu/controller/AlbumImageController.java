@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.dto.AlbumImageListInput;
 import com.youyu.dto.AlbumImageListOutput;
+import com.youyu.dto.AlbumImageSaveInput;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.entity.Album;
 import com.youyu.entity.AlbumImage;
@@ -64,7 +65,7 @@ public class AlbumImageController {
     @RequestMapping("/open/list")
     public ResponseResult<PageOutput<AlbumImageListOutput>> list(@Valid AlbumImageListInput input) {
         LambdaQueryWrapper<AlbumImage> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(AlbumImage::getId, input.getId());
+        queryWrapper.eq(AlbumImage::getAlbumId, input.getId());
 
         Album album = albumService.getById(input.getId());
         // 私密，且不是作者或授权用户
@@ -88,9 +89,12 @@ public class AlbumImageController {
         return ResponseResult.success(albumImage);
     }
 
-    @RequestMapping("/save")
-    public ResponseResult<Boolean> save(List<AlbumImage> inputs) {
-        boolean save = albumImageService.saveBatch(inputs);
+    @RequestMapping("/create")
+    public ResponseResult<Boolean> create(@Valid @RequestBody AlbumImageSaveInput input) {
+        Album album = albumService.getById(input.getAlbumId());
+        SecurityUtils.authAuthorizationUser(album.getUserId());
+        input.getImages().forEach(image -> image.setAlbumId(input.getAlbumId()));
+        boolean save = albumImageService.saveBatch(input.getImages());
         return ResponseResult.success(save);
     }
 

@@ -5,14 +5,13 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+
 
 /**
  * (Album)表实体类
@@ -20,9 +19,12 @@ import java.io.Serializable;
  * @author makejava
  * @since 2024-06-02 13:49:18
  */
-@EqualsAndHashCode(callSuper = true)
-@Data
+@SuppressWarnings("serial")
 @TableName("bs_album")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Component
 public class Album extends Model<Album> {
     //主键
     @TableId
@@ -35,7 +37,7 @@ public class Album extends Model<Album> {
     // 授权用户
     private String authorizedUsers;
     //封面
-        private String cover;
+    private String cover;
     //相册描述
     @NotBlank(message = "相册描述不能为空")
     private String content;
@@ -59,4 +61,3 @@ public class Album extends Model<Album> {
     //逻辑删除
     private Integer deleted;
 }
-

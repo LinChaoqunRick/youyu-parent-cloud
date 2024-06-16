@@ -15,11 +15,13 @@ import com.youyu.service.AlbumImageService;
 import com.youyu.service.AlbumService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.SecurityUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -51,13 +53,16 @@ public class AlbumController {
         return ResponseResult.success(pageOutput);
     }
 
-    @RequestMapping("/detail")
+    @RequestMapping("/open/detail")
     public ResponseResult<AlbumListOutput> detail(@RequestParam Long id) {
         Album album = albumService.getById(id);
-        List<Long> userIds = Arrays.stream(album.getAuthorizedUsers().split(","))
-                .map(String::trim)
-                .map(Long::valueOf)
-                .toList();
+        List<Long> authorizedUserIds = null;
+        if (StringUtils.hasText(album.getAuthorizedUsers())) {
+            authorizedUserIds = Arrays.stream(album.getAuthorizedUsers().split(","))
+                    .map(String::trim)
+                    .map(Long::valueOf)
+                    .toList();
+        }
 
         AlbumListOutput output = BeanCopyUtils.copyBean(album, AlbumListOutput.class);
 
@@ -66,8 +71,10 @@ public class AlbumController {
 
         // 如果是所有者，查询授权用户
         if (Objects.equals(SecurityUtils.getUserId(), album.getUserId())) {
-            List<User> users = userServiceClient.listByIds(userIds).getData();
-            output.setAuthorizedUserList(users);
+            if (Objects.nonNull(authorizedUserIds)) {
+                List<User> users = userServiceClient.listByIds(authorizedUserIds).getData();
+                output.setAuthorizedUserList(users);
+            }
         }
 
         // 查询照片数量
@@ -88,6 +95,7 @@ public class AlbumController {
 
     @RequestMapping("/update")
     public ResponseResult<Boolean> update(@Valid Album input) {
+        input.setUpdateTime(new Date());
         Album album = albumService.getById(input.getId());
         // 水平越权校验
         SecurityUtils.authAuthorizationUser(album.getUserId());
