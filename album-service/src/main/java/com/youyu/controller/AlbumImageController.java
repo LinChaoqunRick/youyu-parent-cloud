@@ -100,12 +100,15 @@ public class AlbumImageController {
 
     @RequestMapping("/update")
     public ResponseResult<Boolean> update(AlbumImage input) {
+        Album album = albumService.getById(input.getAlbumId());
+        SecurityUtils.authAuthorizationUser(album.getUserId());
         boolean update = albumImageService.updateById(input);
         return ResponseResult.success(update);
     }
 
     @RequestMapping("/remove")
     public ResponseResult<Boolean> remove(List<Long> ids) {
+        //TODO... 如何进行水平越权校验？
         boolean removed = albumImageService.removeBatchByIds(ids);
         return ResponseResult.success(removed);
     }
