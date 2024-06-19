@@ -57,6 +57,7 @@ public class AlbumController {
     public ResponseResult<AlbumListOutput> detail(@RequestParam Long id) {
         Album album = albumService.getById(id);
         List<Long> authorizedUserIds = null;
+        List<User> users = null;
         if (StringUtils.hasText(album.getAuthorizedUsers())) {
             authorizedUserIds = Arrays.stream(album.getAuthorizedUsers().split(","))
                     .map(String::trim)
@@ -64,18 +65,24 @@ public class AlbumController {
                     .toList();
         }
 
+        // 没有权限返回null
+        if (!(Objects.equals(SecurityUtils.getUserId(), album.getUserId()) || (authorizedUserIds != null && authorizedUserIds.contains(album.getUserId())))) {
+            return ResponseResult.success(null);
+        }
+
+        // 查询授权用户详情
+        if (Objects.nonNull(authorizedUserIds)) {
+            users = userServiceClient.listByIds(authorizedUserIds).getData();
+        }
+
         AlbumListOutput output = BeanCopyUtils.copyBean(album, AlbumListOutput.class);
+
+        if (Objects.nonNull(authorizedUserIds)) {
+            output.setAuthorizedUserList(users);
+        }
 
         PostUserOutput detail = albumService.getUserDetailById(output.getUserId());
         output.setUserInfo(detail);
-
-        // 如果是所有者，查询授权用户
-        if (Objects.equals(SecurityUtils.getUserId(), album.getUserId())) {
-            if (Objects.nonNull(authorizedUserIds)) {
-                List<User> users = userServiceClient.listByIds(authorizedUserIds).getData();
-                output.setAuthorizedUserList(users);
-            }
-        }
 
         // 查询照片数量
         LambdaQueryWrapper<AlbumImage> albumImageLambdaQueryWrapper = new LambdaQueryWrapper<>();
