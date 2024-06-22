@@ -6,4 +6,5 @@ import lombok.Data;
 @Data
 public class AlbumImageListOutput extends AlbumImage {
     private String url;
+    private String originUrl;
 }

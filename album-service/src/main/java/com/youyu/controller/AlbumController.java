@@ -65,9 +65,11 @@ public class AlbumController {
                     .toList();
         }
 
-        // 没有权限返回null
-        if (!(Objects.equals(SecurityUtils.getUserId(), album.getUserId()) || (authorizedUserIds != null && authorizedUserIds.contains(album.getUserId())))) {
-            return ResponseResult.success(null);
+        if (album.getOpen() == 0) {
+            // 没有权限返回null
+            if (!(Objects.equals(SecurityUtils.getUserId(), album.getUserId()) || (authorizedUserIds != null && authorizedUserIds.contains(album.getUserId())))) {
+                return ResponseResult.success(null);
+            }
         }
 
         // 查询授权用户详情
@@ -91,6 +93,29 @@ public class AlbumController {
         output.setImageCount(count);
 
         return ResponseResult.success(output);
+    }
+
+    @RequestMapping("/open/accessible")
+    public ResponseResult<Boolean> accessible(@RequestParam Long id) {
+        Album album = albumService.getById(id);
+        if (album.getOpen() == 1) {
+            return ResponseResult.success(true);
+        }
+
+        List<Long> authorizedUserIds = null;
+        if (StringUtils.hasText(album.getAuthorizedUsers())) {
+            authorizedUserIds = Arrays.stream(album.getAuthorizedUsers().split(","))
+                    .map(String::trim)
+                    .map(Long::valueOf)
+                    .toList();
+        }
+
+        // 没有权限返回null
+        if (!(Objects.equals(SecurityUtils.getUserId(), album.getUserId()) || (authorizedUserIds != null && authorizedUserIds.contains(album.getUserId())))) {
+            return ResponseResult.success(false);
+        } else {
+            return ResponseResult.success(true);
+        }
     }
 
     @RequestMapping("/create")

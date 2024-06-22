@@ -134,6 +134,9 @@ public class AlbumImageController {
             Date expiration = new Date(new Date().getTime() + 1000 * 60 * 10);
             GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(bucket, item.getPath(), HttpMethod.GET);
             req.setExpiration(expiration);
+            URL signedOriginalUrl = ossClient.generatePresignedUrl(req);
+            item.setOriginUrl(signedOriginalUrl.toString());
+            req.setProcess("style/thumbnail");
             URL signedUrl = ossClient.generatePresignedUrl(req);
             item.setUrl(signedUrl.toString());
         });
