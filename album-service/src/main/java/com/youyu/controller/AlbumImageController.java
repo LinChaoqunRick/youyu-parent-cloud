@@ -113,6 +113,19 @@ public class AlbumImageController {
         return ResponseResult.success(removed);
     }
 
+    @RequestMapping("/origin")
+    public ResponseResult<String> getOriginUrl(@RequestParam Long id) {
+        AlbumImage albumImage = albumImageService.getById(id);
+        OSS ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, accessKeySecret);
+
+        // 指定签名URL过期时间为10分钟。
+        Date expiration = new Date(new Date().getTime() + 1000 * 60 * 10);
+        GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(bucket, albumImage.getPath(), HttpMethod.GET);
+        req.setExpiration(expiration);
+        URL signedOriginalUrl = ossClient.generatePresignedUrl(req);
+        return ResponseResult.success(signedOriginalUrl.toString());
+    }
+
     public boolean isAccessible(Album album, Long userId) {
         if (Objects.equals(album.getUserId(), userId)) {
             return true;
@@ -134,8 +147,8 @@ public class AlbumImageController {
             Date expiration = new Date(new Date().getTime() + 1000 * 60 * 10);
             GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(bucket, item.getPath(), HttpMethod.GET);
             req.setExpiration(expiration);
-            URL signedOriginalUrl = ossClient.generatePresignedUrl(req);
-            item.setOriginUrl(signedOriginalUrl.toString());
+            /*URL signedOriginalUrl = ossClient.generatePresignedUrl(req);
+            item.setOriginUrl(signedOriginalUrl.toString());*/
             req.setProcess("style/thumbnail");
             URL signedUrl = ossClient.generatePresignedUrl(req);
             item.setUrl(signedUrl.toString());

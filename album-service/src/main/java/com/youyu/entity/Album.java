@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotBlank;
@@ -19,12 +20,8 @@ import java.io.Serializable;
  * @author makejava
  * @since 2024-06-02 13:49:18
  */
-@SuppressWarnings("serial")
 @TableName("bs_album")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Component
 public class Album extends Model<Album> {
     //主键
     @TableId
@@ -52,11 +49,13 @@ public class Album extends Model<Album> {
     //创建时间
     @TableField(fill = FieldFill.INSERT, updateStrategy = FieldStrategy.NEVER)
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     //更新时间
     @TableField(fill = FieldFill.INSERT_UPDATE, updateStrategy = FieldStrategy.NOT_EMPTY)
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
     //逻辑删除
     private Integer deleted;

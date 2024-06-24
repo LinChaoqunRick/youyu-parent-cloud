@@ -101,7 +101,6 @@ public class AlbumController {
         if (album.getOpen() == 1) {
             return ResponseResult.success(true);
         }
-
         List<Long> authorizedUserIds = null;
         if (StringUtils.hasText(album.getAuthorizedUsers())) {
             authorizedUserIds = Arrays.stream(album.getAuthorizedUsers().split(","))
