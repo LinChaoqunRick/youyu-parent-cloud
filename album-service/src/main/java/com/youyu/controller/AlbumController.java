@@ -67,14 +67,15 @@ public class AlbumController {
 
         if (album.getOpen() == 0) {
             // 没有权限返回null
-            if (!(Objects.equals(SecurityUtils.getUserId(), album.getUserId()) || (authorizedUserIds != null && authorizedUserIds.contains(album.getUserId())))) {
+            if (!(Objects.equals(SecurityUtils.getUserId(), album.getUserId()) || (authorizedUserIds != null && authorizedUserIds.contains(SecurityUtils.getUserId())))) {
                 return ResponseResult.success(null);
             }
         }
 
-        // 查询授权用户详情
+        // 查询授权用户详情，查询前5个
         if (Objects.nonNull(authorizedUserIds)) {
-            users = userServiceClient.listByIds(authorizedUserIds).getData();
+            List<Long> topFiveUserIds = authorizedUserIds.stream().limit(8).toList();
+            users = userServiceClient.listByIds(topFiveUserIds).getData();
         }
 
         AlbumListOutput output = BeanCopyUtils.copyBean(album, AlbumListOutput.class);
@@ -110,7 +111,7 @@ public class AlbumController {
         }
 
         // 没有权限返回null
-        if (!(Objects.equals(SecurityUtils.getUserId(), album.getUserId()) || (authorizedUserIds != null && authorizedUserIds.contains(album.getUserId())))) {
+        if (!(Objects.equals(SecurityUtils.getUserId(), album.getUserId()) || (authorizedUserIds != null && authorizedUserIds.contains(SecurityUtils.getUserId())))) {
             return ResponseResult.success(false);
         } else {
             return ResponseResult.success(true);

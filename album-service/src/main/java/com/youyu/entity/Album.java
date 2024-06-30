@@ -34,6 +34,7 @@ public class Album extends Model<Album> {
     // 授权用户
     private String authorizedUsers;
     //封面
+    @TableField(updateStrategy = FieldStrategy.NOT_EMPTY)
     private String cover;
     //相册描述
     @NotBlank(message = "相册描述不能为空")

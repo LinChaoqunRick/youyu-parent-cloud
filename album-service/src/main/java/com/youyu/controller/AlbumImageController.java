@@ -66,6 +66,7 @@ public class AlbumImageController {
     public ResponseResult<PageOutput<AlbumImageListOutput>> list(@Valid AlbumImageListInput input) {
         LambdaQueryWrapper<AlbumImage> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AlbumImage::getAlbumId, input.getId());
+        queryWrapper.orderByDesc(AlbumImage::getCreateTime);
 
         Album album = albumService.getById(input.getId());
         // 私密，且不是作者或授权用户
@@ -107,9 +108,10 @@ public class AlbumImageController {
     }
 
     @RequestMapping("/remove")
-    public ResponseResult<Boolean> remove(List<Long> ids) {
+    public ResponseResult<Boolean> remove(String ids) {
         //TODO... 如何进行水平越权校验？
-        boolean removed = albumImageService.removeBatchByIds(ids);
+        List<String> idsList = Arrays.stream(ids.split(",")).toList();
+        boolean removed = albumImageService.removeBatchByIds(idsList);
         return ResponseResult.success(removed);
     }
 
@@ -147,8 +149,8 @@ public class AlbumImageController {
             Date expiration = new Date(new Date().getTime() + 1000 * 60 * 10);
             GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(bucket, item.getPath(), HttpMethod.GET);
             req.setExpiration(expiration);
-            /*URL signedOriginalUrl = ossClient.generatePresignedUrl(req);
-            item.setOriginUrl(signedOriginalUrl.toString());*/
+//            URL signedOriginalUrl = ossClient.generatePresignedUrl(req);
+//            item.setOriginUrl(signedOriginalUrl.toString());
             req.setProcess("style/thumbnail");
             URL signedUrl = ossClient.generatePresignedUrl(req);
             item.setUrl(signedUrl.toString());
