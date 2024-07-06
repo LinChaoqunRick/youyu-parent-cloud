@@ -84,7 +84,7 @@ public class AlbumImageController {
         return ResponseResult.success(pageOutput);
     }
 
-    @RequestMapping("/detail")
+    @RequestMapping("/open/detail")
     public ResponseResult<AlbumImage> save(@RequestParam Long id) {
         AlbumImage albumImage = albumImageService.getById(id);
         return ResponseResult.success(albumImage);
@@ -115,7 +115,7 @@ public class AlbumImageController {
         return ResponseResult.success(removed);
     }
 
-    @RequestMapping("/origin")
+    @RequestMapping("/open/origin")
     public ResponseResult<String> getOriginUrl(@RequestParam Long id) {
         AlbumImage albumImage = albumImageService.getById(id);
         OSS ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, accessKeySecret);
