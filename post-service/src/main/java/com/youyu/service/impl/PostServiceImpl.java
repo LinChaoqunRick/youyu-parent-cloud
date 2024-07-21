@@ -72,7 +72,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         // 如果 有isOriginal 就要求 查询时要和传入的相同
         lambdaQueryWrapper.eq(input.isOriginal(), Post::getCreateType, 0);
         // 状态是正式发布的
-        if (!Objects.equals(SecurityUtils.getUserId(), input.getUserId())) {
+        if (Objects.isNull(SecurityUtils.getUserId()) || !Objects.equals(SecurityUtils.getUserId(), input.getUserId())) {
             lambdaQueryWrapper.eq(Post::getStatus, 0);
         }
         // 对isTop进行降序
