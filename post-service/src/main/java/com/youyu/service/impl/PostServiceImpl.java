@@ -70,9 +70,11 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         // 如果 有userId 就要求 查询时要和传入的相同
         lambdaQueryWrapper.eq(Objects.nonNull(input.getUserId()), Post::getUserId, input.getUserId());
         // 如果 有isOriginal 就要求 查询时要和传入的相同
-        lambdaQueryWrapper.eq(input.isOriginal(), Post::getCreateType, "0");
+        lambdaQueryWrapper.eq(input.isOriginal(), Post::getCreateType, 0);
         // 状态是正式发布的
-        lambdaQueryWrapper.eq(Post::getStatus, '0');
+        if (!Objects.equals(SecurityUtils.getUserId(), input.getUserId())) {
+            lambdaQueryWrapper.eq(Post::getStatus, 0);
+        }
         // 对isTop进行降序
         // lambdaQueryWrapper.orderByDesc(Post::getIsTop);
         // lambdaQueryWrapper.orderByDesc(Post::getCreateTime);
@@ -119,6 +121,11 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     @Override
     public PostDetailOutput get(Long postId) {
         Post post = postMapper.selectById(postId);
+
+        if (post.getStatus() == 1 && !Objects.equals(post.getUserId(), SecurityUtils.getUserId())) {
+            throw new SystemException(ResultCode.FORBIDDEN);
+        }
+
         if (Objects.isNull(post)) {
             throw new SystemException(ResultCode.NOT_FOUND);
         }

@@ -2,6 +2,7 @@ package com.youyu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.post.post.*;
 import com.youyu.entity.post.Post;
@@ -88,6 +89,19 @@ public class PostController {
         post.setUpdateTime(new Date());
         boolean save = postService.updateById(post);
         return ResponseResult.success(save);
+    }
+
+    @RequestMapping("/hide")
+    public ResponseResult<Boolean> hide(@RequestParam Long postId, @RequestParam Integer status) {
+        Post post = postService.get(postId);
+        if (!Objects.equals(SecurityUtils.getUserId(), post.getUserId())) {
+            throw new SystemException(ResultCode.FORBIDDEN);
+        }
+        LambdaUpdateWrapper<Post> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(Post::getId, postId);
+        updateWrapper.set(Post::getStatus, status);
+        boolean hide = postService.update(updateWrapper);
+        return ResponseResult.success(hide);
     }
 
     @RequestMapping("/delete")

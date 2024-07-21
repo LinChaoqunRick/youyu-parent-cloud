@@ -63,7 +63,7 @@ public class Post extends Model<Post> {
     //是否置顶（0 否 1 是）
     private String isTop;
     //状态（0已发布 1草稿）
-    private String status;
+    private Integer status;
     //访问量
     private Integer viewCount;
     //是否允许评论（0否 1是）
