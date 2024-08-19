@@ -125,7 +125,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 mailReplyInput.setCaption("用户@" + user.getNickname() + " 在你的博客《" + post.getTitle() + "》下留言了：");
                 mailReplyInput.setContent(comment.getContent());
                 mailReplyInput.setUrl("http://v2.youyul.com/post/details/" + post.getId());
-                template.convertAndSend("amq.direct", "mail", mailReplyInput);
+                template.convertAndSend("amq.direct", "postCommentMail", mailReplyInput);
             }
 
             return output;

@@ -13,21 +13,21 @@ public class RabbitConfiguration {
         return ExchangeBuilder.directExchange("amq.direct").build();
     }
 
-    @Bean("mailQueue")     //定义消息队列
+    @Bean("momentCommentMailQueue")     //定义消息队列
     public Queue queue() {
         return QueueBuilder
-                .nonDurable("mail")   //非持久化类型
+                .nonDurable("momentCommentMail")   //非持久化类型
                 .build();
     }
 
     @Bean("binding")
     public Binding binding(@Qualifier("directExchange") Exchange exchange,
-                           @Qualifier("mailQueue") Queue queue) {
+                           @Qualifier("momentCommentMailQueue") Queue queue) {
         //将我们刚刚定义的交换机和队列进行绑定
         return BindingBuilder
                 .bind(queue)   //绑定队列
                 .to(exchange)  //到交换机
-                .with("mail")   //使用自定义的routingKey
+                .with("momentCommentMail")   //使用自定义的routingKey
                 .noargs();
     }
 

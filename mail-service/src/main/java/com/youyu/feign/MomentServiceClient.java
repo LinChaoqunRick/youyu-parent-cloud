@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(value = "moment-service")
 public interface MomentServiceClient {
-    @PostMapping(value = "/user/open/selectCount")
+    @PostMapping(value = "/moment/open/get")
     ResponseResult<Moment> getById(@RequestParam Long momentId);
 }

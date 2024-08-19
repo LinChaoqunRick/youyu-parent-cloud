@@ -1,6 +1,7 @@
 package com.youyu.listener;
 
 import com.youyu.dto.mail.MailReplyInput;
+import com.youyu.dto.moment.MomentCommentListOutput;
 import com.youyu.service.MailService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -14,10 +15,18 @@ public class MailSendListener {
     @Resource
     private MailService mailService;
 
-    @RabbitListener(queues = "mail", messageConverter = "jacksonConverter")
-    public void test(MailReplyInput input) throws MessagingException, InterruptedException {
-        Thread.sleep(1000);
-//        System.out.println(input.getTarget());
+    @RabbitListener(queues = "postCommentMail", messageConverter = "jacksonConverter")
+    public void postCommentListener(MailReplyInput input) throws MessagingException {
         mailService.sendPostCommentMailNotice(input);
     }
+
+    @RabbitListener(queues = "momentCommentMail", messageConverter = "jacksonConverter")
+    public void momentCommentListener(MomentCommentListOutput input) throws MessagingException {
+        mailService.sendMomentCommentMailNotice(input);
+    }
+
+    /*@RabbitListener(queues = "momentReplyMail", messageConverter = "jacksonConverter")
+    public void momentReplyListener(MomentCommentListOutput input) throws MessagingException {
+        mailService.sendMomentCommentMailNotice(input);
+    }*/
 }

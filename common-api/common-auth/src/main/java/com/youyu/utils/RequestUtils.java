@@ -1,6 +1,7 @@
 package com.youyu.utils;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -12,6 +13,7 @@ public class RequestUtils {
 
     /**
      * 获取用户真实IP
+     *
      * @return
      */
     public static String getClientIp() {
@@ -31,9 +33,15 @@ public class RequestUtils {
 
     /**
      * 获取请求的HttpServletRequest对象
+     *
      * @return
      */
     public static HttpServletRequest getRequest() {
-        return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (Objects.isNull(requestAttributes)) {
+            return null;
+        } else {
+            return ((ServletRequestAttributes) requestAttributes).getRequest();
+        }
     }
 }

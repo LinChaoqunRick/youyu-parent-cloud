@@ -27,8 +27,8 @@ public class OAuth2FeignRequestInterceptor implements RequestInterceptor {
 
         // 传递真实调用者ip地址信息
         HttpServletRequest request = RequestUtils.getRequest();
-        String x_forward_for = request.getHeader(X_FORWARDED_FOR);
-        if (x_forward_for != null) {
+        if (request != null) {
+            String x_forward_for = request.getHeader(X_FORWARDED_FOR);
             template.header(X_FORWARDED_FOR, x_forward_for);
         }
     }

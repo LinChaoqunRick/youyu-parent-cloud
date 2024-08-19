@@ -22,6 +22,7 @@ import com.youyu.service.MomentService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -49,12 +50,17 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
     @Resource
     private MailServiceClient mailServiceClient;
 
+    @Resource
+    RabbitTemplate template;
+
     @Override
     public MomentCommentListOutput createComment(MomentComment input) {
         int save = momentCommentMapper.insert(input);
         if (save > 0) {
             MomentCommentListOutput detail = getCommentDetailByCommentId(input.getId());
-            mailServiceClient.sendMomentCommentMailNotice(detail);
+            if (!input.getUserId().equals(input.getUserIdTo())) {
+                template.convertAndSend("amq.direct", "momentCommentMail", detail);
+            }
             return detail;
         } else {
             throw new SystemException(ResultCode.OPERATION_FAIL);

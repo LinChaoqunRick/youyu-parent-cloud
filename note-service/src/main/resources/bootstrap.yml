@@ -12,3 +12,13 @@ spring:
         server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
         file-extension: yaml
         namespace: ${NACOS_NAMESPACE:}
+        #nacos拓展配置中心配置
+        extension-configs:
+          - data-id: database.yaml
+            refresh: true
+          - data-id: mybatisplus.yaml
+            refresh: true
+          - data-id: pagehelper.yaml
+            refresh: true
+          - data-id: rabbitmq.yaml
+            refresh: true

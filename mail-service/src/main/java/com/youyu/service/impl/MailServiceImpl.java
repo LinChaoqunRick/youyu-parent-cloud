@@ -68,7 +68,6 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public Boolean sendPostCommentMailNotice(MailReplyInput input) {
-        System.out.println(input.getNickname());
         Context context = new Context();
         context.setVariable("nickname", input.getNickname());
         context.setVariable("caption", input.getCaption());
@@ -100,14 +99,8 @@ public class MailServiceImpl implements MailService {
         return true;
     }
 
-    @Async
     @Override
     public Boolean sendMomentCommentMailNotice(MomentCommentListOutput detail) {
-        Long currentUserId = SecurityUtils.getUserId();
-        if (currentUserId.equals(detail.getUserIdTo())) {
-            return false; // 不发给自己
-        }
-
         // 获取双方用户信息
         User user = userServiceClient.selectById(detail.getUserId()).getData();
         User userTo = userServiceClient.selectById(detail.getUserIdTo()).getData();
