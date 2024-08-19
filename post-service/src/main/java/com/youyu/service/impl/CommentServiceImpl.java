@@ -25,6 +25,7 @@ import com.youyu.service.PostService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -52,10 +53,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     private CommentLikeService commentLikeService;
 
     @Resource
-    private MailServiceClient mailServiceClient;
+    private UserServiceClient userServiceClient;
 
     @Resource
-    private UserServiceClient userServiceClient;
+    RabbitTemplate template;
 
     @Override
     public PageOutput<CommentListOutput> getCommentsPage(CommentListInput input) {
@@ -124,7 +125,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 mailReplyInput.setCaption("用户@" + user.getNickname() + " 在你的博客《" + post.getTitle() + "》下留言了：");
                 mailReplyInput.setContent(comment.getContent());
                 mailReplyInput.setUrl("http://v2.youyul.com/post/details/" + post.getId());
-                mailServiceClient.sendPostCommentMailNotice(mailReplyInput);
+                template.convertAndSend("amq.direct", "mail", mailReplyInput);
             }
 
             return output;

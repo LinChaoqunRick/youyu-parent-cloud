@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @EnableFeignClients
 @EnableAsync
+
 public class PostServiceApp {
     public static void main(String[] args) {
         SpringApplication.run(PostServiceApp.class, args);
