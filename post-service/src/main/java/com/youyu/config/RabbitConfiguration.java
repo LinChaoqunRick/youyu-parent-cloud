@@ -8,8 +8,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfiguration {
-    @Bean("directExchange")  //定义交换机Bean，可以很多个
+    @Bean("directExchange")
     public Exchange exchange() {
+        //定义交换机Bean，可以很多个
         return ExchangeBuilder.directExchange("amq.direct").build();
     }
 
@@ -17,6 +18,8 @@ public class RabbitConfiguration {
     public Queue queue() {
         return QueueBuilder
                 .nonDurable("postCommentMail")   //非持久化类型
+                .deadLetterExchange("dlx.direct")
+                .deadLetterRoutingKey("dl-PostComment")
                 .build();
     }
 
@@ -31,8 +34,26 @@ public class RabbitConfiguration {
                 .noargs();
     }
 
-    @Bean("jacksonConverter")   //直接创建一个用于JSON转换的Bean
-    public Jackson2JsonMessageConverter converter() {
-        return new Jackson2JsonMessageConverter();
+    @Bean("directDlExchange")
+    public Exchange dlExchange() {
+        //创建一个新的死信交换机
+        return ExchangeBuilder.directExchange("dlx.direct").build();
+    }
+
+    @Bean("dl-PostCommentQueue")   //创建一个新的死信队列
+    public Queue dlQueue() {
+        return QueueBuilder
+                .nonDurable("dl-PostComment")
+                .build();
+    }
+
+    @Bean("dlBinding")   //死信交换机和死信队列进绑定
+    public Binding dlBinding(@Qualifier("directDlExchange") Exchange exchange,
+                             @Qualifier("dl-PostCommentQueue") Queue queue) {
+        return BindingBuilder
+                .bind(queue)
+                .to(exchange)
+                .with("dl-PostComment")
+                .noargs();
     }
 }

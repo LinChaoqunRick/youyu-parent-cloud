@@ -17,6 +17,8 @@ public class RabbitConfiguration {
     public Queue queue() {
         return QueueBuilder
                 .nonDurable("momentCommentMail")   //非持久化类型
+                .deadLetterExchange("dlx.direct")
+                .deadLetterRoutingKey("dl-MomentComment")
                 .build();
     }
 
@@ -31,8 +33,26 @@ public class RabbitConfiguration {
                 .noargs();
     }
 
-    @Bean("jacksonConverter")   //直接创建一个用于JSON转换的Bean
-    public Jackson2JsonMessageConverter converter() {
-        return new Jackson2JsonMessageConverter();
+    @Bean("directDlExchange")
+    public Exchange dlExchange() {
+        //创建一个新的死信交换机
+        return ExchangeBuilder.directExchange("dlx.direct").build();
+    }
+
+    @Bean("dl-MomentCommentQueue")   //创建一个新的死信队列
+    public Queue dlQueue() {
+        return QueueBuilder
+                .nonDurable("dl-MomentComment")
+                .build();
+    }
+
+    @Bean("dlBinding")   //死信交换机和死信队列进绑定
+    public Binding dlBinding(@Qualifier("directDlExchange") Exchange exchange,
+                             @Qualifier("dl-MomentCommentQueue") Queue queue) {
+        return BindingBuilder
+                .bind(queue)
+                .to(exchange)
+                .with("dl-momentComment")
+                .noargs();
     }
 }

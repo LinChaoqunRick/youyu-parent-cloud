@@ -25,8 +25,13 @@ public class MailSendListener {
         mailService.sendMomentCommentMailNotice(input);
     }
 
-    /*@RabbitListener(queues = "momentReplyMail", messageConverter = "jacksonConverter")
-    public void momentReplyListener(MomentCommentListOutput input) throws MessagingException {
-        mailService.sendMomentCommentMailNotice(input);
-    }*/
+    @RabbitListener(queues = "dl-PostComment", messageConverter = "jacksonConverter")
+    public void dlPostCommentQueue(MailReplyInput input) {
+        System.out.println(input);
+    }
+
+    @RabbitListener(queues = "dl-MomentComment", messageConverter = "jacksonConverter")
+    public void dlMomentCommentQueue(MomentCommentListOutput input) {
+        System.out.println(input);
+    }
 }
