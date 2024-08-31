@@ -45,8 +45,8 @@ public class CommentController {
     }
 
     @RequestMapping("/createComment")
-    ResponseResult<CommentListOutput> createComment(Comment comment) {
-        CommentListOutput output = commentService.createComment(comment);
+    ResponseResult<CommentListOutput> createPostComment(Comment comment) {
+        CommentListOutput output = commentService.createPostComment(comment);
         return ResponseResult.success(output);
     }
 

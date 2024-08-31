@@ -104,31 +104,16 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    public CommentListOutput createComment(@Valid Comment comment) {
+    public CommentListOutput createPostComment(@Valid Comment comment) {
         int insert = commentMapper.insert(comment);
         if (insert > 0) {
-            CommentListOutput output = getCommentDetailById(comment.getId());
+            CommentListOutput detail = getCommentDetailById(comment.getId());
             // 如果回复的是自己，不发送邮件
-            if (comment.getUserId().equals(comment.getUserIdTo())) {
-                return output;
-            }
-            User user = userServiceClient.selectById(comment.getUserId()).getData();
-            User userTo = userServiceClient.selectById(comment.getUserIdTo()).getData();
-            Post post = postService.getById(comment.getPostId());
-
-            // 回复人已绑定邮箱
-            if (Objects.nonNull(userTo) && StringUtils.hasText(userTo.getEmail())) {
-                MailReplyInput mailReplyInput = new MailReplyInput();
-                mailReplyInput.setTarget(userTo.getEmail());
-                mailReplyInput.setNickname(userTo.getNickname());
-                mailReplyInput.setSubject("[有语] 您有一条新的留言");
-                mailReplyInput.setCaption("用户@" + user.getNickname() + " 在你的博客《" + post.getTitle() + "》下留言了：");
-                mailReplyInput.setContent(comment.getContent());
-                mailReplyInput.setUrl("http://v2.youyul.com/post/details/" + post.getId());
-                template.convertAndSend("amq.direct", "postCommentMail", mailReplyInput);
+            if (!comment.getUserId().equals(comment.getUserIdTo())) {
+                template.convertAndSend("amq.direct", "postCommentMail", detail);
             }
 
-            return output;
+            return detail;
         } else {
             throw new SystemException(ResultCode.OPERATION_FAIL);
         }

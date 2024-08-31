@@ -18,7 +18,7 @@ public interface CommentService extends IService<Comment> {
 
     PageOutput<CommentListOutput> getPostSubCommentsPage(PostReplyListInput input);
 
-    CommentListOutput createComment(Comment comment);
+    CommentListOutput createPostComment(Comment comment);
 
     CommentListOutput getCommentDetailById(Long commentId);
 

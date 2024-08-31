@@ -4,11 +4,15 @@ package com.youyu.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.youyu.dto.mail.MailReplyInput;
 import com.youyu.dto.moment.MomentCommentListOutput;
+import com.youyu.dto.post.comment.CommentListOutput;
+import com.youyu.dto.post.post.PostDetailOutput;
 import com.youyu.entity.moment.Moment;
+import com.youyu.entity.post.Post;
 import com.youyu.entity.user.User;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.feign.MomentServiceClient;
+import com.youyu.feign.PostServiceClient;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.service.MailService;
 import com.youyu.utils.MailUtils;
@@ -34,6 +38,9 @@ public class MailServiceImpl implements MailService {
 
     @Resource
     private MomentServiceClient momentServiceClient;
+
+    @Resource
+    private PostServiceClient postServiceClient;
 
     @Resource
     private MailUtils mailUtils;
@@ -67,34 +74,21 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public Boolean sendPostCommentMailNotice(MailReplyInput input) {
-        Context context = new Context();
-        context.setVariable("nickname", input.getNickname());
-        context.setVariable("caption", input.getCaption());
-        context.setVariable("content", input.getContent());
-        context.setVariable("url", input.getUrl());
-        String emailContent = templateEngine.process("MailReplyTemplate", context);
-        try {
-            mailUtils.sendHtmlMail(input.getTarget(), input.getSubject(), emailContent);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
+    public Boolean sendPostCommentMailNotice(CommentListOutput input) {
+        User user = userServiceClient.selectById(input.getUserId()).getData();
+        User userTo = userServiceClient.selectById(input.getUserIdTo()).getData();
+        PostDetailOutput post = postServiceClient.selectById(input.getPostId()).getData();
 
-    @Override
-    public Boolean sendMomentCommentNotice(MailReplyInput input) {
         Context context = new Context();
-        context.setVariable("nickname", input.getNickname());
-        context.setVariable("caption", input.getCaption());
+        context.setVariable("nickname", userTo.getNickname());
+        context.setVariable("caption", "用户@" + user.getNickname() + " 在你的博客《" + post.getTitle() + "》下留言了：");
         context.setVariable("content", input.getContent());
-        context.setVariable("url", input.getUrl());
+        context.setVariable("url", "https://v2.youyul.com/post/details/" + post.getId());
         String emailContent = templateEngine.process("MailReplyTemplate", context);
         try {
-            mailUtils.sendHtmlMail(input.getTarget(), input.getSubject(), emailContent);
+            mailUtils.sendHtmlMail(userTo.getEmail(), "[有语] 您有一条新的留言", emailContent);
         } catch (MessagingException e) {
             e.printStackTrace();
-            return false;
         }
         return true;
     }
@@ -104,22 +98,21 @@ public class MailServiceImpl implements MailService {
         // 获取双方用户信息
         User user = userServiceClient.selectById(detail.getUserId()).getData();
         User userTo = userServiceClient.selectById(detail.getUserIdTo()).getData();
-
-        // 获取时刻信息
         Moment moment = momentServiceClient.getById(detail.getMomentId()).getData();
 
         // 回复人已绑定邮箱
-        if (Objects.nonNull(userTo) && StringUtils.hasText(userTo.getEmail())) {
-            MailReplyInput mailReplyInput = new MailReplyInput();
-            mailReplyInput.setTarget(userTo.getEmail());
-            mailReplyInput.setNickname(userTo.getNickname());
-            mailReplyInput.setSubject("[有语] 您有一条新的留言");
-            mailReplyInput.setCaption("用户@" + user.getNickname() + " 在你的时刻《" + moment.getContent() + "》下留言了：");
-            mailReplyInput.setContent(detail.getContent());
-            mailReplyInput.setUrl("http://v2.youyul.com/details/details/" + moment.getId());
-            return sendMomentCommentNotice(mailReplyInput);
-
+        Context context = new Context();
+        context.setVariable("nickname", userTo.getNickname());
+        context.setVariable("caption", "用户@" + user.getNickname() + " 在你的时刻《" + moment.getContent() + "》下留言了：");
+        context.setVariable("content", detail.getContent());
+        context.setVariable("url", "https://v2.youyul.com/moment/details/" + moment.getId());
+        String emailContent = templateEngine.process("MailReplyTemplate", context);
+        try {
+            mailUtils.sendHtmlMail(userTo.getEmail(), "[有语] 您有一条新的留言", emailContent);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return false;
         }
-        return false;
+        return true;
     }
 }

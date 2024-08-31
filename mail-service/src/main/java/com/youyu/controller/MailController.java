@@ -2,6 +2,7 @@ package com.youyu.controller;
 
 import com.youyu.dto.mail.MailReplyInput;
 import com.youyu.dto.moment.MomentCommentListOutput;
+import com.youyu.dto.post.comment.CommentListOutput;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class MailController {
     }
 
     @RequestMapping("/sendPostCommentMailNotice")
-    public ResponseResult<Boolean> sendPostCommentMailNotice(MailReplyInput input) throws MessagingException {
+    public ResponseResult<Boolean> sendPostCommentMailNotice(CommentListOutput input) throws MessagingException {
         Boolean result = mailService.sendPostCommentMailNotice(input);
         return ResponseResult.success(result);
     }
