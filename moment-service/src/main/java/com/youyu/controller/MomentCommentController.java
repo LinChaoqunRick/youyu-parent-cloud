@@ -52,6 +52,12 @@ public class MomentCommentController {
         return ResponseResult.success(remove);
     }
 
+    @RequestMapping("/getById")
+    public ResponseResult<MomentComment> getById(Long commentId) {
+        MomentComment comment = momentCommentService.getById(commentId);
+        return ResponseResult.success(comment);
+    }
+
     @RequestMapping("/open/listMomentCommentPage")
     public ResponseResult<PageOutput<MomentCommentListOutput>> listMomentCommentPage(@Valid MomentCommentListInput input) {
         PageOutput<MomentCommentListOutput> comments = momentCommentService.listMomentCommentPage(input);

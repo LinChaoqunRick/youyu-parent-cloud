@@ -9,7 +9,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import javax.mail.MessagingException;
 
 @Component
 @Slf4j
@@ -19,13 +18,21 @@ public class MailSendListener {
     private MailService mailService;
 
     @RabbitListener(queues = "postCommentMail", messageConverter = "jacksonConverter")
-    public void postCommentListener(CommentListOutput input) throws MessagingException {
-        mailService.sendPostCommentMailNotice(input);
+    public void postCommentListener(CommentListOutput input) {
+        try {
+            mailService.sendPostCommentMailNotice(input);
+        } catch (Exception ignored) {
+
+        }
     }
 
     @RabbitListener(queues = "momentCommentMail", messageConverter = "jacksonConverter")
-    public void momentCommentListener(MomentCommentListOutput input) throws MessagingException {
-        mailService.sendMomentCommentMailNotice(input);
+    public void momentCommentListener(MomentCommentListOutput input) {
+        try {
+            mailService.sendMomentCommentMailNotice(input);
+        } catch (Exception ignored) {
+
+        }
     }
 
     @RabbitListener(queues = "dl-PostComment", messageConverter = "jacksonConverter")

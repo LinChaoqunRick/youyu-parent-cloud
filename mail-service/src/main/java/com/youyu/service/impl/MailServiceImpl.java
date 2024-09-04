@@ -7,6 +7,7 @@ import com.youyu.dto.moment.MomentCommentListOutput;
 import com.youyu.dto.post.comment.CommentListOutput;
 import com.youyu.dto.post.post.PostDetailOutput;
 import com.youyu.entity.moment.Moment;
+import com.youyu.entity.moment.MomentComment;
 import com.youyu.entity.post.Post;
 import com.youyu.entity.user.User;
 import com.youyu.enums.ResultCode;
@@ -19,6 +20,7 @@ import com.youyu.utils.MailUtils;
 import com.youyu.utils.NumberUtils;
 import com.youyu.utils.RedisCache;
 import com.youyu.utils.SecurityUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -31,6 +33,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class MailServiceImpl implements MailService {
 
     @Resource
@@ -52,7 +55,7 @@ public class MailServiceImpl implements MailService {
     private RedisCache redisCache;
 
     @Override
-    public Boolean sendRegisterCode(String target, boolean repeat) throws MessagingException {
+    public Boolean sendRegisterCode(String target, boolean repeat) {
         if (repeat) { // 不发送给已存在的邮箱
             Integer count = userServiceClient.selectCountByEmail(target).getData();
             if (count > 0) {
@@ -67,9 +70,14 @@ public class MailServiceImpl implements MailService {
         Context context = new Context();
         context.setVariable("content", code);
         String emailContent = templateEngine.process("MailRegisterCodeTemplate", context);
-        mailUtils.sendHtmlMail(target, subject, emailContent);
-        // 设置5分钟后过期
-        redisCache.setCacheObject("emailCode:" + target, code, 5, TimeUnit.MINUTES);
+        try {
+            mailUtils.sendHtmlMail(target, subject, emailContent);
+            // 设置5分钟后过期
+            redisCache.setCacheObject("emailCode:" + target, code, 5, TimeUnit.MINUTES);
+        } catch (MessagingException e) {
+            return false;
+        }
+
         return true;
     }
 
@@ -87,8 +95,10 @@ public class MailServiceImpl implements MailService {
         String emailContent = templateEngine.process("MailReplyTemplate", context);
         try {
             mailUtils.sendHtmlMail(userTo.getEmail(), "[有语] 您有一条新的留言", emailContent);
+            log.info("文章评论通知邮件已发送至:{}", userTo.getEmail());
         } catch (MessagingException e) {
-            e.printStackTrace();
+            log.error("文章评论通知邮件发送失败：{}", e.getMessage());
+            return false;
         }
         return true;
     }
@@ -97,8 +107,8 @@ public class MailServiceImpl implements MailService {
     public Boolean sendMomentCommentMailNotice(MomentCommentListOutput detail) {
         // 获取双方用户信息
         User user = userServiceClient.selectById(detail.getUserId()).getData();
+        Moment moment = momentServiceClient.getMomentById(detail.getMomentId()).getData();
         User userTo = userServiceClient.selectById(detail.getUserIdTo()).getData();
-        Moment moment = momentServiceClient.getById(detail.getMomentId()).getData();
 
         // 回复人已绑定邮箱
         Context context = new Context();
@@ -109,8 +119,9 @@ public class MailServiceImpl implements MailService {
         String emailContent = templateEngine.process("MailReplyTemplate", context);
         try {
             mailUtils.sendHtmlMail(userTo.getEmail(), "[有语] 您有一条新的留言", emailContent);
+            log.info("时刻评论通知邮件已发送至:{}", userTo.getEmail());
         } catch (MessagingException e) {
-            e.printStackTrace();
+            log.error("时刻评论通知邮件发送失败：{}", e.getMessage());
             return false;
         }
         return true;
