@@ -1,14 +1,11 @@
 package com.youyu.service.impl;
 
-
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.youyu.dto.mail.MailReplyInput;
 import com.youyu.dto.moment.MomentCommentListOutput;
 import com.youyu.dto.post.comment.CommentListOutput;
 import com.youyu.dto.post.post.PostDetailOutput;
+import com.youyu.dto.post.post.PostUserOutput;
 import com.youyu.entity.moment.Moment;
-import com.youyu.entity.moment.MomentComment;
-import com.youyu.entity.post.Post;
+import com.youyu.entity.moment.MomentUserOutput;
 import com.youyu.entity.user.User;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -19,17 +16,13 @@ import com.youyu.service.MailService;
 import com.youyu.utils.MailUtils;
 import com.youyu.utils.NumberUtils;
 import com.youyu.utils.RedisCache;
-import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -62,9 +55,7 @@ public class MailServiceImpl implements MailService {
                 throw new SystemException(ResultCode.EMAIL_CONFLICT);
             }
         }
-        // 主题
         String subject = "邮件验证码";
-        // 内容
         String code = NumberUtils.createRandomNumber(6);
 
         Context context = new Context();
@@ -74,17 +65,16 @@ public class MailServiceImpl implements MailService {
             mailUtils.sendHtmlMail(target, subject, emailContent);
             // 设置5分钟后过期
             redisCache.setCacheObject("emailCode:" + target, code, 5, TimeUnit.MINUTES);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             return false;
         }
-
         return true;
     }
 
     @Override
     public Boolean sendPostCommentMailNotice(CommentListOutput input) {
-        User user = userServiceClient.selectById(input.getUserId()).getData();
-        User userTo = userServiceClient.selectById(input.getUserIdTo()).getData();
+        PostUserOutput user = input.getUser();
+        PostUserOutput userTo = input.getUserTo();
         PostDetailOutput post = postServiceClient.selectById(input.getPostId()).getData();
 
         Context context = new Context();
@@ -96,9 +86,9 @@ public class MailServiceImpl implements MailService {
         try {
             mailUtils.sendHtmlMail(userTo.getEmail(), "[有语] 您有一条新的留言", emailContent);
             log.info("文章评论通知邮件已发送至:{}", userTo.getEmail());
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             log.error("文章评论通知邮件发送失败：{}", e.getMessage());
-            return false;
+            throw new SystemException(ResultCode.OPERATION_FAIL);
         }
         return true;
     }
@@ -106,9 +96,9 @@ public class MailServiceImpl implements MailService {
     @Override
     public Boolean sendMomentCommentMailNotice(MomentCommentListOutput detail) {
         // 获取双方用户信息
-        User user = userServiceClient.selectById(detail.getUserId()).getData();
+        MomentUserOutput user = detail.getUser();
+        MomentUserOutput userTo = detail.getUserTo();
         Moment moment = momentServiceClient.getMomentById(detail.getMomentId()).getData();
-        User userTo = userServiceClient.selectById(detail.getUserIdTo()).getData();
 
         // 回复人已绑定邮箱
         Context context = new Context();
@@ -119,9 +109,9 @@ public class MailServiceImpl implements MailService {
         String emailContent = templateEngine.process("MailReplyTemplate", context);
         try {
             mailUtils.sendHtmlMail(userTo.getEmail(), "[有语] 您有一条新的留言", emailContent);
-            log.info("时刻评论通知邮件已发送至:{}", userTo.getEmail());
-        } catch (MessagingException e) {
-            log.error("时刻评论通知邮件发送失败：{}", e.getMessage());
+            log.info("时刻评论通知邮件已发送至: {}", userTo.getEmail());
+        } catch (Exception e) {
+            log.error("时刻评论通知邮件发送失败: {}", e.getMessage());
             return false;
         }
         return true;

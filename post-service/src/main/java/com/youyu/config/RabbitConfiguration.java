@@ -17,7 +17,7 @@ public class RabbitConfiguration {
     @Bean("postCommentMailQueue")     //定义消息队列
     public Queue queue() {
         return QueueBuilder
-                .nonDurable("postCommentMail")   //非持久化类型
+                .durable("postCommentMail")   //非持久化类型
                 .deadLetterExchange("dlx.direct")
                 .deadLetterRoutingKey("dl-PostComment")
                 .build();
@@ -43,7 +43,7 @@ public class RabbitConfiguration {
     @Bean("dl-PostCommentQueue")   //创建一个新的死信队列
     public Queue dlQueue() {
         return QueueBuilder
-                .nonDurable("dl-PostComment")
+                .durable("dl-PostComment")
                 .build();
     }
 

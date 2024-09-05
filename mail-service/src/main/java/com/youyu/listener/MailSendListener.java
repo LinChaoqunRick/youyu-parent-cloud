@@ -19,29 +19,21 @@ public class MailSendListener {
 
     @RabbitListener(queues = "postCommentMail", messageConverter = "jacksonConverter")
     public void postCommentListener(CommentListOutput input) {
-        try {
-            mailService.sendPostCommentMailNotice(input);
-        } catch (Exception ignored) {
-
-        }
+        mailService.sendPostCommentMailNotice(input);
     }
 
     @RabbitListener(queues = "momentCommentMail", messageConverter = "jacksonConverter")
     public void momentCommentListener(MomentCommentListOutput input) {
-        try {
-            mailService.sendMomentCommentMailNotice(input);
-        } catch (Exception ignored) {
-
-        }
+        mailService.sendMomentCommentMailNotice(input);
     }
 
-    @RabbitListener(queues = "dl-PostComment", messageConverter = "jacksonConverter")
+    /*@RabbitListener(queues = "dl-PostComment", messageConverter = "jacksonConverter")
     public void dlPostCommentQueue(MailReplyInput input) {
         System.out.println(input);
-    }
+    }*/
 
-    @RabbitListener(queues = "dl-MomentComment", messageConverter = "jacksonConverter")
+    /*@RabbitListener(queues = "dl-MomentComment", messageConverter = "jacksonConverter")
     public void dlMomentCommentQueue(MomentCommentListOutput input) {
         System.out.println(input);
-    }
+    }*/
 }

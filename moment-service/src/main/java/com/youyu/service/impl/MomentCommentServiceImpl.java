@@ -48,9 +48,6 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
     private MomentCommentLikeService momentCommentLikeService;
 
     @Resource
-    private MailServiceClient mailServiceClient;
-
-    @Resource
     RabbitTemplate template;
 
     @Override

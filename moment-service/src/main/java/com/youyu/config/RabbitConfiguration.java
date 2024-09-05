@@ -16,7 +16,7 @@ public class RabbitConfiguration {
     @Bean("momentCommentMailQueue")     //定义消息队列
     public Queue queue() {
         return QueueBuilder
-                .nonDurable("momentCommentMail")   //非持久化类型
+                .durable("momentCommentMail")   //非持久化类型
                 .deadLetterExchange("dlx.direct")
                 .deadLetterRoutingKey("dl-MomentComment")
                 .build();
@@ -42,7 +42,7 @@ public class RabbitConfiguration {
     @Bean("dl-MomentCommentQueue")   //创建一个新的死信队列
     public Queue dlQueue() {
         return QueueBuilder
-                .nonDurable("dl-MomentComment")
+                .durable("dl-MomentComment")
                 .build();
     }
 

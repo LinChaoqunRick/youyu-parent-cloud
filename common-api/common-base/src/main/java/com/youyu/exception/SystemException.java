@@ -1,18 +1,12 @@
 package com.youyu.exception;
 
 import com.youyu.enums.ResultCode;
+import lombok.Getter;
 
+@Getter
 public class SystemException extends RuntimeException {
     private final int code;
     private final String message;
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 
     public SystemException(ResultCode resultCode) {
         super(resultCode.getMessage());
