@@ -8,10 +8,14 @@ spring:
       discovery:
         server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
         namespace: ${NACOS_NAMESPACE:}
+        username: nacos
+        password: nacos123
       config:
         server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
         file-extension: yaml
         namespace: ${NACOS_NAMESPACE:}
+        username: nacos
+        password: nacos123
         #nacos拓展配置中心配置
         extension-configs:
           - data-id: database.yaml
