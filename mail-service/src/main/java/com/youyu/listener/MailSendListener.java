@@ -1,6 +1,5 @@
 package com.youyu.listener;
 
-import com.youyu.dto.mail.MailReplyInput;
 import com.youyu.dto.moment.MomentCommentListOutput;
 import com.youyu.dto.post.comment.CommentListOutput;
 import com.youyu.service.MailService;
@@ -26,14 +25,4 @@ public class MailSendListener {
     public void momentCommentListener(MomentCommentListOutput input) {
         mailService.sendMomentCommentMailNotice(input);
     }
-
-    /*@RabbitListener(queues = "dl-PostComment", messageConverter = "jacksonConverter")
-    public void dlPostCommentQueue(MailReplyInput input) {
-        System.out.println(input);
-    }*/
-
-    /*@RabbitListener(queues = "dl-MomentComment", messageConverter = "jacksonConverter")
-    public void dlMomentCommentQueue(MomentCommentListOutput input) {
-        System.out.println(input);
-    }*/
 }

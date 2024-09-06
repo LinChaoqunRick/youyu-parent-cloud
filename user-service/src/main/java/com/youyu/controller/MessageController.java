@@ -15,6 +15,7 @@ import com.youyu.mapper.MessageMapper;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.MessageService;
 import com.youyu.service.UserService;
+import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.PageUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,7 +44,7 @@ public class MessageController {
     private UserService userService;
 
     @RequestMapping("/open/create")
-    ResponseResult<Message> create(@Valid Message message) {
+    ResponseResult<MessageListOutput> create(@Valid Message message) {
         if (Objects.isNull(message.getUserId())) { // 如果是游客
             if (Objects.isNull(message.getNickname())) {
                 throw new SystemException(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), "昵称不能为空");
@@ -53,10 +54,15 @@ public class MessageController {
                 throw new SystemException(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), "邮箱不能为空");
             }
         }
-        boolean save = messageService.save(message);
+        messageService.save(message);
+        MessageListOutput output = BeanCopyUtils.copyBean(message, MessageListOutput.class);
         PositionInfo position = userService.getUserPositionByIP();
-        message.setAdcode(position.getAdcode());
-        return ResponseResult.success(message);
+        output.setAdcode(position.getAdcode());
+        if (Objects.nonNull(output.getUserId())) {
+            MessageUserOutput userDetail = messageService.getUserDetail(message.getUserId());
+            output.setUserInfo(userDetail);
+        }
+        return ResponseResult.success(output);
     }
 
     @RequestMapping("/open/update")
@@ -83,6 +89,20 @@ public class MessageController {
         });
 
         return ResponseResult.success(pageOutput);
+    }
+
+    @RequestMapping("/open/getById")
+    ResponseResult<MessageListOutput> getById(Long id) {
+        Message message = messageService.getById(id);
+        MessageListOutput output = BeanCopyUtils.copyBean(message, MessageListOutput.class);
+
+        output.setAdname(AdCode.getDescByCode(output.getAdcode()));
+        if (Objects.nonNull(output.getUserId())) {
+            MessageUserOutput userDetail = messageService.getUserDetail(output.getUserId());
+            output.setUserInfo(userDetail);
+        }
+
+        return ResponseResult.success(output);
     }
 
     @RequestMapping("/delete")

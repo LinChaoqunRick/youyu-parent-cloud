@@ -6,7 +6,6 @@ import com.youyu.dto.post.post.PostDetailOutput;
 import com.youyu.dto.post.post.PostUserOutput;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentUserOutput;
-import com.youyu.entity.user.User;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.feign.MomentServiceClient;
@@ -22,7 +21,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.annotation.Resource;
-import javax.mail.MessagingException;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -85,7 +83,7 @@ public class MailServiceImpl implements MailService {
         String emailContent = templateEngine.process("MailReplyTemplate", context);
         try {
             mailUtils.sendHtmlMail(userTo.getEmail(), "[有语] 您有一条新的留言", emailContent);
-            log.info("文章评论通知邮件已发送至:{}", userTo.getEmail());
+            log.info("文章评论通知邮件已发送至: {}", userTo.getEmail());
         } catch (Exception e) {
             log.error("文章评论通知邮件发送失败：{}", e.getMessage());
             throw new SystemException(ResultCode.OPERATION_FAIL);
@@ -112,7 +110,7 @@ public class MailServiceImpl implements MailService {
             log.info("时刻评论通知邮件已发送至: {}", userTo.getEmail());
         } catch (Exception e) {
             log.error("时刻评论通知邮件发送失败: {}", e.getMessage());
-            return false;
+            throw new SystemException(ResultCode.OPERATION_FAIL);
         }
         return true;
     }
