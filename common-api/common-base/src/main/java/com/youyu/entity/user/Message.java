@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotBlank;
 
@@ -16,7 +17,7 @@ import javax.validation.constraints.NotBlank;
  * @author makejava
  * @since 2024-02-20 22:04:01
  */
-@SuppressWarnings("serial")
+@EqualsAndHashCode(callSuper = true)
 @TableName("bs_message")
 @Data
 public class Message extends Model<Message> {

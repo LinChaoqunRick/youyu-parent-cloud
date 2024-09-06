@@ -55,7 +55,7 @@ public class MomentController {
     }
 
     @RequestMapping("/delete")
-    public ResponseResult<Boolean> create(@RequestParam Long momentId) {
+    public ResponseResult<Boolean> delete(@RequestParam Long momentId) {
         boolean remove = momentService.delete(momentId);
         return ResponseResult.success(remove);
     }

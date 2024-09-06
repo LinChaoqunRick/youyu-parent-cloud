@@ -14,7 +14,7 @@ public class RequestUtils {
     /**
      * 获取用户真实IP
      *
-     * @return
+     * @return 调用者IP
      */
     public static String getClientIp() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
@@ -34,7 +34,7 @@ public class RequestUtils {
     /**
      * 获取请求的HttpServletRequest对象
      *
-     * @return
+     * @return HttpServletRequest对象
      */
     public static HttpServletRequest getRequest() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();

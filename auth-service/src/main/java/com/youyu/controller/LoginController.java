@@ -1,6 +1,5 @@
 package com.youyu.controller;
 
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.youyu.dto.*;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.connect.GithubConstants;
@@ -13,6 +12,7 @@ import com.youyu.service.LoginService;
 import com.youyu.service.impl.GithubAuthServiceImpl;
 import com.youyu.service.impl.QQAuthServiceImpl;
 import com.youyu.utils.SecurityUtils;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,6 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.net.URLEncoder;
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -54,13 +53,14 @@ public class LoginController {
     private UserFrameworkMapper userFrameworkMapper;
 
     @RequestMapping("/token")
+    @ApiOperation("系统登录")
     public ResponseResult<OAuth2AccessToken> postAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
         OAuth2AccessToken body = tokenEndpoint.postAccessToken(principal, parameters).getBody();
         return ResponseResult.success(body);
     }
 
     @RequestMapping("/logout")
-    public ResponseResult logout() {
+    public ResponseResult<String> logout() {
         loginService.logout();
         return ResponseResult.success("注销成功");
     }

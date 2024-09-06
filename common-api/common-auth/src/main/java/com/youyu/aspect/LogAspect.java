@@ -1,5 +1,6 @@
 package com.youyu.aspect;
 
+import com.alibaba.fastjson.JSON;
 import com.youyu.entity.auth.ActionLog;
 import com.youyu.utils.RequestUtils;
 import com.youyu.utils.SecurityUtils;
@@ -11,8 +12,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
@@ -43,8 +42,8 @@ public class LogAspect {
         } finally {
             endTime = System.currentTimeMillis();
             actionLog.setDuration(endTime - startTime);
-            StringBuilder builder = createLogStyle(actionLog);
-            log.info(String.valueOf(builder));
+//            StringBuilder builder = createLogStyle(actionLog);
+//            log.info(String.valueOf(builder));
         }
         return result;
     }
@@ -54,16 +53,16 @@ public class LogAspect {
         // 获取userId
         actionLog.setUserId(SecurityUtils.getUserId());
         // 获取request
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
+        HttpServletRequest request = RequestUtils.getRequest();
         // 获取ip
         actionLog.setIp(RequestUtils.getClientIp());
         // 获取URI
-        actionLog.setPath(request.getRequestURI());
+        actionLog.setPath(request != null ? request.getRequestURI(): "");
         // 获取API信息
         Method m = ((MethodSignature) point.getSignature()).getMethod();
         ApiOperation apiOperation = m.getAnnotation(ApiOperation.class);
-
+        // 获取请求参数
+        String params = JSON.toJSONString(request.getParameterMap());
         if (Objects.nonNull(apiOperation)) {
             actionLog.setAction(apiOperation.value());
         }
