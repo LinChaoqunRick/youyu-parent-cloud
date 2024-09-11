@@ -14,7 +14,7 @@ public class ActionLog {
     @TableId
     private Long id;
     private Long userId;
-    private Integer type;
+    private String type;
     private String ip;
     private String action;
     private String path;

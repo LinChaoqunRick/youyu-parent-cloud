@@ -49,22 +49,20 @@ public class LogAspect {
     }
 
     private ActionLog aroundLogBefore(ProceedingJoinPoint point) {
+        HttpServletRequest request = RequestUtils.getRequest(); // 获取request
+        Method m = ((MethodSignature) point.getSignature()).getMethod(); // 获取API信息
+        ApiOperation apiOperation = m.getAnnotation(ApiOperation.class); // 获取注解信息
+
         ActionLog actionLog = new ActionLog();
-        // 获取userId
-        actionLog.setUserId(SecurityUtils.getUserId());
-        // 获取request
-        HttpServletRequest request = RequestUtils.getRequest();
-        // 获取ip
-        actionLog.setIp(RequestUtils.getClientIp());
-        // 获取URI
-        actionLog.setPath(request != null ? request.getRequestURI(): "");
-        // 获取API信息
-        Method m = ((MethodSignature) point.getSignature()).getMethod();
-        ApiOperation apiOperation = m.getAnnotation(ApiOperation.class);
-        // 获取请求参数
-        String params = JSON.toJSONString(request.getParameterMap());
+        actionLog.setUserId(SecurityUtils.getUserId()); // 获取userId
+        actionLog.setIp(RequestUtils.getClientIp()); // 获取调用者ip
+        if (request != null) {
+            actionLog.setPath(request.getRequestURI()); // 获取调用的URI
+            actionLog.setParams(JSON.toJSONString(request.getParameterMap())); // 获取请求参数
+        }
         if (Objects.nonNull(apiOperation)) {
             actionLog.setAction(apiOperation.value());
+            actionLog.setType(apiOperation.tags()[0]);
         }
         return actionLog;
     }

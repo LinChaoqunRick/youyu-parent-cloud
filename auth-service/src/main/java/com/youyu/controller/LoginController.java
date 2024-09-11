@@ -4,6 +4,7 @@ import com.youyu.dto.*;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.connect.GithubConstants;
 import com.youyu.entity.connect.QQConstants;
+import com.youyu.entity.system.LogConstants;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.mapper.UserFrameworkMapper;
@@ -53,7 +54,7 @@ public class LoginController {
     private UserFrameworkMapper userFrameworkMapper;
 
     @RequestMapping("/token")
-    @ApiOperation("系统登录")
+    @ApiOperation(value = "系统登录", tags = {LogConstants.LOGIN_LOGOUT_LOG_CODE})
     public ResponseResult<OAuth2AccessToken> postAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
         OAuth2AccessToken body = tokenEndpoint.postAccessToken(principal, parameters).getBody();
         return ResponseResult.success(body);
