@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * @author makejava
  * @since 2024-02-20 22:04:04
  */
-@Service("messageService")
+@Service("logService")
 public class LogServiceImpl extends ServiceImpl<LogMapper, ActionLog> implements LogService {
 
 }

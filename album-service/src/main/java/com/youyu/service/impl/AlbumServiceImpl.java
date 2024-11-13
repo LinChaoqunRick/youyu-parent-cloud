@@ -58,8 +58,8 @@ public class AlbumServiceImpl extends ServiceImpl<AlbumMapper, Album> implements
     private AlbumImageService albumImageService;
 
     @Override
-    public PageOutput<AlbumListOutput> selectPage(Page<Album> page, String name) {
-        Page<Album> albumPage = albumMapper.selectPage(page, name);
+    public PageOutput<AlbumListOutput> selectPage(Page<Album> page, Album album) {
+        Page<Album> albumPage = albumMapper.selectPage(page, new LambdaQueryWrapper<>(album));
 
         // 封装查询结果
         PageOutput<AlbumListOutput> pageOutput = PageUtils.setPageResult(albumPage, AlbumListOutput.class);
@@ -74,8 +74,12 @@ public class AlbumServiceImpl extends ServiceImpl<AlbumMapper, Album> implements
             PostUserOutput detail = getUserDetailById(item.getUserId());
             item.setUserInfo(detail);
 
-            String cover = item.getCover();
-            if (Objects.isNull(cover)) {
+            Long coverImageId = item.getCoverImageId();
+            String cover = null;
+            if (Objects.nonNull(coverImageId)) {
+                AlbumImage albumImage = albumImageService.getById(coverImageId);
+                cover = albumImage.getPath();
+            } else {
                 // 如果没有设置封面，就取第一张照片
                 LambdaQueryWrapper<AlbumImage> queryWrapper = new LambdaQueryWrapper<>();
                 queryWrapper.eq(AlbumImage::getAlbumId, item.getId()).last("limit 1");

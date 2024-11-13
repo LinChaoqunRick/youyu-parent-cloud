@@ -1,6 +1,7 @@
 package com.youyu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.dto.AlbumListInput;
 import com.youyu.dto.AlbumListOutput;
@@ -45,11 +46,22 @@ public class AlbumController {
     @Resource
     private UserServiceClient userServiceClient;
 
+    @RequestMapping("/mine/list")
+    public ResponseResult<PageOutput<AlbumListOutput>> mineList(AlbumListInput input) {
+        // 分页查询
+        Page<Album> page = new Page<>(input.getPageNum(), input.getPageSize());
+        Album album = BeanCopyUtils.copyBean(input, Album.class);
+        album.setUserId(SecurityUtils.getUserId());
+        PageOutput<AlbumListOutput> pageOutput = albumService.selectPage(page, album);
+        return ResponseResult.success(pageOutput);
+    }
+
     @RequestMapping("/open/list")
     public ResponseResult<PageOutput<AlbumListOutput>> list(AlbumListInput input) {
         // 分页查询
         Page<Album> page = new Page<>(input.getPageNum(), input.getPageSize());
-        PageOutput<AlbumListOutput> pageOutput = albumService.selectPage(page, input.getName());
+        Album album = BeanCopyUtils.copyBean(input, Album.class);
+        PageOutput<AlbumListOutput> pageOutput = albumService.selectPage(page, album);
         return ResponseResult.success(pageOutput);
     }
 
@@ -141,6 +153,17 @@ public class AlbumController {
         // 水平越权校验
         SecurityUtils.authAuthorizationUser(album.getUserId());
         boolean update = albumService.removeById(input.getId());
+        return ResponseResult.success(update);
+    }
+
+    @RequestMapping("/setCover")
+    public ResponseResult<Boolean> setCover(@RequestParam Long id, @RequestParam Long coverImageId) {
+        LambdaUpdateWrapper<Album> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(Album::getId, id);
+        updateWrapper.set(Album::getCoverImageId, coverImageId);
+        // 水平越权校验
+        SecurityUtils.authAuthorizationUser(SecurityUtils.getUserId());
+        boolean update = albumService.update(updateWrapper);
         return ResponseResult.success(update);
     }
 }
