@@ -1,7 +1,6 @@
 package com.youyu.filter;
 
 import com.alibaba.fastjson.JSON;
-import com.youyu.enums.ResultCode;
 import com.youyu.result.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -10,7 +9,6 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
@@ -68,7 +66,7 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
                 Long authenticateUserId = getSecurityUserId(accessToken);
 
                 if (Objects.isNull(authenticateUserId)) {
-                    return buildReturnMono(HttpStatus.UNAUTHORIZED, ResultCode.UNAUTHORIZED.getMessage(), exchange);
+                    return buildReturnMono(HttpStatus.UNAUTHORIZED, "未认证用户", exchange);
                 }
 
                 boolean expired = accessToken.isExpired();
@@ -92,7 +90,7 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
                 }
             }
 
-            return buildReturnMono(HttpStatus.UNAUTHORIZED, ResultCode.UNAUTHORIZED.getMessage(), exchange);
+            return buildReturnMono(HttpStatus.UNAUTHORIZED, "未认证用户", exchange);
         }
     }
 
