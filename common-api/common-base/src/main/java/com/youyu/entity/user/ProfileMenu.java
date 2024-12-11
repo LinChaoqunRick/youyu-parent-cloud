@@ -1,7 +1,6 @@
 package com.youyu.entity.user;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -42,6 +41,8 @@ public class ProfileMenu implements Serializable {
     private Integer showFollow = 1;
     @NotNull(message = "showFans不能为空")
     private Integer showFans = 1;
+    @NotNull(message = "showFans不能为空")
+    private Integer showAlbum = 1;
 
 }
 

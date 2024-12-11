@@ -75,7 +75,7 @@ public enum AdCode {
         }
         String areaName = null;
         for (AdCode type : AdCode.values()) {
-            if (type.getAdcode() < adcode) {
+            if (type.getAdcode() <= adcode) {
                 areaName = type.getName();
             } else {
                 return areaName;
