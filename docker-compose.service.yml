@@ -5,8 +5,8 @@ services:
     build: # 服务的 Docker 构建文件位置
       context: ./gateway-service
       dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
+#    ports:
+#      - "8080:8080"
     environment:
       - NACOS_SERVER_ADDR=nacos:8848
     networks:
