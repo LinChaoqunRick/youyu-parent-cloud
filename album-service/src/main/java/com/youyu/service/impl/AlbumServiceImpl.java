@@ -78,7 +78,9 @@ public class AlbumServiceImpl extends ServiceImpl<AlbumMapper, Album> implements
             String cover = null;
             if (Objects.nonNull(coverImageId)) {
                 AlbumImage albumImage = albumImageService.getById(coverImageId);
-                cover = albumImage.getPath();
+                if (Objects.nonNull(albumImage)) {
+                    cover = albumImage.getPath();
+                }
             } else {
                 // 如果没有设置封面，就取第一张照片
                 LambdaQueryWrapper<AlbumImage> queryWrapper = new LambdaQueryWrapper<>();
