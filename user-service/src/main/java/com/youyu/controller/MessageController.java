@@ -53,10 +53,10 @@ public class MessageController {
                 throw new SystemException(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), "邮箱不能为空");
             }
         }
+        PositionInfo position = userService.getUserPositionByIP();
+        message.setAdcode(position.getAdcode());
         messageService.save(message);
         MessageListOutput output = BeanCopyUtils.copyBean(message, MessageListOutput.class);
-        PositionInfo position = userService.getUserPositionByIP();
-        output.setAdcode(position.getAdcode());
         if (Objects.nonNull(output.getUserId())) {
             MessageUserOutput userDetail = messageService.getUserDetail(message.getUserId());
             output.setUserInfo(userDetail);
@@ -74,6 +74,7 @@ public class MessageController {
     ResponseResult<PageOutput<MessageListOutput>> list(PageBase input) {
         LambdaQueryWrapper<Message> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Message::getRootId, -1);
+        queryWrapper.orderByDesc(Message::getCreateTime);
 
         Page<Message> page = new Page<>(input.getPageNum(), input.getPageSize());
         Page<Message> messagePage = messageMapper.selectPage(page, queryWrapper);

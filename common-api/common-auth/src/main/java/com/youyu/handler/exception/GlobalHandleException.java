@@ -4,6 +4,7 @@ import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,42 +27,48 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalHandleException {
 
+    @Value("${spring.profiles.active}")
+    private String active;
+
+    public String getErrorMsg(Exception ex) {
+        if (Objects.equals(active, "dev")) {
+            return getErrorMsg(ex);
+        } else {
+            return "服务异常，请联系管理员!";
+        }
+    }
 
     @ExceptionHandler(SystemException.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseResult systemExceptionHandler(SystemException ex) {
-        log.error("出现异常!SystemException: {}", ex);
-        return ResponseResult.error(ex.getCode(), ex.getMessage());
+    public ResponseResult<?> systemExceptionHandler(SystemException ex) {
+        log.error("出现异常!SystemException: {}", getErrorMsg(ex), ex);
+        return ResponseResult.error(ex.getCode(), getErrorMsg(ex));
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseResult authenticationExceptionHandler(AuthenticationException ex) {
-        log.error("出现异常!AuthenticationException: {}", ex);
-        return ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR.getCode(), ex.getMessage());
+    public ResponseResult<?> authenticationExceptionHandler(AuthenticationException ex) {
+        log.error("出现异常!AuthenticationException: {}", getErrorMsg(ex), ex);
+        return ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR.getCode(), getErrorMsg(ex));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseResult argumentNotValidExceptionHandler(MethodArgumentNotValidException ex) {
-        log.error("出现异常!MethodArgumentNotValidException: {}", ex);
+    public ResponseResult<?> argumentNotValidExceptionHandler(MethodArgumentNotValidException ex) {
+        log.error("出现异常!MethodArgumentNotValidException: {}", getErrorMsg(ex), ex);
         List<FieldError> fieldErrorList = ex.getBindingResult().getFieldErrors();
         String specific = fieldErrorList.get(0).getDefaultMessage();
         return ResponseResult.error(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), specific);
     }
 
     @ExceptionHandler(BindException.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseResult bindExceptionHandler(BindException ex) {
-        log.error("出现异常!BindException: {}", ex);
+    public ResponseResult<?> bindExceptionHandler(BindException ex) {
+        log.error("出现异常!BindException: {}", getErrorMsg(ex), ex);
         List<FieldError> fieldErrorList = ex.getBindingResult().getFieldErrors();
         String specific = fieldErrorList.get(0).getDefaultMessage();
         return ResponseResult.error(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), specific);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseResult bindExceptionHandler(ConstraintViolationException ex) {
-        log.error("出现异常!ConstraintViolationException: {}", ex);
+    public ResponseResult<?> bindExceptionHandler(ConstraintViolationException ex) {
+        log.error("出现异常!ConstraintViolationException: {}", getErrorMsg(ex), ex);
         Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
         List<String> collect = constraintViolations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
         String message = String.join(",", collect);
@@ -69,16 +77,16 @@ public class GlobalHandleException {
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseResult accessDeniedExceptionHandler(AccessDeniedException ex, HttpServletResponse response) {
-        log.error("出现异常!SystemException: {}", ex);
+    public ResponseResult<?> accessDeniedExceptionHandler(AccessDeniedException ex, HttpServletResponse response) {
+        log.error("出现异常!SystemException: {}", getErrorMsg(ex), ex);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        return ResponseResult.error(ResultCode.UNAUTHORIZED.getCode(), ex.getMessage());
+        return ResponseResult.error(ResultCode.UNAUTHORIZED.getCode(), getErrorMsg(ex));
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseResult exceptionHandler(Exception ex) {
-        log.error("出现异常!Exception: {}", ex);
-        return ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR.getCode(), ex.getMessage());
+    public ResponseResult<?> exceptionHandler(Exception ex) {
+        log.error("出现异常!Exception: {}", getErrorMsg(ex), ex);
+        return ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR.getCode(), getErrorMsg(ex));
     }
 }

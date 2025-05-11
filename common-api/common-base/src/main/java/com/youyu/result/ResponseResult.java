@@ -1,10 +1,12 @@
 package com.youyu.result;
 
 import com.youyu.enums.ResultCode;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 public class ResponseResult<T> {
     private int code = 200;
@@ -31,35 +33,12 @@ public class ResponseResult<T> {
         return new ResponseResult<T>(ResultCode.SUCCESS.getCode(), message, data);
     }
 
-    public static ResponseResult error(ResultCode resultCode) {
-        return new ResponseResult(resultCode.getCode(), resultCode.getMessage(), null);
+    public static ResponseResult<?> error(ResultCode resultCode) {
+        return new ResponseResult<>(resultCode.getCode(), resultCode.getMessage());
     }
 
-    public static <T> ResponseResult<T> error(int code, String message) {
-        return new ResponseResult<T>(code, message, null);
+    public static ResponseResult<?> error(int code, String message) {
+        return new ResponseResult<>(code, message);
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
 }

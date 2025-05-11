@@ -1,14 +1,15 @@
 version: '3'
+
 services:
   gateway-service:
     container_name: gateway-service
     build: # 服务的 Docker 构建文件位置
       context: ./gateway-service
       dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
+    #    ports:
+    #      - "8080:8080"
     environment:
-      - NACOS_SERVER_ADDR=nacos:8848
+      TZ: Asia/Shanghai # 设置时区
     networks:
       - mynetwork
 
@@ -17,8 +18,10 @@ services:
     build:
       context: ./auth-service
       dockerfile: Dockerfile
-#    ports:
-#      - "8090:8090"
+    #    ports:
+    #      - "8090:8090"
+    environment:
+      TZ: Asia/Shanghai # 设置时区
     networks:
       - mynetwork
     depends_on: # 本服务依赖的服务，控制启动先后顺序
@@ -29,8 +32,10 @@ services:
     build:
       context: ./user-service
       dockerfile: Dockerfile
-#    ports:
-#      - "8120:8120"
+    #    ports:
+    #      - "8120:8120"
+    environment:
+      TZ: Asia/Shanghai # 设置时区
     networks:
       - mynetwork
     depends_on:
@@ -41,8 +46,10 @@ services:
     build:
       context: ./post-service
       dockerfile: Dockerfile
-#    ports:
-#      - "8150:8150"
+    #    ports:
+    #      - "8150:8150"
+    environment:
+      TZ: Asia/Shanghai # 设置时区
     networks:
       - mynetwork
     depends_on:
@@ -54,8 +61,10 @@ services:
     build:
       context: ./moment-service
       dockerfile: Dockerfile
-#    ports:
-#      - "8130:8130"
+    #    ports:
+    #      - "8130:8130"
+    environment:
+      TZ: Asia/Shanghai # 设置时区
     networks:
       - mynetwork
     depends_on:
@@ -67,8 +76,10 @@ services:
     build:
       context: ./note-service
       dockerfile: Dockerfile
-#    ports:
-#      - "8140:8140"
+    #    ports:
+    #      - "8140:8140"
+    environment:
+      TZ: Asia/Shanghai # 设置时区
     networks:
       - mynetwork
     depends_on:
@@ -80,8 +91,10 @@ services:
     build:
       context: ./mail-service
       dockerfile: Dockerfile
-#    ports:
-#      - "8110:8110"
+    #    ports:
+    #      - "8110:8110"
+    environment:
+      TZ: Asia/Shanghai # 设置时区
     networks:
       - mynetwork
     depends_on:
@@ -93,8 +106,10 @@ services:
     build:
       context: ./file-service
       dockerfile: Dockerfile
-#    ports:
-#      - "8160:8160"
+    #    ports:
+    #      - "8160:8160"
+    environment:
+      TZ: Asia/Shanghai # 设置时区
     networks:
       - mynetwork
     depends_on:
@@ -106,8 +121,10 @@ services:
     build:
       context: ./sms-service
       dockerfile: Dockerfile
-#    ports:
-#      - "8170:8170"
+    #    ports:
+    #      - "8170:8170"
+    environment:
+      TZ: Asia/Shanghai # 设置时区
     networks:
       - mynetwork
     depends_on:
@@ -121,6 +138,8 @@ services:
       dockerfile: Dockerfile
     #    ports:
     #      - "8160:8160"
+    environment:
+      TZ: Asia/Shanghai # 设置时区
     networks:
       - mynetwork
     depends_on:
@@ -131,3 +150,4 @@ services:
 # 网络，不定义的话就是默认网络
 networks:
   mynetwork:
+    external: true
