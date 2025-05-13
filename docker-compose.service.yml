@@ -8,6 +8,8 @@ services:
       dockerfile: Dockerfile
     #    ports:
     #      - "8080:8080"
+    volumes:
+      - /data/volumes/service-log/gateway-service:/opt/logs
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
@@ -20,6 +22,8 @@ services:
       dockerfile: Dockerfile
     #    ports:
     #      - "8090:8090"
+    volumes:
+      - /data/volumes/service-log/auth-service:/opt/logs
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
@@ -34,6 +38,8 @@ services:
       dockerfile: Dockerfile
     #    ports:
     #      - "8120:8120"
+    volumes:
+      - /data/volumes/service-log/user-service:/opt/logs
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
@@ -48,6 +54,8 @@ services:
       dockerfile: Dockerfile
     #    ports:
     #      - "8150:8150"
+    volumes:
+      - /data/volumes/service-log/post-service:/opt/logs
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
@@ -63,6 +71,8 @@ services:
       dockerfile: Dockerfile
     #    ports:
     #      - "8130:8130"
+    volumes:
+      - /data/volumes/service-log/moment-service:/opt/logs
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
@@ -78,6 +88,8 @@ services:
       dockerfile: Dockerfile
     #    ports:
     #      - "8140:8140"
+    volumes:
+      - /data/volumes/service-log/note-service:/opt/logs
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
@@ -93,6 +105,8 @@ services:
       dockerfile: Dockerfile
     #    ports:
     #      - "8110:8110"
+    volumes:
+      - /data/volumes/service-log/mail-service:/opt/logs
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
@@ -108,6 +122,8 @@ services:
       dockerfile: Dockerfile
     #    ports:
     #      - "8160:8160"
+    volumes:
+      - /data/volumes/service-log/file-service:/opt/logs
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
@@ -123,6 +139,8 @@ services:
       dockerfile: Dockerfile
     #    ports:
     #      - "8170:8170"
+    volumes:
+      - /data/volumes/service-log/sms-service:/opt/logs
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
@@ -138,6 +156,8 @@ services:
       dockerfile: Dockerfile
     #    ports:
     #      - "8160:8160"
+    volumes:
+      - /data/volumes/service-log/album-service:/opt/logs
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
