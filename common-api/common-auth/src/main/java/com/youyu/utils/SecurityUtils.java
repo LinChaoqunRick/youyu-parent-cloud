@@ -77,15 +77,15 @@ public class SecurityUtils {
     }
 
     /**
-     * 获取请求中的AuthenticateUserId
+     * 获取请求中的X-User-Id
      *
      * @return
      */
     public static Long getRequestAuthenticateUserId() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String authenticateUserId = request.getHeader("AuthenticateUserId");
-        if (Objects.nonNull(authenticateUserId)) {
-            return Long.valueOf(authenticateUserId);
+        String X_User_ID = request.getHeader("X-User-Id");
+        if (Objects.nonNull(X_User_ID)) {
+            return Long.valueOf(X_User_ID);
         } else {
             return null;
         }

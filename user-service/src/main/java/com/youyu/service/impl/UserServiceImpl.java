@@ -14,9 +14,7 @@ import com.youyu.dto.user.*;
 import com.youyu.entity.auth.Route;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.user.*;
-import com.youyu.feign.MomentServiceClient;
-import com.youyu.feign.NoteServiceClient;
-import com.youyu.feign.PostServiceClient;
+import com.youyu.feign.ContentServiceClient;
 import com.youyu.mapper.UserFollowMapper;
 import com.youyu.mapper.UserMapper;
 import com.youyu.service.UserService;
@@ -46,13 +44,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private UserFollowMapper userFollowMapper;
 
     @Resource
-    private PostServiceClient postServiceClient;
-
-    @Resource
-    private MomentServiceClient momentServiceClient;
-
-    @Resource
-    private NoteServiceClient noteServiceClient;
+    private ContentServiceClient contentServiceClient;
 
     @Resource
     private RestTemplate restTemplate;
@@ -175,19 +167,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         collect.keySet().forEach(key -> {
             if (key == 1) { // 文章
                 List<Long> postIds = collect.get(key).stream().map(DynamicInfo::getId).collect(Collectors.toList());
-                List<PostListOutput> postList = postServiceClient.postListByIds(postIds).getData();
+                List<PostListOutput> postList = contentServiceClient.postListByIds(postIds).getData();
                 resultList.addAll(postList);
             } else if (key == 2) { // 时刻
                 List<Long> momentIds = collect.get(key).stream().map(DynamicInfo::getId).collect(Collectors.toList());
-                List<MomentListOutput> momentList = momentServiceClient.momentListByIds(momentIds).getData();
+                List<MomentListOutput> momentList = contentServiceClient.momentListByIds(momentIds).getData();
                 resultList.addAll(momentList);
             } else if (key == 3) { // 笔记
                 List<Long> noteIds = collect.get(key).stream().map(DynamicInfo::getId).collect(Collectors.toList());
-                List<NoteListOutput> noteList = noteServiceClient.noteListByIds(noteIds).getData();
+                List<NoteListOutput> noteList = contentServiceClient.noteListByIds(noteIds).getData();
                 resultList.addAll(noteList);
             } else if (key == 4) { // 章节
                 List<Long> chapterIds = collect.get(key).stream().map(DynamicInfo::getId).collect(Collectors.toList());
-                List<ChapterListOutput> chapterList = noteServiceClient.listChapterByIds(chapterIds).getData();
+                List<ChapterListOutput> chapterList = contentServiceClient.listChapterByIds(chapterIds).getData();
                 resultList.addAll(chapterList);
             }
         });

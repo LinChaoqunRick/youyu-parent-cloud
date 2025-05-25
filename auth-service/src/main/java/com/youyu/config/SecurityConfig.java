@@ -2,7 +2,7 @@ package com.youyu.config;
 
 import com.youyu.authentication.config.DaoAuthenticationProviderCustom;
 import com.youyu.filter.JwtAuthenticationTokenFilter;
-import com.youyu.service.impl.UserDetailsServiceImpl;
+import com.youyu.service.mail.impl.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

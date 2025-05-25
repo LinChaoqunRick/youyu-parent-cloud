@@ -1,0 +1,28 @@
+server:
+  port: 8150
+spring:
+  application:
+    name: content-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:}
+        username: nacos
+        password: nacos123
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        file-extension: yaml
+        namespace: ${NACOS_NAMESPACE:}
+        username: nacos
+        password: nacos123
+        #nacos拓展配置中心配置
+        extension-configs:
+          - data-id: database.yaml
+            refresh: true
+          - data-id: mybatisplus.yaml
+            refresh: true
+          - data-id: pagehelper.yaml
+            refresh: true
+          - data-id: rabbitmq.yaml
+            refresh: true

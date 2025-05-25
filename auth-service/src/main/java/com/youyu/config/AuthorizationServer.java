@@ -1,6 +1,6 @@
 package com.youyu.config;
 
-import com.youyu.service.impl.UserDetailsServiceImpl;
+import com.youyu.service.mail.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

@@ -47,15 +47,15 @@ services:
     depends_on:
       - auth-service
 
-  post-service:
-    container_name: post-service
+  content-service:
+    container_name: content-service
     build:
-      context: ./post-service
+      context: ./content-service
       dockerfile: Dockerfile
     #    ports:
     #      - "8150:8150"
     volumes:
-      - /data/volumes/service-log/post-service:/opt/logs
+      - /data/volumes/service-log/content-service:/opt/logs
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
@@ -64,49 +64,15 @@ services:
       - gateway-service
       - user-service
 
-  moment-service:
-    container_name: moment-service
+  notify-service:
+    container_name: notify-service
     build:
-      context: ./moment-service
-      dockerfile: Dockerfile
-    #    ports:
-    #      - "8130:8130"
-    volumes:
-      - /data/volumes/service-log/moment-service:/opt/logs
-    environment:
-      TZ: Asia/Shanghai # 设置时区
-    networks:
-      - mynetwork
-    depends_on:
-      - gateway-service
-      - user-service
-
-  note-service:
-    container_name: note-service
-    build:
-      context: ./note-service
-      dockerfile: Dockerfile
-    #    ports:
-    #      - "8140:8140"
-    volumes:
-      - /data/volumes/service-log/note-service:/opt/logs
-    environment:
-      TZ: Asia/Shanghai # 设置时区
-    networks:
-      - mynetwork
-    depends_on:
-      - gateway-service
-      - user-service
-
-  mail-service:
-    container_name: mail-service
-    build:
-      context: ./mail-service
+      context: ./notify-service
       dockerfile: Dockerfile
     #    ports:
     #      - "8110:8110"
     volumes:
-      - /data/volumes/service-log/mail-service:/opt/logs
+      - /data/volumes/service-log/notify-service:/opt/logs
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
@@ -131,41 +97,6 @@ services:
     depends_on:
       - gateway-service
       - user-service
-
-  sms-service:
-    container_name: sms-service
-    build:
-      context: ./sms-service
-      dockerfile: Dockerfile
-    #    ports:
-    #      - "8170:8170"
-    volumes:
-      - /data/volumes/service-log/sms-service:/opt/logs
-    environment:
-      TZ: Asia/Shanghai # 设置时区
-    networks:
-      - mynetwork
-    depends_on:
-      - gateway-service
-      - user-service
-
-  album-service:
-    container_name: album-service
-    build:
-      context: ./album-service
-      dockerfile: Dockerfile
-    #    ports:
-    #      - "8160:8160"
-    volumes:
-      - /data/volumes/service-log/album-service:/opt/logs
-    environment:
-      TZ: Asia/Shanghai # 设置时区
-    networks:
-      - mynetwork
-    depends_on:
-      - gateway-service
-      - user-service
-      - file-service
 
 # 网络，不定义的话就是默认网络
 networks:

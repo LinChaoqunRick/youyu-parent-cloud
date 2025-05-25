@@ -1,6 +1,6 @@
 package com.youyu.config;
 
-import com.youyu.service.impl.UserDetailsServiceImpl;
+import com.youyu.service.mail.impl.UserDetailsServiceImpl;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

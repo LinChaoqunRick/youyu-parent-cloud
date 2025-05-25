@@ -63,9 +63,9 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
             //判断是否是有效的token
             try {
                 OAuth2AccessToken accessToken = getAccessToken(token);
-                Long authenticateUserId = getSecurityUserId(accessToken);
+                Long X_User_ID = getSecurityUserId(accessToken);
 
-                if (Objects.isNull(authenticateUserId)) {
+                if (Objects.isNull(X_User_ID)) {
                     return buildReturnMono(HttpStatus.UNAUTHORIZED, "未认证用户", exchange);
                 }
 
@@ -74,7 +74,7 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
                     return buildReturnMono(HttpStatus.UNAUTHORIZED, "认证令牌已过期", exchange);
                 }
                 // 将userId存储到HTTP请求的Header中
-                exchange.getRequest().mutate().headers(httpHeaders -> httpHeaders.add("AuthenticateUserId", String.valueOf(authenticateUserId)));
+                exchange.getRequest().mutate().headers(httpHeaders -> httpHeaders.add("X-User-Id", String.valueOf(X_User_ID)));
                 return chain.filter(exchange);
             } catch (InvalidTokenException e) {
                 log.info("认证令牌无效: {}", token);

@@ -37,14 +37,14 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         // 如果请求中不存在userId，则放行，让后面的拦截器拦截它
-        String authenticateUserId = request.getHeader("AuthenticateUserId"); //获取认证userId
-        if (!StringUtils.hasText(authenticateUserId)) {
+        String X_User_ID = request.getHeader("X-User-Id"); //获取认证userId
+        if (!StringUtils.hasText(X_User_ID)) {
             filterChain.doFilter(request, response);
             return;
         }
 
         //从redis中获取用户信息
-        String redisKey = "user:" + authenticateUserId;
+        String redisKey = "user:" + X_User_ID;
         LoginUser loginUser = redisCache.getCacheObject(redisKey);
         if (Objects.isNull(loginUser)) {
             ResponseResult result = ResponseResult.error(ResultCode.UNAUTHORIZED.getCode(), "用户信息获取失败");

@@ -32,7 +32,7 @@ public class GlobalHandleException {
 
     public String getErrorMsg(Exception ex) {
         if (Objects.equals(active, "dev")) {
-            return getErrorMsg(ex);
+            return ex.getMessage();
         } else {
             return "服务异常，请联系管理员!";
         }
