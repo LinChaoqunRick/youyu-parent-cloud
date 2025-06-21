@@ -31,11 +31,12 @@ public class GlobalHandleException {
     private String active;
 
     public String getErrorMsg(Exception ex) {
-        if (Objects.equals(active, "dev")) {
-            return ex.getMessage();
-        } else {
-            return "服务异常，请联系管理员!";
-        }
+        return ex.getMessage();
+        //        if (Objects.equals(active, "dev")) {
+        //            return ex.getMessage();
+        //        } else {
+        //            return "服务异常，请联系管理员!";
+        //        }
     }
 
     @ExceptionHandler(SystemException.class)

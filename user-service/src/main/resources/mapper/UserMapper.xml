@@ -18,24 +18,36 @@
 
 
     <select id="getAuthRoutes" resultMap="route">
-        SELECT * FROM bs_route WHERE id IN
-                                     (SELECT route_id FROM sys_role_route WHERE sys_role_route.role_id =
-                                                                                (SELECT role_id FROM sys_user_role WHERE user_id = #{id}))
+        SELECT *
+        FROM bs_route
+        WHERE id IN
+              (SELECT route_id
+               FROM sys_role_route
+               WHERE sys_role_route.role_id =
+                     (SELECT role_id FROM sys_user_role WHERE user_id = 10000))
+          AND deleted != 1
     </select>
 
     <select id="getRoutesByRoleId" resultMap="route">
-        SELECT * FROM bs_route WHERE id in (SELECT route_id FROM sys_role_route WHERE role_id = #{roleId})
+        SELECT *
+        FROM bs_route
+        WHERE id in (SELECT route_id FROM sys_role_route WHERE role_id = #{roleId})
     </select>
 
     <select id="getUserById" resultType="com.youyu.entity.auth.UserFramework">
-        SELECT * FROM bs_user where id = #{id}
+        SELECT *
+        FROM bs_user
+        where id = #{id}
     </select>
 
     <!--查询动态-->
     <select id="getUserDynamics" resultMap="DynamicInfoMap">
-        (SELECT id, create_time, 1 AS type FROM bs_post WHERE user_id = #{userId} AND deleted = 0) UNION
-        (SELECT id, create_time, 2 AS type FROM bs_moment WHERE user_id = #{userId} AND deleted = 0) UNION
-        (SELECT id, create_time, 3 AS type FROM bs_note WHERE user_id = #{userId} AND deleted = 0) UNION
+        (SELECT id, create_time, 1 AS type FROM bs_post WHERE user_id = #{userId} AND deleted = 0)
+        UNION
+        (SELECT id, create_time, 2 AS type FROM bs_moment WHERE user_id = #{userId} AND deleted = 0)
+        UNION
+        (SELECT id, create_time, 3 AS type FROM bs_note WHERE user_id = #{userId} AND deleted = 0)
+        UNION
         (SELECT id, create_time, 4 AS type FROM bs_note_chapter WHERE FIND_IN_SET(#{userId}, user_ids) AND deleted = 0)
         ORDER BY create_time DESC
     </select>
