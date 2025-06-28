@@ -3,6 +3,7 @@ package com.youyu.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageInfo;
+import com.youyu.annotation.Log;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.user.*;
 import com.youyu.entity.auth.Route;
@@ -11,12 +12,14 @@ import com.youyu.entity.user.ProfileMenu;
 import com.youyu.entity.user.User;
 import com.youyu.entity.user.UserFollow;
 import com.youyu.enums.AdCode;
+import com.youyu.enums.BusinessType;
 import com.youyu.enums.RoleEnum;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
 import com.youyu.service.UserFollowService;
 import com.youyu.service.UserService;
 import com.youyu.utils.BeanCopyUtils;
+import com.youyu.utils.LocateUtils;
 import com.youyu.utils.RequestUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +53,9 @@ public class UserOpenController {
 
     @Resource
     private ProfileMenuService profileMenuService;
+
+    @Resource
+    private LocateUtils locateUtils;
 
     @RequestMapping("/list")
     ResponseResult<PageOutput<UserListOutput>> list(UserListInput input) {
@@ -129,12 +135,13 @@ public class UserOpenController {
 
     @RequestMapping("/ipLocation")
     public ResponseResult<PositionInfo> getUserPositionInfo() {
-        PositionInfo positionInfo = userService.getUserPositionByIP();
-        log.info("当前访问IP:" + RequestUtils.getClientIp() + positionInfo.toString());
+        PositionInfo positionInfo = locateUtils.getUserPositionByIP();
+        log.info("当前访问IP:{}{}", RequestUtils.getClientIp(), positionInfo.toString());
         return ResponseResult.success(positionInfo);
     }
 
     @RequestMapping("/getAuthRoutes")
+    @Log(title = "获取权限路由", type = BusinessType.GET_ROUTER)
     public ResponseResult<List<Route>> getAuthRoutes() {
         Long X_User_ID = SecurityUtils.getRequestAuthenticateUserId();
         if (Objects.isNull(X_User_ID)) {

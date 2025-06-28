@@ -16,6 +16,7 @@ import com.youyu.result.ResponseResult;
 import com.youyu.service.MessageService;
 import com.youyu.service.UserService;
 import com.youyu.utils.BeanCopyUtils;
+import com.youyu.utils.LocateUtils;
 import com.youyu.utils.PageUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +43,9 @@ public class MessageController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private LocateUtils locateUtils;
+
     @RequestMapping("/open/create")
     ResponseResult<MessageListOutput> create(@Valid Message message) {
         if (Objects.isNull(message.getUserId())) { // 如果是游客
@@ -53,7 +57,7 @@ public class MessageController {
                 throw new SystemException(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), "邮箱不能为空");
             }
         }
-        PositionInfo position = userService.getUserPositionByIP();
+        PositionInfo position = locateUtils.getUserPositionByIP();
         message.setAdcode(position.getAdcode());
         messageService.save(message);
         MessageListOutput output = BeanCopyUtils.copyBean(message, MessageListOutput.class);

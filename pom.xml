@@ -10,9 +10,7 @@
         <module>content-service</module>
         <module>notify-service</module>
         <module>file-service</module>
-        <module>common-api</module>
-        <module>common-api/common-auth</module>
-        <module>common-api/common-base</module>
+        <module>common</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

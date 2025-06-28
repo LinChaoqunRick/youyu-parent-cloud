@@ -19,9 +19,7 @@ import com.youyu.mapper.UserFollowMapper;
 import com.youyu.mapper.UserMapper;
 import com.youyu.service.UserService;
 import com.youyu.utils.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -45,12 +43,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private ContentServiceClient contentServiceClient;
-
-    @Resource
-    private RestTemplate restTemplate;
-
-    @Value("${amap.key}")
-    private String amapKey;
 
     @Override
     public PageOutput<UserListOutput> list(UserListInput input) {
@@ -192,11 +184,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         });
         resultPageInfo.setList(resultList);
         return resultPageInfo;
-    }
-
-    @Override
-    public PositionInfo getUserPositionByIP() {
-        return restTemplate.getForObject("https://restapi.amap.com/v3/ip?key=" + amapKey + "&ip=" + RequestUtils.getClientIp(), PositionInfo.class);
     }
 
     private void setFollow(Long currentUserId, List<UserListOutput> list) {

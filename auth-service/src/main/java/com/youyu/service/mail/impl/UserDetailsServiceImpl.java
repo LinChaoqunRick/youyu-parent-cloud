@@ -44,8 +44,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         Map<String, String[]> map = request.getParameterMap();
-        UserFramework user = null;
-        AuthParamsEntity authParamsEntity = null;
+        UserFramework user;
+        AuthParamsEntity authParamsEntity;
         try {
             authParamsEntity = BeanTransformUtils.requestParamsMapToBean(map, AuthParamsEntity.class);
         } catch (Exception e) {
@@ -56,16 +56,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (Objects.nonNull(authParamsEntity.getRefresh_token())) { // 如果是refresh_token
             user = userFrameworkMapper.getUserByUsername(username);
         } else {
-            String authType = authParamsEntity.getAuthType() != null ? authParamsEntity.getAuthType() : "password"; // 获取认证类型，beanName就是 认证类型 + 后缀，例如 password + _authService = password_authService
+            // 获取认证类型，beanName就是 认证类型 + 后缀，例如 password + _authService = password_authService
+            String authType = authParamsEntity.getAuthType() != null ? authParamsEntity.getAuthType() : "password";
             AuthService authService = null;
             try {
-                authService = applicationContext.getBean(authType + "_authService", AuthService.class); // 根据认证类型，从Spring容器中取出对应的bean
+                // 根据认证类型，从Spring容器中取出对应的bean
+                authService = applicationContext.getBean(authType + "_authService", AuthService.class);
             } catch (Exception e) {
                 if (e instanceof NoSuchBeanDefinitionException) {
                     throw new RuntimeException("无效的authType：" + authType);
                 }
+                throw new RuntimeException(e);
             }
-            assert authService != null;
             user = authService.execute(authParamsEntity);
         }
 

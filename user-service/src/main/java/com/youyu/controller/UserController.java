@@ -13,6 +13,7 @@ import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
 import com.youyu.service.UserFollowService;
 import com.youyu.service.UserService;
+import com.youyu.utils.LocateUtils;
 import com.youyu.utils.RedisCache;
 import com.youyu.utils.SecurityUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,6 +51,9 @@ public class UserController {
 
     @Resource
     private RedisCache redisCache;
+
+    @Resource
+    private LocateUtils locateUtils;
 
     @RequestMapping("/follow")
     ResponseResult<Boolean> userFollow(UserFollow input) {
@@ -173,7 +177,7 @@ public class UserController {
         } else {
             throw new SystemException(ResultCode.USER_NOT_EXIST);
         }
-        PositionInfo position = userService.getUserPositionByIP();
+        PositionInfo position = locateUtils.getUserPositionByIP();
         if (position.getAdcode() != null) {
             // 更新用户adcode
             LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();

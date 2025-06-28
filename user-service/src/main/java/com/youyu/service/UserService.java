@@ -34,6 +34,4 @@ public interface UserService extends IService<User> {
     UserFramework getUserById(Long id);
 
     PageInfo<Object> getUserDynamics(DynamicListInput input);
-
-    PositionInfo getUserPositionByIP();
 }

@@ -20,8 +20,6 @@ import javax.annotation.Resource;
 @Service("password_authService")
 public class PasswordAuthServiceImpl implements AuthService {
 
-    private final String emailRegex = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
-
     @Resource
     private UserFrameworkMapper userFrameworkMapper;
 
@@ -35,6 +33,7 @@ public class PasswordAuthServiceImpl implements AuthService {
 
         // 2. 根据账号去数据库中查询是否存在
         UserFramework user = null;
+        String emailRegex = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
         if (username.matches(emailRegex)) { // 如果是邮箱登录
             user = userFrameworkMapper.getUserByEmail(username);
         } else { // 如果是手机号登录
