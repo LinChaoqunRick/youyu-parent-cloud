@@ -32,11 +32,6 @@ public class GlobalHandleException {
 
     public String getErrorMsg(Exception ex) {
         return ex.getMessage();
-        //        if (Objects.equals(active, "dev")) {
-        //            return ex.getMessage();
-        //        } else {
-        //            return "服务异常，请联系管理员!";
-        //        }
     }
 
     @ExceptionHandler(SystemException.class)
@@ -81,7 +76,7 @@ public class GlobalHandleException {
     public ResponseResult<?> accessDeniedExceptionHandler(AccessDeniedException ex, HttpServletResponse response) {
         log.error("出现异常!SystemException: {}", getErrorMsg(ex), ex);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        return ResponseResult.error(ResultCode.UNAUTHORIZED.getCode(), getErrorMsg(ex));
+        return ResponseResult.error(ResultCode.FORBIDDEN.getCode(), getErrorMsg(ex));
     }
 
     @ExceptionHandler(Exception.class)

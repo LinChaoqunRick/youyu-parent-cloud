@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -83,13 +84,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/oauth/token").permitAll()
-                .antMatchers("/oauth/login").permitAll()
                 .antMatchers("/oauth/connect/**").permitAll()
-                .anyRequest().authenticated();
-                /*.and()
+                .anyRequest().authenticated()
+                .and()
                 .exceptionHandling()
-                .accessDeniedHandler(accessDeniedHandler)
-                .authenticationEntryPoint(authenticationEntryPoint);*/
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"" + authException.getMessage() + "\"}");
+                }); // 开发环境使用，返回错误信息
+                // 网关服务进行了认证异常处理(401)、全局异常捕获了授权异常(403)，此处不再处理
+                //                .accessDeniedHandler(accessDeniedHandler)
+                //                .authenticationEntryPoint(authenticationEntryPoint);
 
         http.csrf().disable().headers().frameOptions().disable();;
 

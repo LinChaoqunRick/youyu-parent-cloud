@@ -27,7 +27,7 @@ public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
 
     @Override
     public Map<String, ?> convertAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication) {
-        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> response = new HashMap<>();
         OAuth2Request clientToken = authentication.getOAuth2Request();
 
         if (!authentication.isClientOnly()) {
