@@ -16,7 +16,7 @@ public class JwtUtil {
     //有效期为
     public static final Long JWT_TTL = 24 * 60 * 60 * 1000L;// 60 * 60 *1000  一个小时
     //设置秘钥明文
-    public static final String JWT_KEY = "youyul";
+    public static final String JWT_KEY = "MtR6UDKvOg7IBcpW7o4j0UK2pVAf1geB14VXicSOm92quFmDhtOjo9nDTxajysqyWlfXKIqqGcsTHBGnBeZLZ0aQfHJS8a22P2UgYJ47vrNesKZ7UGSCnLeKELunVt6lSz3KZ5F1rA11XHZgoLXsTjwEtHPylkISG75Q7L9jeKbAoDGRgYEl2r8V8ijvAqmg3OyxOXaMS6IwgLTBFZJfpiQQJ4I1lO5oqpQ5gqK7aLk5SgdU1xPPyfeNyseMaxkY";
 
     public static String getUUID() {
         String token = UUID.randomUUID().toString().replaceAll("-", "");
@@ -79,7 +79,7 @@ public class JwtUtil {
     }
 
     public static void main(String[] args) throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkM2RhNjAwZGY4OTU0MzdlYWVlYzYwNDY5ZjQxMDhkOSIsInN1YiI6IjEwMDAwIiwiaXNzIjoibGluIiwiaWF0IjoxNjkyMTA1MzcxLCJleHAiOjE2OTIxOTE3NzF9.VNmLFzcg2m05KGluVAHFI9uld6Wll2bCnDGPhSlJ3Mo";
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTIxOTk2MDcsInVzZXJfaWQiOjEwMDAwLCJ1c2VyX25hbWUiOiIxNTg2MDA5NDU0NCIsImp0aSI6IjA5NGVmZjk3LTE2YWMtNGY0YS1iMjEyLTU2ZTI0ZDI3MjQ2MiIsImNsaWVudF9pZCI6InlvdXl1LXdlYiIsInNjb3BlIjpbImFsbCJdfQ.Bx3QyQ7iKjHAAkxr8dtl5iEssaw5AeDoQD91V16AFgk";
         Claims claims = parseJWT(token);
         System.out.println(claims);
         System.out.println(claims.getSubject());
@@ -91,9 +91,7 @@ public class JwtUtil {
      * @return
      */
     public static SecretKey generalKey() {
-        byte[] encodedKey = Base64.getDecoder().decode(JwtUtil.JWT_KEY);
-        SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
-        return key;
+        return new SecretKeySpec(JWT_KEY.getBytes(), "HmacSHA256");
     }
 
     /**
@@ -104,9 +102,8 @@ public class JwtUtil {
      * @throws Exception
      */
     public static Claims parseJWT(String jwt) throws Exception {
-        SecretKey secretKey = generalKey();
         return Jwts.parser()
-                .setSigningKey(secretKey)
+                .setSigningKey(generalKey())
                 .parseClaimsJws(jwt)
                 .getBody();
     }

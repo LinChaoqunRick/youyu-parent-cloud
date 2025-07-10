@@ -48,7 +48,7 @@ public class GlobalHandleException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseResult<?> argumentNotValidExceptionHandler(MethodArgumentNotValidException ex) {
-        log.error("出现异常!MethodArgumentNotValidException: {}", getErrorMsg(ex), ex);
+        // log.error("出现异常!MethodArgumentNotValidException: {}", getErrorMsg(ex), ex);
         List<FieldError> fieldErrorList = ex.getBindingResult().getFieldErrors();
         String specific = fieldErrorList.get(0).getDefaultMessage();
         return ResponseResult.error(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), specific);
@@ -56,7 +56,7 @@ public class GlobalHandleException {
 
     @ExceptionHandler(BindException.class)
     public ResponseResult<?> bindExceptionHandler(BindException ex) {
-        log.error("出现异常!BindException: {}", getErrorMsg(ex), ex);
+        // log.error("出现异常!BindException: {}", getErrorMsg(ex), ex);
         List<FieldError> fieldErrorList = ex.getBindingResult().getFieldErrors();
         String specific = fieldErrorList.get(0).getDefaultMessage();
         return ResponseResult.error(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), specific);
@@ -64,7 +64,7 @@ public class GlobalHandleException {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseResult<?> bindExceptionHandler(ConstraintViolationException ex) {
-        log.error("出现异常!ConstraintViolationException: {}", getErrorMsg(ex), ex);
+        // log.error("出现异常!ConstraintViolationException: {}", getErrorMsg(ex), ex);
         Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
         List<String> collect = constraintViolations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
         String message = String.join(",", collect);
@@ -74,7 +74,7 @@ public class GlobalHandleException {
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseResult<?> accessDeniedExceptionHandler(AccessDeniedException ex, HttpServletResponse response) {
-        log.error("出现异常!SystemException: {}", getErrorMsg(ex), ex);
+        // log.error("出现异常!SystemException: {}", getErrorMsg(ex), ex);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         return ResponseResult.error(ResultCode.FORBIDDEN.getCode(), getErrorMsg(ex));
     }

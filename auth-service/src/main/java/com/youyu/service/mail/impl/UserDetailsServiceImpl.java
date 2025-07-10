@@ -11,6 +11,8 @@ import com.youyu.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -70,16 +72,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             }
             user = authService.execute(authParamsEntity);
         }
-
         // 查询对应权限信息
         List<String> permission = menuMapper.selectPermsByUserId(user.getId());
-
         // 把数据封装成UserDetails返回
         LoginUser loginUser = new LoginUser(user, permission);
-
         // 把完整的用户信息存入redis userId作为key
-        redisCache.setCacheObject("user:" + user.getId(), loginUser);
-
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String clientId = auth.getName();
+        redisCache.setCacheObject(clientId + ":" + user.getId(), loginUser);
         return loginUser;
     }
 }

@@ -78,6 +78,7 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
                 return chain.filter(exchange);
             } catch (InvalidTokenException e) {
                 log.info("认证令牌无效: {}", token);
+                e.printStackTrace();
                 return buildReturnMono(HttpStatus.UNAUTHORIZED, "认证令牌无效", exchange);
             }
         } else {
