@@ -6,29 +6,23 @@ import com.youyu.enums.ResultCode;
 import com.youyu.result.ResponseResult;
 import com.youyu.utils.JwtUtil;
 import com.youyu.utils.RedisCache;
-import com.youyu.utils.SecurityUtils;
 import com.youyu.utils.WebUtils;
 import io.jsonwebtoken.Claims;
 import org.apache.http.HttpStatus;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
-import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.annotation.Resource;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.annotation.Resource;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Objects;
 
 @Component
@@ -77,7 +71,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         //获取权限信息封装到Authentication中
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
-        authenticationToken.setDetails(new OAuth2AuthenticationDetails(request));
+        // 可以设置请求相关信息（非必须）
+        // authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         //存入SecurityContextHolder
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);

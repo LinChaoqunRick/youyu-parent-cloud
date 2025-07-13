@@ -14,14 +14,11 @@ import com.youyu.service.LoginService;
 import com.youyu.service.mail.impl.GithubAuthServiceImpl;
 import com.youyu.service.mail.impl.QQAuthServiceImpl;
 import com.youyu.utils.SecurityUtils;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Map;
@@ -29,11 +26,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/oauth")
+@RequestMapping("/account")
 public class LoginController {
-
-    @Resource
-    private TokenEndpoint tokenEndpoint;
 
     @Resource
     private LoginService loginService;
@@ -52,13 +46,6 @@ public class LoginController {
 
     @Resource
     private UserFrameworkMapper userFrameworkMapper;
-
-    @RequestMapping("/token")
-    @Log(title = "系统登录", type = BusinessType.LOGIN, savaRequestData = false)
-    public ResponseResult<OAuth2AccessToken> postAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
-        OAuth2AccessToken body = tokenEndpoint.postAccessToken(principal, parameters).getBody();
-        return ResponseResult.success(body);
-    }
 
     @RequestMapping("/logout")
     @Log(title = "退出登陆", type = BusinessType.LOGOUT)

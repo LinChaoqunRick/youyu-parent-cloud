@@ -10,7 +10,7 @@ import com.youyu.service.UserService;
 import com.youyu.utils.BeanCopyUtils;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 /**
  * (Message)表服务实现类

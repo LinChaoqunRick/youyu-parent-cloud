@@ -6,10 +6,9 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class OAuth2FeignRequestInterceptor implements RequestInterceptor {
@@ -21,8 +20,13 @@ public class OAuth2FeignRequestInterceptor implements RequestInterceptor {
     public void apply(RequestTemplate template) {
         // 服务间调用携带AuthorizationUserId
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getDetails() instanceof OAuth2AuthenticationDetails) {
-            template.header(X_USER_ID, String.valueOf(SecurityUtils.getRequestAuthenticateUserId()));
+        // 判断是否为已登录状态
+        if (authentication != null && authentication.isAuthenticated()) {
+            // 自定义工具类从 Authentication 中取用户信息
+            Long userId = SecurityUtils.getRequestAuthenticateUserId();
+            if (null != userId) {
+                template.header(X_USER_ID, String.valueOf(userId));
+            }
         }
 
         // 传递真实调用者ip地址信息

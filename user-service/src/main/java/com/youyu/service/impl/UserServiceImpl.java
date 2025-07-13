@@ -21,8 +21,8 @@ import com.youyu.service.UserService;
 import com.youyu.utils.*;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 

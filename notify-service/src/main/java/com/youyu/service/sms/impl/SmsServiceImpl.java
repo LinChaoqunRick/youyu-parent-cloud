@@ -13,7 +13,7 @@ import com.youyu.utils.NumberUtils;
 import com.youyu.utils.RedisCache;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 

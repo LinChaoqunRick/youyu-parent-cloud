@@ -3,109 +3,46 @@ package com.youyu.config;
 import com.youyu.authentication.config.DaoAuthenticationProviderCustom;
 import com.youyu.filter.JwtAuthenticationTokenFilter;
 import com.youyu.service.mail.impl.UserDetailsServiceImpl;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
-@Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@ConfigurationProperties(prefix = "security")
+@Configuration(proxyBeanMethods = false)
+@EnableWebSecurity
+public class SecurityConfig {
 
-    @Resource
-    DaoAuthenticationProviderCustom daoAuthenticationProviderCustom;
-
-    @Resource
-    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
-
-    @Resource
-    private CustomAccessTokenConverter customAccessTokenConverter;
-
-    @Resource
-    private UserDetailsServiceImpl userDetailsService;
-
-    @Resource
-    private AuthenticationEntryPoint authenticationEntryPoint;
-
-    @Resource
-    private AccessDeniedHandler accessDeniedHandler;
-
-    @Bean//刷新token时自动调用，不能用TheCustomAuthenticationProvider替代
-    public PreAuthenticatedAuthenticationProvider preAuthenticatedAuthenticationProvider() {
-        PreAuthenticatedAuthenticationProvider preAuthenticatedAuthenticationProvider = new PreAuthenticatedAuthenticationProvider();
-        preAuthenticatedAuthenticationProvider.setPreAuthenticatedUserDetailsService(new UserDetailsByNameServiceWrapper<>(userDetailsService));
-        return preAuthenticatedAuthenticationProvider;
-    }
-
+    /**
+     * Spring Security 安全过滤器链配置
+     *
+     * @param http 安全配置
+     * @return 安全过滤器链
+     */
     @Bean
-    public TokenStore tokenStore() {
-        return new JwtTokenStore(accessTokenConverter());
-    }
-
-    @Bean
-    public JwtAccessTokenConverter accessTokenConverter() {
-        JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        jwtAccessTokenConverter.setAccessTokenConverter(customAccessTokenConverter);
-        jwtAccessTokenConverter.setSigningKey("MtR6UDKvOg7IBcpW7o4j0UK2pVAf1geB14VXicSOm92quFmDhtOjo9nDTxajysqyWlfXKIqqGcsTHBGnBeZLZ0aQfHJS8a22P2UgYJ47vrNesKZ7UGSCnLeKELunVt6lSz3KZ5F1rA11XHZgoLXsTjwEtHPylkISG75Q7L9jeKbAoDGRgYEl2r8V8ijvAqmg3OyxOXaMS6IwgLTBFZJfpiQQJ4I1lO5oqpQ5gqK7aLk5SgdU1xPPyfeNyseMaxkY");
-        return jwtAccessTokenConverter;
-    }
-
-    //使用自己定义DaoAuthenticationProviderCustom来代替框架的DaoAuthenticationProvider
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
-        auth.authenticationProvider(daoAuthenticationProviderCustom);
-        auth.authenticationProvider(preAuthenticatedAuthenticationProvider());
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
         http
-                .authorizeRequests()
-                .and()
-                .formLogin()
-                .permitAll()
-                .and()
-                .authorizeRequests()
-                .antMatchers("/oauth/token").permitAll()
-                .antMatchers("/oauth/connect/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint((request, response, authException) -> {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setContentType("application/json;charset=UTF-8");
-                    response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"" + authException.getMessage() + "\"}");
-                }); // 开发环境使用，返回错误信息
-                // 网关服务进行了认证异常处理(401)、全局异常捕获了授权异常(403)，此处不再处理
-                //                .accessDeniedHandler(accessDeniedHandler)
-                //                .authenticationEntryPoint(authenticationEntryPoint);
-
-        http.csrf().disable().headers().frameOptions().disable();;
-
-        // 添加过滤器
-        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
-    }
-
-    @Bean("authenticationManagerBean")
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/oauth2/**").permitAll() // 放行OAuth2端点
+                        .anyRequest().authenticated()
+                )
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/oauth2/**")); // 禁用CSRF保护
+        return http.build();
     }
 }

@@ -7,7 +7,7 @@ import com.youyu.service.mail.MailService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import javax.mail.MessagingException;
 
 @RestController

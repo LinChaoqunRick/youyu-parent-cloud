@@ -20,7 +20,7 @@ import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.PageUtils;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 
