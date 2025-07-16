@@ -1,14 +1,22 @@
 package com.youyu.config;
 
+import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.youyu.entity.auth.UserFramework;
+import com.youyu.handler.MyAuthenticationFailureHandler;
+import com.youyu.handler.MyAuthenticationSuccessHandler;
+import com.youyu.oauth2.extensition.password.PasswordAuthenticationConverter;
+import com.youyu.oauth2.extensition.password.PasswordAuthenticationProvider;
+import com.youyu.oauth2.oidc.CustomOidcAuthenticationConverter;
+import com.youyu.oauth2.oidc.CustomOidcAuthenticationProvider;
+import com.youyu.oauth2.oidc.CustomOidcUserInfoService;
+import com.youyu.utils.RedisCache;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -17,25 +25,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
@@ -54,19 +56,13 @@ import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
-import org.springframework.util.StringUtils;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import javax.sql.DataSource;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -79,8 +75,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthorizationServerConfig {
-
-    private final StringRedisTemplate redisTemplate;
+    /**
+     * JWT 密钥对(包含公钥和私钥)
+     */
+    String JWK_SET_KEY = "jwk_set";
 
     @Resource
     private OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer;
@@ -88,15 +86,78 @@ public class AuthorizationServerConfig {
     @Resource
     private PasswordEncoder passwordEncoder;
 
+    @Resource
+    private RedisCache redisCache;
+
+    private final CustomOidcUserInfoService customOidcUserInfoService;
+
     /**
-     * JWK（JWT密钥对）源
+     * 授权服务器端点配置
      */
+    @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public SecurityFilterChain authorizationServerSecurityFilterChain(
+            HttpSecurity http,
+            AuthenticationManager authenticationManager,
+            OAuth2AuthorizationService authorizationService,
+            OAuth2TokenGenerator<?> tokenGenerator
+
+    ) throws Exception {
+        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+
+        // 替换 /oauth2/token 端点的默认处理器
+        http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
+                // 自定义授权模式转换器(Converter)
+                .tokenEndpoint(tokenEndpoint -> tokenEndpoint
+                        .accessTokenRequestConverters(
+                                authenticationConverters -> // <1>
+                                        // 自定义授权模式转换器(Converter)
+                                        authenticationConverters.addAll(
+                                                List.of(
+                                                        new PasswordAuthenticationConverter()
+                                                )
+                                        )
+                        )
+                        .authenticationProviders(
+                                authenticationProviders -> // <2>
+                                        // 自定义授权模式提供者(Provider)
+                                        authenticationProviders.addAll(
+                                                List.of(
+                                                        new PasswordAuthenticationProvider(authenticationManager, authorizationService, tokenGenerator)
+                                                )
+                                        )
+                        )
+                        .accessTokenResponseHandler(new MyAuthenticationSuccessHandler()) // 自定义成功响应
+                        .errorResponseHandler(new MyAuthenticationFailureHandler()) // 自定义失败响应
+                )
+                // Enable OpenID Connect 1.0 自定义
+                .oidc(oidcCustomizer ->
+                        oidcCustomizer.userInfoEndpoint(userInfoEndpointCustomizer ->
+                                {
+                                    userInfoEndpointCustomizer.userInfoRequestConverter(new CustomOidcAuthenticationConverter(customOidcUserInfoService));
+                                    userInfoEndpointCustomizer.authenticationProvider(new CustomOidcAuthenticationProvider(authorizationService));
+                                }
+                        )
+                );
+
+        http
+                .exceptionHandling((exceptions) -> exceptions
+                        .defaultAuthenticationEntryPointFor(
+                                new LoginUrlAuthenticationEntryPoint("/login"),
+                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
+                        )
+                )
+                .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()));
+        return http.build();
+    }
+
     @Bean // <5>
     @SneakyThrows
     public JWKSource<SecurityContext> jwkSource() {
+
         // 尝试从Redis中获取JWKSet(JWT密钥对，包含非对称加密的公钥和私钥)
-        String jwkSetStr = redisTemplate.opsForValue().get("jwk_set");
-        if (StringUtils.hasText(jwkSetStr)) {
+        String jwkSetStr = redisCache.getCacheObject(JWK_SET_KEY);
+        if (StrUtil.isNotBlank(jwkSetStr)) {
             // 如果存在，解析JWKSet并返回
             JWKSet jwkSet = JWKSet.parse(jwkSetStr);
             return new ImmutableJWKSet<>(jwkSet);
@@ -116,7 +177,7 @@ public class AuthorizationServerConfig {
             JWKSet jwkSet = new JWKSet(rsaKey);
 
             // 将JWKSet存储在Redis中
-            redisTemplate.opsForValue().set("jwk_set", jwkSet.toString(Boolean.FALSE));
+            redisCache.setCacheObject(JWK_SET_KEY, jwkSet.toString(Boolean.FALSE));
             return new ImmutableJWKSet<>(jwkSet);
         }
 
@@ -274,6 +335,7 @@ public class AuthorizationServerConfig {
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .authorizationGrantType(AuthorizationGrantType.PASSWORD)
                 .redirectUri("http://127.0.0.1:8080/authorized")
                 .postLogoutRedirectUri("http://127.0.0.1:8080/logged-out")
                 .scope(OidcScopes.OPENID)

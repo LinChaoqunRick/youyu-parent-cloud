@@ -1,33 +1,47 @@
 package com.youyu.config;
 
-import com.youyu.authentication.config.DaoAuthenticationProviderCustom;
-import com.youyu.filter.JwtAuthenticationTokenFilter;
-import com.youyu.service.mail.impl.UserDetailsServiceImpl;
+import cn.hutool.core.collection.CollectionUtil;
+import com.youyu.handler.AccessDeniedHandlerImpl;
+import com.youyu.handler.AuthenticationEntryPointImpl;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
-import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+
+import java.util.List;
 
 @ConfigurationProperties(prefix = "security")
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 public class SecurityConfig {
+
+    /**
+     * 白名单路径列表
+     */
+    @Setter
+    private List<String> whitelistPaths;
+
+    /**
+     * 授权异常处理
+     */
+    @Resource
+    private AccessDeniedHandlerImpl accessDeniedHandler;
+
+    /**
+     * 认证异常处理
+     */
+    @Resource
+    private AuthenticationEntryPointImpl authenticationEntryPoint;
 
     /**
      * Spring Security 安全过滤器链配置
@@ -36,13 +50,27 @@ public class SecurityConfig {
      * @return 安全过滤器链
      */
     @Bean
+    @Order(0)
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
-        http
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/oauth2/**").permitAll() // 放行OAuth2端点
-                        .anyRequest().authenticated()
+        MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
+        http.authorizeHttpRequests((requests) ->
+                        {
+                            if (CollectionUtil.isNotEmpty(whitelistPaths)) {
+                                for (String whitelistPath : whitelistPaths) {
+                                    requests.requestMatchers(mvcMatcherBuilder.pattern(whitelistPath)).permitAll();
+                                }
+                            }
+                            requests.anyRequest().authenticated();
+                        }
                 )
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/oauth2/**")); // 禁用CSRF保护
+                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(Customizer.withDefaults())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint) // 401 未认证
+                        .accessDeniedHandler(accessDeniedHandler)           // 403 无权限
+                );
+
         return http.build();
     }
+
 }

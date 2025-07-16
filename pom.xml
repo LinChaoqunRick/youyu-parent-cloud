@@ -31,7 +31,17 @@
         <mybatis-plus.version>3.5.5</mybatis-plus.version>
         <pagehelper.boot.version>1.4.1</pagehelper.boot.version>
         <springdoc.version>1.7.0</springdoc.version>
+
+        <hutool.version>5.8.26</hutool.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+    </dependencies>
 
     <dependencyManagement>
         <dependencies>

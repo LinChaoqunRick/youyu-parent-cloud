@@ -23,7 +23,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
         authException.printStackTrace();
         // InsufficientAuthenticationException, BadCredentialsException
-        ResponseResult result = null;
+        ResponseResult<?> result = null;
         if (authException instanceof BadCredentialsException) {
             result = ResponseResult.error(ResultCode.LOGIN_ERROR.getCode(), authException.getMessage() + " BadCredentialsException");
         } else if (authException instanceof InsufficientAuthenticationException) {
