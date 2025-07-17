@@ -47,4 +47,17 @@ public class UserFramework implements Serializable {
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
     private int deleted;
+
+    public UserFramework(Long id, String username, String password, String nickname, String avatar, Integer sex, Integer adcode, String adname, Integer level, int status) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.avatar = avatar;
+        this.sex = sex;
+        this.adcode = adcode;
+        this.adname = adname;
+        this.level = level;
+        this.status = status;
+    }
 }

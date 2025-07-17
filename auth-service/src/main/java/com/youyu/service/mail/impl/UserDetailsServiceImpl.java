@@ -79,7 +79,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // 把完整的用户信息存入redis userId作为key
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String clientId = auth.getName();
-        redisCache.setCacheObject(clientId + ":" + user.getId(), loginUser);
+//        redisCache.setCacheObject(clientId + ":" + user.getId(), loginUser);
         return loginUser;
     }
 }

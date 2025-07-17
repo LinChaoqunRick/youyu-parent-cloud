@@ -20,13 +20,11 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import java.net.URLEncoder;
-import java.security.Principal;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/oauth2")
 public class LoginController {
 
     @Resource

@@ -1,4 +1,4 @@
-package com.youyu.handler;
+package com.youyu.oauth2.handler;
 
 import com.youyu.result.ResponseResult;
 import jakarta.servlet.ServletException;

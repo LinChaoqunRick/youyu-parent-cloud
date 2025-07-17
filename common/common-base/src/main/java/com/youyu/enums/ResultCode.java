@@ -6,6 +6,7 @@ import org.apache.http.HttpStatus;
 @Getter
 public enum ResultCode implements HttpStatus {
     SUCCESS(200, "成功"),
+    
     INTERNAL_SERVER_ERROR(500, "内部服务器错误"),
     UNAUTHORIZED(401, "未认证用户"),
     FORBIDDEN(403, "拒绝访问"),

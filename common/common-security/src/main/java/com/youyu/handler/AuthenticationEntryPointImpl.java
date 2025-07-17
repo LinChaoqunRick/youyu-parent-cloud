@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
-        authException.printStackTrace();
+        // authException.printStackTrace();
         // InsufficientAuthenticationException, BadCredentialsException
         ResponseResult<?> result = null;
         if (authException instanceof BadCredentialsException) {
