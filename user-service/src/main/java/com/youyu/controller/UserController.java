@@ -2,12 +2,10 @@ package com.youyu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.youyu.entity.auth.Route;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.user.*;
 import com.youyu.enums.AdCode;
 import com.youyu.enums.ResultCode;
-import com.youyu.enums.RoleEnum;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
@@ -16,6 +14,7 @@ import com.youyu.service.UserService;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.RedisCache;
 import com.youyu.utils.SecurityUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -78,7 +77,7 @@ public class UserController {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getNickname, user.getNickname());
         queryWrapper.ne(User::getId, user.getId());
-        Long count = userService.count(queryWrapper);
+        long count = userService.count(queryWrapper);
         if (count > 0) {
             throw new SystemException(ResultCode.NICKNAME_CONFLICT);
         }
@@ -109,7 +108,7 @@ public class UserController {
     ResponseResult<Boolean> saveHomepage(@RequestParam String oldTel, @RequestParam String newTel) {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUsername, newTel);
-        Long count = userService.count(queryWrapper);
+        long count = userService.count(queryWrapper);
         if (count > 0) {
             throw new SystemException(ResultCode.TELEPHONE_CONFLICT);
         }
@@ -183,6 +182,19 @@ public class UserController {
         }
         user.setAdname(AdCode.getDescByCode(user.getAdcode()));
         return ResponseResult.success(user);
+    }
+
+
+    @PreAuthorize("hasAuthority('test')")
+    @RequestMapping("/hasAuthTest")
+    public ResponseResult<String> hasAuthTest() {
+        return ResponseResult.success("OK Success");
+    }
+
+    @PreAuthorize("hasAuthority('test123')")
+    @RequestMapping("/noAuthTest")
+    public ResponseResult<String> noAuthTest() {
+        return ResponseResult.success("OK Success");
     }
 }
 

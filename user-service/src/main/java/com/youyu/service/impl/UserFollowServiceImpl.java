@@ -6,9 +6,9 @@ import com.youyu.entity.user.UserFollow;
 import com.youyu.mapper.UserFollowMapper;
 import com.youyu.service.UserFollowService;
 import com.youyu.utils.SecurityUtils;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

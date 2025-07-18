@@ -1,39 +1,41 @@
 package com.youyu.interceptor;
 
 import com.youyu.utils.RequestUtils;
-import com.youyu.utils.SecurityUtils;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
-
-import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.util.StringUtils;
 
 @Component
 public class OAuth2FeignRequestInterceptor implements RequestInterceptor {
 
-    private static final String X_USER_ID = "X-User-Id";
-    private static final String X_FORWARDED_FOR = "X-FORWARDED-FOR";
+    private static final String HEADER_AUTHORIZATION = "Authorization";
+    private static final String HEADER_X_FORWARDED_FOR = "X-FORWARDED-FOR";
 
     @Override
     public void apply(RequestTemplate template) {
-        // 服务间调用携带AuthorizationUserId
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // 判断是否为已登录状态
-        if (authentication != null && authentication.isAuthenticated()) {
-            // 自定义工具类从 Authentication 中取用户信息
-            Long userId = SecurityUtils.getRequestAuthenticateUserId();
-            if (null != userId) {
-                template.header(X_USER_ID, String.valueOf(userId));
-            }
+
+        if (authentication instanceof JwtAuthenticationToken jwtToken && jwtToken.isAuthenticated()) {
+            // 设置 Bearer Token
+            String token = jwtToken.getToken().getTokenValue();
+            template.header(HEADER_AUTHORIZATION, "Bearer " + token);
         }
 
-        // 传递真实调用者ip地址信息
-        HttpServletRequest request = RequestUtils.getRequest();
+        // 传递 X-FORWARDED-FOR 头
+        HttpServletRequest request = RequestUtils.getRequest(); // 你自定义的工具类
         if (request != null) {
-            String x_forward_for = request.getHeader(X_FORWARDED_FOR);
-            template.header(X_FORWARDED_FOR, x_forward_for);
+            String forwardedFor = request.getHeader(HEADER_X_FORWARDED_FOR);
+            if (StringUtils.hasText(forwardedFor)) {
+                template.header(HEADER_X_FORWARDED_FOR, forwardedFor);
+            } else {
+                // 如果没有就传当前请求的 IP
+                template.header(HEADER_X_FORWARDED_FOR, request.getRemoteAddr());
+            }
         }
     }
 }

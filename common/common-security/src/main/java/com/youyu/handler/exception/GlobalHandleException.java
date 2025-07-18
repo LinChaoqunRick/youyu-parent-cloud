@@ -72,10 +72,10 @@ public class GlobalHandleException {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseResult<?> accessDeniedExceptionHandler(AccessDeniedException ex, HttpServletResponse response) {
         // log.error("出现异常!SystemException: {}", getErrorMsg(ex), ex);
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setStatus(HttpStatus.FORBIDDEN.value());
         return ResponseResult.error(ResultCode.FORBIDDEN.getCode(), getErrorMsg(ex));
     }
 

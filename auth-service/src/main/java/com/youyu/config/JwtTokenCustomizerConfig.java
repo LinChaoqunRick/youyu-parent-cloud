@@ -33,10 +33,10 @@ public class JwtTokenCustomizerConfig {
                         claims.claim("user_id", userDetails.getUser().getId());
 
                         // 这里存入角色至JWT，解析JWT的角色用于鉴权的位置: ResourceServerConfig#jwtAuthenticationConverter
-                        /*var authorities = AuthorityUtils.authorityListToSet(context.getPrincipal().getAuthorities())
+                        var authorities = AuthorityUtils.authorityListToSet(context.getPrincipal().getAuthorities())
                                 .stream()
                                 .collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
-                        claims.claim("authorities", authorities);*/
+                        claims.claim("authorities", authorities);
                     }
                 });
             }
