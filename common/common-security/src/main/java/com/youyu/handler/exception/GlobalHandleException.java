@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -72,10 +72,10 @@ public class GlobalHandleException {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseResult<?> accessDeniedExceptionHandler(AccessDeniedException ex, HttpServletResponse response) {
         // log.error("出现异常!SystemException: {}", getErrorMsg(ex), ex);
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setStatus(HttpStatus.FORBIDDEN.value());
         return ResponseResult.error(ResultCode.FORBIDDEN.getCode(), getErrorMsg(ex));
     }
 

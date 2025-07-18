@@ -9,8 +9,8 @@ import com.youyu.service.sms.SmsService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/sms")

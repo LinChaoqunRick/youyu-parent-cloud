@@ -6,7 +6,7 @@ import com.youyu.entity.post.Favorites;
 import com.youyu.service.post.FavoritesService;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.Objects;
 
 /**
