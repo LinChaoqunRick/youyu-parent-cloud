@@ -29,14 +29,7 @@ public class JwtTokenCustomizerConfig {
                 Optional.ofNullable(context.getPrincipal().getPrincipal()).ifPresent(principal -> {
                     JwtClaimsSet.Builder claims = context.getClaims();
                     if (principal instanceof LoginUser userDetails) { // 系统用户添加自定义字段
-
                         claims.claim("user_id", userDetails.getUser().getId());
-
-                        // 这里存入角色至JWT，解析JWT的角色用于鉴权的位置: ResourceServerConfig#jwtAuthenticationConverter
-                        var authorities = AuthorityUtils.authorityListToSet(context.getPrincipal().getAuthorities())
-                                .stream()
-                                .collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
-                        claims.claim("authorities", authorities);
                     }
                 });
             }

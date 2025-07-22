@@ -16,6 +16,10 @@ spring:
         namespace: ${NACOS_NAMESPACE:}
         username: nacos
         password: nacos123
+        #nacos拓展配置中心配置
+        extension-configs:
+          - data-id: database.yaml
+            refresh: true
     gateway:
       routes:
         - id: auth-service   # 路由名称
@@ -26,7 +30,7 @@ spring:
         - id: user-service
           uri: lb://user-service
           predicates:
-            - Path=/user/**,/message/**
+            - Path=/user/**,/message/**,/manage/user/**
 
         - id: content-service
           uri: lb://content-service

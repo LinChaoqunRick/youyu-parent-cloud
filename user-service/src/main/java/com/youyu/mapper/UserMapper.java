@@ -22,6 +22,7 @@ import java.util.List;
 @Repository
 public interface UserMapper extends BaseMapper<User> {
     List<Route> getAuthRoutes(@Param("id") Long id);
+    List<Route> getManageAuthRoutes(@Param("id") Long id);
     List<Route> getRoutesByRoleId(@Param("roleId") Long roleId);
     UserFramework getUserById(@Param("id") Long id);
     List<DynamicInfo> getUserDynamics(DynamicListInput input);

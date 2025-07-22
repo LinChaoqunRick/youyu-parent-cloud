@@ -12,6 +12,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 import jakarta.annotation.Resource;
@@ -65,6 +66,12 @@ public class SecurityConfig {
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(Customizer.withDefaults())
+                // 配置资源服务器
+                .oauth2ResourceServer(oauth2ResourceServer ->
+                        oauth2ResourceServer.jwt(Customizer.withDefaults()))
+                // 禁用session
+                .sessionManagement(sessionManagement ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPoint) // 401 未认证
                         .accessDeniedHandler(accessDeniedHandler)           // 403 无权限

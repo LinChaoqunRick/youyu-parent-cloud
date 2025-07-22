@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
+        authException.printStackTrace();
         ResponseResult<?> result = ResponseResult.error(ResultCode.UNAUTHORIZED.getCode(), "未认证用户(认证失败)");
         WebUtils.renderString(response, JSON.toJSONString(result));
         response.setStatus(HttpStatus.UNAUTHORIZED.value());

@@ -137,6 +137,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public List<Route> getManageAuthRoutes(Long id) {
+        return userMapper.getManageAuthRoutes(id);
+    }
+
+    @Override
     public List<Route> getRoutesByRoleId(Long roleId) {
         return userMapper.getRoutesByRoleId(roleId);
     }

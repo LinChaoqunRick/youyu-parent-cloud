@@ -129,7 +129,7 @@ public class UserController {
         String redisKey = "emailCode:" + email;
         String redisCode = redisCache.getCacheObject(redisKey);
         if (Objects.isNull(redisCode) || !redisCode.equals(code)) {
-            throw new SystemException(700, "验证码错误或已过期");
+            throw new SystemException("700", "验证码错误或已过期");
         }
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(User::getId, userId);

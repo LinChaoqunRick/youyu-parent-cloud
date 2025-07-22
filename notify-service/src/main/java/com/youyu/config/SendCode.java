@@ -51,7 +51,7 @@ public class SendCode {
         if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
             return true;
         } else {
-            throw new SystemException(800, sendSmsResponse.getMessage());
+            throw new SystemException("800", sendSmsResponse.getMessage());
         }
     }
 }

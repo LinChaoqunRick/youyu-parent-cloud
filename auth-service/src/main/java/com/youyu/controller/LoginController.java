@@ -58,11 +58,11 @@ public class LoginController {
     public ResponseResult<Boolean> register(@Valid RegisterInput input) {
         if (input.getType() == 0) {
             if (Objects.isNull(input.getUsername())) {
-                throw new SystemException(800, "手机号不能为空");
+                throw new SystemException("800", "手机号不能为空");
             }
         } else {
             if (Objects.isNull(input.getEmail())) {
-                throw new SystemException(800, "邮箱不能为空");
+                throw new SystemException("800", "邮箱不能为空");
             }
         }
         int result = loginService.register(input);

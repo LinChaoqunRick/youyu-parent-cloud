@@ -3,6 +3,7 @@ package com.youyu.config;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
 import com.youyu.constant.JwtClaimConstants;
+import com.youyu.utils.RedisCache;
 import jakarta.annotation.Resource;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,9 @@ public class ResourceServerConfig {
     @Resource
     private AuthenticationEntryPoint authenticationEntryPoint;
 
+    @Resource
+    private RedisCache redisCache;
+
     /**
      * 白名单路径列表
      */
@@ -77,7 +81,7 @@ public class ResourceServerConfig {
         ;
         http.oauth2ResourceServer(resourceServerConfigurer ->
                 resourceServerConfigurer
-                        .jwt(jwtConfigurer -> jwtAuthenticationConverter())
+                        .jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler)
         );
@@ -97,12 +101,8 @@ public class ResourceServerConfig {
      */
     @Bean
     public Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix(Strings.EMPTY);
-        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName(JwtClaimConstants.AUTHORITIES);
-
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new RedisJwtGrantedAuthoritiesConverter(redisCache));
         return jwtAuthenticationConverter;
     }
 }

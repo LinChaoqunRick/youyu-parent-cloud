@@ -47,7 +47,7 @@ public class SmsServiceImpl implements SmsService {
         try {
             send = sendCode.sendSms(input.getTelephone(), code, templateCode);
         } catch (ClientException e) {
-            throw new SystemException(800, e.getMessage());
+            throw new SystemException("800", e.getMessage());
         }
         // 设置5分钟后过期
         redisCache.setCacheObject(SMSTemplate.getLabelById(input.getType()) + ":" + input.getTelephone(), code, 5, TimeUnit.MINUTES);

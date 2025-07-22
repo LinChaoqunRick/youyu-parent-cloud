@@ -20,6 +20,10 @@
         SELECT * FROM bs_user where username = #{username} and deleted = 0
     </select>
 
+    <select id="getManageUserByUsername" resultType="com.youyu.entity.auth.UserFramework">
+        SELECT * FROM manage_user where username = #{username} and deleted = 0
+    </select>
+
     <select id="getUserByEmail" resultType="com.youyu.entity.auth.UserFramework">
         SELECT * FROM bs_user where email = #{email} and deleted = 0
     </select>

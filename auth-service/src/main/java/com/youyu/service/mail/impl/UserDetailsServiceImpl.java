@@ -3,35 +3,26 @@ package com.youyu.service.mail.impl;
 import com.youyu.entity.LoginUser;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.auth.AuthParamsEntity;
-import com.youyu.mapper.MenuMapper;
 import com.youyu.mapper.UserFrameworkMapper;
 import com.youyu.service.AuthService;
 import com.youyu.utils.BeanTransformUtils;
 import com.youyu.utils.RedisCache;
+import com.youyu.utils.SecurityUtils;
+import com.youyu.utils.WebUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @Service
 @Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
-
-    @Resource
-    private MenuMapper menuMapper;
 
     @Resource
     ApplicationContext applicationContext;
@@ -44,42 +35,35 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        Map<String, String[]> map = request.getParameterMap();
-        UserFramework user;
+        HttpServletRequest request = WebUtils.getRequest();
+        if (request == null) return null;
+
+        LoginUser loginUser;
         AuthParamsEntity authParamsEntity;
+
         try {
-            authParamsEntity = BeanTransformUtils.requestParamsMapToBean(map, AuthParamsEntity.class);
+            authParamsEntity = BeanTransformUtils.requestParamsMapToBean(request.getParameterMap(), AuthParamsEntity.class);
         } catch (Exception e) {
             log.error("认证请求数据格式不对：{}", e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
-
-        if (Objects.nonNull(authParamsEntity.getRefresh_token())) { // 如果是refresh_token
-            user = userFrameworkMapper.getUserByUsername(username);
-        } else {
-            // 获取认证类型，beanName就是 认证类型 + 后缀，例如 password + _authService = password_authService
-            String authType = authParamsEntity.getAuthType() != null ? authParamsEntity.getAuthType() : "password";
-            AuthService authService = null;
-            try {
-                // 根据认证类型，从Spring容器中取出对应的bean
-                authService = applicationContext.getBean(authType + "_authService", AuthService.class);
-            } catch (Exception e) {
-                if (e instanceof NoSuchBeanDefinitionException) {
-                    throw new RuntimeException("无效的authType：" + authType);
-                }
-                throw new RuntimeException(e);
+        // 获取认证类型，beanName就是 认证类型 + 后缀，例如 password + _authService = password_authService
+        String authType = authParamsEntity.getAuthType() != null ? authParamsEntity.getAuthType() : "password";
+        AuthService authService;
+        try {
+            // 根据认证类型，从Spring容器中取出对应的bean
+            authService = applicationContext.getBean(authType + "_authService", AuthService.class);
+        } catch (Exception e) {
+            if (e instanceof NoSuchBeanDefinitionException) {
+                throw new RuntimeException("无效的authType：" + authType);
             }
-            user = authService.execute(authParamsEntity);
+            throw new RuntimeException(e);
         }
-        // 查询对应权限信息
-        List<String> permission = menuMapper.selectPermsByUserId(user.getId());
-        // 把数据封装成UserDetails返回
-        LoginUser loginUser = new LoginUser(user, permission);
-        // 把完整的用户信息存入redis userId作为key
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String clientId = auth.getName();
-//        redisCache.setCacheObject(clientId + ":" + user.getId(), loginUser);
+
+        String clientId = SecurityUtils.getAuthentication().getName();
+        loginUser = authService.execute(authParamsEntity, clientId);
+        // 存入redis，便于资源服务器解析jwt获取authorities信息
+        redisCache.setCacheObject(clientId + ":" + loginUser.getUser().getId(), loginUser);
         return loginUser;
     }
 }
