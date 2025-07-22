@@ -14,4 +14,18 @@
 	    AND r.`status` = 0
 	    AND m.`status` = 0
     </select>
+
+	<select id="selectManagePermsByUserId" resultType="java.lang.String">
+		SELECT
+			DISTINCT m.`perms`
+		FROM
+			manage_user_role ur
+				LEFT JOIN `manage_role` r ON ur.`role_id` = r.`id`
+				LEFT JOIN `manage_role_menu` rm ON ur.`role_id` = rm.`role_id`
+				LEFT JOIN `manage_menu` m ON m.`id` = rm.`menu_id`
+		WHERE
+			user_id = #{userId}
+		  AND r.`status` = 0
+		  AND m.`status` = 0
+	</select>
 </mapper>

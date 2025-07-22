@@ -16,17 +16,21 @@ spring:
         namespace: ${NACOS_NAMESPACE:}
         username: nacos
         password: nacos123
+        #nacos拓展配置中心配置
+        extension-configs:
+          - data-id: database.yaml
+            refresh: true
     gateway:
       routes:
         - id: auth-service   # 路由名称
           uri: lb://auth-service  # 路由的地址，lb表示使用负载均衡到微服务，也可以使用http正常转发
           predicates: # 路由规则，断言什么请求会被路由
-            - Path=/login/**,/oauth/**,/auth/**  # 只要是访问的这个路径，一律都被路由到上面指定的服务
+            - Path=/login/**,/oauth2/**,/auth/**  # 只要是访问的这个路径，一律都被路由到上面指定的服务
 
         - id: user-service
           uri: lb://user-service
           predicates:
-            - Path=/user/**,/message/**
+            - Path=/user/**,/message/**,/manage/user/**
 
         - id: content-service
           uri: lb://content-service

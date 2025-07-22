@@ -1,11 +1,11 @@
 package com.youyu.utils;
 
 import com.youyu.entity.user.PositionInfo;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
 
 @Component
 public class LocateUtils {

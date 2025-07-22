@@ -9,10 +9,9 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface UserFrameworkMapper extends BaseMapper<UserFramework> {
-    UserFramework getUserForLogin(@Param("username") String username, @Param("email") String email, @Param("id") Long id);
     UserFramework getUserByUsername(@Param("username") String username);
+    UserFramework getManageUserByUsername(@Param("username") String username);
     UserFramework getUserByEmail(@Param("email") String email);
     UserFramework getUserByGithubId(@Param("githubId") String githubId);
     UserFramework getUserByQQId(@Param("qqId") String qqId);
-    UserFramework updateUser(UserFramework userFramework);
 }

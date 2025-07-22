@@ -1,6 +1,11 @@
 package com.youyu.utils;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import java.io.IOException;
 
 public class WebUtils {
@@ -19,6 +24,18 @@ public class WebUtils {
             response.getWriter().print(string);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 获取 Request 对象
+     * @return HttpServletRequest
+     */
+    public static HttpServletRequest getRequest() {
+        RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+        if (attrs instanceof ServletRequestAttributes) {
+            return ((ServletRequestAttributes) attrs).getRequest();
         }
         return null;
     }

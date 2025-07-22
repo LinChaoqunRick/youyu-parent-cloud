@@ -24,8 +24,8 @@ import com.youyu.utils.SecurityUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;

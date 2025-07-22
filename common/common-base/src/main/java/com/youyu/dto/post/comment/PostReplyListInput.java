@@ -3,7 +3,7 @@ package com.youyu.dto.post.comment;
 import com.youyu.dto.common.PageBase;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 public class PostReplyListInput extends PageBase {

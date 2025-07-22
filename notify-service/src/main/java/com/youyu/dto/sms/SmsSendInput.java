@@ -3,7 +3,7 @@ package com.youyu.dto.sms;
 import com.youyu.enums.SMSTemplate;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 public class SmsSendInput {

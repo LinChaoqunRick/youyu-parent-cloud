@@ -21,8 +21,8 @@ import com.youyu.service.UserService;
 import com.youyu.utils.*;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -134,6 +134,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public List<Route> getAuthRoutes(Long id) {
         return userMapper.getAuthRoutes(id);
+    }
+
+    @Override
+    public List<Route> getManageAuthRoutes(Long id) {
+        return userMapper.getManageAuthRoutes(id);
     }
 
     @Override

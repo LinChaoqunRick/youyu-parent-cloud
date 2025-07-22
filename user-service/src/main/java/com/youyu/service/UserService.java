@@ -29,6 +29,8 @@ public interface UserService extends IService<User> {
 
     List<Route> getAuthRoutes(Long id);
 
+    List<Route> getManageAuthRoutes(Long id);
+
     List<Route> getRoutesByRoleId(Long roleId);
 
     UserFramework getUserById(Long id);

@@ -4,10 +4,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.entity.BusinessLog;
 import com.youyu.mapper.BusinessLogMapper;
 import com.youyu.service.BusinessLogService;
+import jakarta.annotation.Resource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+
 
 /**
  * (Logs)表服务实现类

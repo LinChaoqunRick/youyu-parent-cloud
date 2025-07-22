@@ -3,9 +3,11 @@ package com.youyu.service.mail.impl;
 import com.youyu.dto.ConnectRegisterInput;
 import com.youyu.dto.GithubAccessTokenResult;
 import com.youyu.dto.GithubUserInfoResult;
+import com.youyu.entity.LoginUser;
 import com.youyu.entity.auth.AuthParamsEntity;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.connect.GithubConstants;
+import com.youyu.mapper.MenuMapper;
 import com.youyu.mapper.UserFrameworkMapper;
 import com.youyu.service.AuthService;
 import com.youyu.service.LoginService;
@@ -16,7 +18,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
+
+import java.util.List;
 
 /**
  * github授权登录
@@ -38,8 +42,11 @@ public class GithubAuthServiceImpl implements AuthService {
     @Resource
     private RestTemplate restTemplate;
 
+    @Resource
+    private MenuMapper menuMapper;
+
     @Override
-    public UserFramework execute(AuthParamsEntity authParamsEntity) {
+    public LoginUser execute(AuthParamsEntity authParamsEntity, String clientId) {
         GithubUserInfoResult userInfoResult = getGithubUserByCode(authParamsEntity.getGithubCode());
         UserFramework githubUser = getUserByGithubId(userInfoResult.getId());
 
@@ -52,7 +59,8 @@ public class GithubAuthServiceImpl implements AuthService {
             githubUser = loginService.connectRegister(input);
         }
 
-        return githubUser;
+        List<String> permission = menuMapper.selectPermsByUserId(githubUser.getId());
+        return new LoginUser(githubUser, permission);
     }
 
     /**

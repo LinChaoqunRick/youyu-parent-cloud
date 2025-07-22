@@ -24,7 +24,18 @@
               (SELECT route_id
                FROM sys_role_route
                WHERE sys_role_route.role_id =
-                     (SELECT role_id FROM sys_user_role WHERE user_id = 10000))
+                     (SELECT role_id FROM sys_user_role WHERE user_id = #{id}))
+          AND deleted != 1
+    </select>
+
+    <select id="getManageAuthRoutes" resultMap="route">
+        SELECT *
+        FROM manage_route
+        WHERE id IN
+              (SELECT route_id
+               FROM manage_role_route
+               WHERE manage_role_route.role_id =
+                     (SELECT role_id FROM manage_user_role WHERE user_id = #{id}))
           AND deleted != 1
     </select>
 

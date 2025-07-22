@@ -13,7 +13,7 @@ import com.youyu.utils.NumberUtils;
 import com.youyu.utils.RedisCache;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -47,7 +47,7 @@ public class SmsServiceImpl implements SmsService {
         try {
             send = sendCode.sendSms(input.getTelephone(), code, templateCode);
         } catch (ClientException e) {
-            throw new SystemException(800, e.getMessage());
+            throw new SystemException("800", e.getMessage());
         }
         // 设置5分钟后过期
         redisCache.setCacheObject(SMSTemplate.getLabelById(input.getType()) + ":" + input.getTelephone(), code, 5, TimeUnit.MINUTES);

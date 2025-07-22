@@ -18,10 +18,10 @@ import com.youyu.service.UserService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.PageUtils;
+import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.Objects;
 
 /**

@@ -1,17 +1,21 @@
 package com.youyu.service.mail.impl;
 
+import com.youyu.entity.LoginUser;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.auth.AuthParamsEntity;
 import com.youyu.enums.ResultCode;
 import com.youyu.enums.SMSTemplate;
 import com.youyu.exception.SystemException;
+import com.youyu.mapper.MenuMapper;
 import com.youyu.mapper.UserFrameworkMapper;
 import com.youyu.service.AuthService;
 import com.youyu.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
+
+import java.util.List;
 
 @Slf4j
 @Service("sms_authService")
@@ -22,8 +26,11 @@ public class SmsAuthServiceImpl implements AuthService {
     @Resource
     private RedisCache redisCache;
 
+    @Resource
+    private MenuMapper menuMapper;
+
     @Override
-    public UserFramework execute(AuthParamsEntity authParamsEntity) {
+    public LoginUser execute(AuthParamsEntity authParamsEntity, String clientId) {
         String username = authParamsEntity.getUsername();
         String smsCode = authParamsEntity.getSmsCode();
         UserFramework user = userFrameworkMapper.getUserByUsername(username);
@@ -31,7 +38,9 @@ public class SmsAuthServiceImpl implements AuthService {
             throw new RuntimeException("手机号或验证码错误");
         }
         checkSmsCode(username, smsCode);
-        return user;
+
+        List<String> permission = menuMapper.selectPermsByUserId(user.getId());
+        return new LoginUser(user, permission);
     }
 
     private void checkSmsCode(String telephone, String code) {

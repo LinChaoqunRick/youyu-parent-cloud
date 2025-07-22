@@ -1,6 +1,8 @@
 package com.youyu.service.mail.impl;
 
+import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.youyu.constant.RedisConstants;
 import com.youyu.dto.ConnectRegisterInput;
 import com.youyu.dto.RegisterInput;
 import com.youyu.entity.LoginUser;
@@ -15,16 +17,22 @@ import com.youyu.mapper.UserRoleMapper;
 import com.youyu.service.LoginService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.RedisCache;
+import com.youyu.utils.SecurityUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
+
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
+@RequiredArgsConstructor
 public class LoginServiceImpl implements LoginService {
 
     @Resource
@@ -39,14 +47,28 @@ public class LoginServiceImpl implements LoginService {
     @Resource
     private UserRoleMapper userRoleMapper;
 
+    private final StringRedisTemplate redisTemplate;
+
     @Override
     public void logout() {
-        // 获取SecurityContextHolder中的用户Id
-        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        Long userId = loginUser.getUser().getId();
-        // 删除redis中的值
-        redisCache.deleteObject("user:" + userId);
+        // 先获取令牌信息
+        Map<String, Object> tokenAttributes = SecurityUtils.getTokenAttributes();
+        if (tokenAttributes != null) {
+            String jti = String.valueOf(tokenAttributes.get("jti"));
+            Long exp = Convert.toLong(tokenAttributes.get("exp"));
+
+            if (exp != null) {
+                long currentTimeInSeconds = System.currentTimeMillis() / 1000;
+                if (exp > currentTimeInSeconds) {
+                    // token未过期，添加至缓存作为黑名单，缓存时间为token剩余的有效时间
+                    long remainingTimeInSeconds = exp - currentTimeInSeconds;
+                    redisTemplate.opsForValue().set(RedisConstants.Auth.BLACKLIST_TOKEN + jti, "", remainingTimeInSeconds, TimeUnit.SECONDS);
+                }
+            } else {
+                // token 永不过期则永久加入黑名单
+                redisTemplate.opsForValue().set(RedisConstants.Auth.BLACKLIST_TOKEN + jti, "");
+            }
+        }
     }
 
     @Override
@@ -64,7 +86,7 @@ public class LoginServiceImpl implements LoginService {
             String redisKey = SMSTemplate.REGISTER_TEMP.getLabel() + ":" + input.getUsername();
             String redisCode = redisCache.getCacheObject(redisKey);
             if (Objects.isNull(redisCode) || !redisCode.equals(input.getCode())) {
-                throw new SystemException(700, "验证码错误或已过期");
+                throw new SystemException("700", "验证码错误或已过期");
             }
             newUser.setUsername(input.getUsername());
         } else { // 邮箱
@@ -76,7 +98,7 @@ public class LoginServiceImpl implements LoginService {
             String redisKey = "emailCode:" + input.getEmail();
             String redisCode = redisCache.getCacheObject(redisKey);
             if (Objects.isNull(redisCode) || !redisCode.equals(input.getCode())) {
-                throw new SystemException(700, "验证码错误或已过期");
+                throw new SystemException("700", "验证码错误或已过期");
             }
             newUser.setEmail(input.getEmail());
         }
@@ -87,7 +109,7 @@ public class LoginServiceImpl implements LoginService {
 
         Long count = userFrameworkMapper.selectCount(nicknameQueryWrapper);
         if (count > 0) {
-            throw new SystemException(700, "昵称“" + input.getNickname() + "”已存在");
+            throw new SystemException("700", "昵称“" + input.getNickname() + "”已存在");
         }
 
         newUser.setNickname(input.getNickname());

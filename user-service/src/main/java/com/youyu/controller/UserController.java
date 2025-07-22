@@ -2,12 +2,10 @@ package com.youyu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.youyu.entity.auth.Route;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.user.*;
 import com.youyu.enums.AdCode;
 import com.youyu.enums.ResultCode;
-import com.youyu.enums.RoleEnum;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
@@ -16,15 +14,12 @@ import com.youyu.service.UserService;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.RedisCache;
 import com.youyu.utils.SecurityUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import java.util.Objects;
 
 /**
@@ -82,7 +77,7 @@ public class UserController {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getNickname, user.getNickname());
         queryWrapper.ne(User::getId, user.getId());
-        Long count = userService.count(queryWrapper);
+        long count = userService.count(queryWrapper);
         if (count > 0) {
             throw new SystemException(ResultCode.NICKNAME_CONFLICT);
         }
@@ -113,7 +108,7 @@ public class UserController {
     ResponseResult<Boolean> saveHomepage(@RequestParam String oldTel, @RequestParam String newTel) {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUsername, newTel);
-        Long count = userService.count(queryWrapper);
+        long count = userService.count(queryWrapper);
         if (count > 0) {
             throw new SystemException(ResultCode.TELEPHONE_CONFLICT);
         }
@@ -134,7 +129,7 @@ public class UserController {
         String redisKey = "emailCode:" + email;
         String redisCode = redisCache.getCacheObject(redisKey);
         if (Objects.isNull(redisCode) || !redisCode.equals(code)) {
-            throw new SystemException(700, "验证码错误或已过期");
+            throw new SystemException("700", "验证码错误或已过期");
         }
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(User::getId, userId);
@@ -187,6 +182,19 @@ public class UserController {
         }
         user.setAdname(AdCode.getDescByCode(user.getAdcode()));
         return ResponseResult.success(user);
+    }
+
+
+    @PreAuthorize("hasAuthority('test')")
+    @RequestMapping("/hasAuthTest")
+    public ResponseResult<String> hasAuthTest() {
+        return ResponseResult.success("OK Success");
+    }
+
+    @PreAuthorize("hasAuthority('test123')")
+    @RequestMapping("/noAuthTest")
+    public ResponseResult<String> noAuthTest() {
+        return ResponseResult.success("OK Success");
     }
 }
 

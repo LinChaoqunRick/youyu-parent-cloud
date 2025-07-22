@@ -3,9 +3,11 @@ package com.youyu.service.mail.impl;
 import com.youyu.dto.ConnectRegisterInput;
 import com.youyu.dto.QQAccessTokenResult;
 import com.youyu.dto.QQUserInfoResult;
+import com.youyu.entity.LoginUser;
 import com.youyu.entity.auth.AuthParamsEntity;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.connect.QQConstants;
+import com.youyu.mapper.MenuMapper;
 import com.youyu.mapper.UserFrameworkMapper;
 import com.youyu.service.AuthService;
 import com.youyu.service.LoginService;
@@ -13,7 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
+
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,8 +41,11 @@ public class QQAuthServiceImpl implements AuthService {
     @Resource
     private LoginService loginService;
 
+    @Resource
+    private MenuMapper menuMapper;
+
     @Override
-    public UserFramework execute(AuthParamsEntity authParamsEntity) {
+    public LoginUser execute(AuthParamsEntity authParamsEntity, String clientId) {
         QQUserInfoResult userInfoResult = getQQUserByCode(authParamsEntity.getQqCode());
         UserFramework qqUser = getUserByQQId(userInfoResult.getOpenId());
 
@@ -51,8 +58,8 @@ public class QQAuthServiceImpl implements AuthService {
             input.setSex(transformGender(userInfoResult.getGender_type()));
             qqUser = loginService.connectRegister(input);
         }
-
-        return qqUser;
+        List<String> permission = menuMapper.selectPermsByUserId(qqUser.getId());
+        return new LoginUser(qqUser, permission);
     }
 
     public QQUserInfoResult getQQUserByCode(String code) {
