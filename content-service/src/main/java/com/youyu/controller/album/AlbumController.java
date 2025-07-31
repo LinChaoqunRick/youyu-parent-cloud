@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -59,9 +60,14 @@ public class AlbumController {
 
     @RequestMapping("/open/list")
     public ResponseResult<PageOutput<AlbumListOutput>> list(AlbumListInput input) {
-        // 分页查询
         Page<Album> page = new Page<>(input.getPageNum(), input.getPageSize());
         Album album = BeanCopyUtils.copyBean(input, Album.class);
+        if (input.getUserId() != null) {
+            album.setUserId(input.getUserId());
+        }
+        if (SecurityUtils.getUserId() == null || !SecurityUtils.isContextUser(input.getUserId())) {
+            album.setOpen(1);
+        }
         PageOutput<AlbumListOutput> pageOutput = albumService.selectPage(page, album);
         return ResponseResult.success(pageOutput);
     }

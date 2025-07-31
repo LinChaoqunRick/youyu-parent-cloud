@@ -20,7 +20,7 @@ public interface UserServiceClient {
     @PostMapping(value = "/user/open/listByIds")
     ResponseResult<List<User>> listByIds(@RequestParam("userIds") List<Long> userIds);
 
-    @PostMapping(value = "/user/follow/getFansCount")
+    @PostMapping(value = "/user/follow/open/getFansCount")
     ResponseResult<Integer> getFansCount(@RequestParam Long userId);
 
     @PostMapping(value = "/user/follow/isFollow")
@@ -29,13 +29,13 @@ public interface UserServiceClient {
     @PostMapping(value = "/user/open/getProfileMenu")
     ResponseResult<ProfileMenu> getProfileMenu(@RequestParam Long userId);
 
-    @PostMapping(value = "/user/follow/getUserFollowCount")
+    @PostMapping(value = "/user/follow/open/getUserFollowCount")
     ResponseResult<Integer> getUserFollowCount(@RequestParam Long userId);
 
     @PostMapping(value = "/user/follow/getFollowUserIdList")
     ResponseResult<List<Long>> getFollowUserIdList(@RequestParam Long userId);
 
-    @PostMapping(value = "/user/follow/isCurrentUserFollow")
+    @PostMapping(value = "/user/follow/open/isCurrentUserFollow")
     ResponseResult<Boolean> isCurrentUserFollow(@RequestParam Long userId);
 
     @RequestMapping("/user/open/pageUserByUserIds")
