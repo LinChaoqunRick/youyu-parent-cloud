@@ -116,7 +116,7 @@ public class FavoritesController {
         }
         List<Favorites> favoritesList = favoritesService.list(favoritesLambdaQueryWrapper);
 
-        if (favoritesList.isEmpty() && SecurityUtils.isContextUser(userId)) { // 如果没有收藏夹，并且是作者自己访问，创建一个默认的
+        if (favoritesList.isEmpty() && SecurityUtils.isAuthorizationUser(userId)) { // 如果没有收藏夹，并且是作者自己访问，创建一个默认的
             Favorites defaultFavorites = new Favorites();
             defaultFavorites.setName("默认收藏夹");
             defaultFavorites.setUserId(authUserId);

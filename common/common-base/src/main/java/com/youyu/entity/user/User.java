@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.validation.constraints.NotNull;
+
+import java.io.Serial;
 import java.util.Date;
 import java.io.Serializable;
 
@@ -26,6 +28,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User extends Model<User> implements Serializable {
+    @Serial
     private static final long serialVersionUID = -81729684263381566L;
 
     @NotNull(message = "用户id不能为空")

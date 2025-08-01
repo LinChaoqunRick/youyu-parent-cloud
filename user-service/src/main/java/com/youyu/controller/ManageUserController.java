@@ -19,7 +19,7 @@ public class ManageUserController {
     private UserService userService;
 
     @RequestMapping("/getAuthRoutes")
-    @Log(title = "获取权限路由", type = BusinessType.GET_ROUTER)
+    @Log(title = "获取权限路由", type = BusinessType.OTHER)
     public ResponseResult<List<Route>> getAuthRoutes() {
         Long userId = SecurityUtils.getUserId();
         List<Route> manageAuthRoutes = userService.getManageAuthRoutes(userId);

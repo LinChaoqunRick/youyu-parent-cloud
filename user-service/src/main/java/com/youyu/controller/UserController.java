@@ -163,9 +163,10 @@ public class UserController {
         return ResponseResult.success(saveOrUpdate);
     }
 
-    @RequestMapping("/getCurrentUser")
+    @RequestMapping("/me")
     public ResponseResult<UserFramework> getCurrentUser() {
         Long currentUserId = SecurityUtils.getUserId();
+        String authorizedClientId = SecurityUtils.getJwtClientId();
         UserFramework user;
         if (Objects.nonNull(currentUserId)) {
             user = userService.getUserById(currentUserId);

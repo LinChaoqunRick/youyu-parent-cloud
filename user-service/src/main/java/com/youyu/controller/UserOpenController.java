@@ -49,9 +49,6 @@ public class UserOpenController {
     private UserService userService;
 
     @Resource
-    private UserFollowService userFollowService;
-
-    @Resource
     private ProfileMenuService profileMenuService;
 
     @Resource
@@ -141,13 +138,13 @@ public class UserOpenController {
     }
 
     @RequestMapping("/getAuthRoutes")
-    @Log(title = "获取权限路由", type = BusinessType.GET_ROUTER)
+    @Log(title = "获取权限路由", type = BusinessType.LOGIN)
     public ResponseResult<List<Route>> getAuthRoutes() {
-        Long X_User_ID = SecurityUtils.getRequestAuthenticateUserId();
-        if (Objects.isNull(X_User_ID)) {
+        Long userId = SecurityUtils.getUserId();
+        if (Objects.isNull(userId)) {
             return ResponseResult.success(userService.getRoutesByRoleId(RoleEnum.NO_LOGGED_USER.getId()));
         } else {
-            return ResponseResult.success(userService.getAuthRoutes(X_User_ID));
+            return ResponseResult.success(userService.getAuthRoutes(userId));
         }
     }
 }
