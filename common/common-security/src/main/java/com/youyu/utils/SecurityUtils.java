@@ -5,11 +5,8 @@ import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Map;
 import java.util.Objects;
@@ -28,6 +25,10 @@ public class SecurityUtils {
         return null;
     }
 
+    /**
+     * 获取当前认证用户id
+     * @return 用户id
+     */
     public static Long getUserId() {
         Map<String, Object> tokenAttributes = getTokenAttributes();
         if (tokenAttributes != null) {
@@ -36,7 +37,23 @@ public class SecurityUtils {
         return null;
     }
 
-    public static String getUsername() {
+    /**
+     * 用户已登录，获取clientId
+     * @return 客户端id
+     */
+    public static String getJwtClientId() {
+        Authentication authentication = getAuthentication();
+        if (authentication instanceof JwtAuthenticationToken token) {
+            Jwt jwt = token.getToken();
+            return jwt.getAudience().get(0); // 取第一个作为 client_id
+        }
+        return null;
+    }
+    /**
+     * 用户已登录，获取clientId
+     * @return 客户端id
+     */
+    public static String getClientId() {
         Authentication authentication = getAuthentication();
         if (authentication != null) {
             return authentication.getName();
@@ -53,33 +70,13 @@ public class SecurityUtils {
         return Objects.equals(getUserId(), userId);
     }
 
-    public static boolean isContextUser(Long userId) {
-        return Objects.equals(getUserId(), userId);
-    }
-
     /**
-     * 水平越权检验
-     *
+     * 水平越权检验，无权限错误
      * @param userId 用户id，将与认证的用户id进行比较
      */
     public static void authAuthorizationUser(Long userId) {
-        if (!isContextUser(userId)) {
+        if (!isAuthorizationUser(userId)) {
             throw new SystemException(ResultCode.FORBIDDEN);
-        }
-    }
-
-    /**
-     * 获取请求中的X-User-Id
-     *
-     * @return
-     */
-    public static Long getRequestAuthenticateUserId() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String X_User_ID = request.getHeader("X-User-Id");
-        if (Objects.nonNull(X_User_ID)) {
-            return Long.valueOf(X_User_ID);
-        } else {
-            return null;
         }
     }
 }

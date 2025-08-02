@@ -163,7 +163,7 @@ public class UserController {
         return ResponseResult.success(saveOrUpdate);
     }
 
-    @RequestMapping("/getCurrentUser")
+    @RequestMapping("/me")
     public ResponseResult<UserFramework> getCurrentUser() {
         Long currentUserId = SecurityUtils.getUserId();
         UserFramework user;

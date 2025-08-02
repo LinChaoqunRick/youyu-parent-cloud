@@ -65,7 +65,7 @@ public class AlbumController {
         if (input.getUserId() != null) {
             album.setUserId(input.getUserId());
         }
-        if (SecurityUtils.getUserId() == null || !SecurityUtils.isContextUser(input.getUserId())) {
+        if (SecurityUtils.getUserId() == null || !SecurityUtils.isAuthorizationUser(input.getUserId())) {
             album.setOpen(1);
         }
         PageOutput<AlbumListOutput> pageOutput = albumService.selectPage(page, album);
