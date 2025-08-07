@@ -30,12 +30,12 @@ spring:
         - id: user-service
           uri: lb://user-service
           predicates:
-            - Path=/user/**,/message/**,/manage/user/**
+            - Path=/user/**,/manage/user/**
 
         - id: content-service
           uri: lb://content-service
           predicates:
-            - Path=/category/**,/column/**,/comment/**,/post/**,/favorites/**,/moment/**,/momentComment/**,/momentCommentLike/**,/momentLike/**,/noteChapter/**,/note/**,/album/**,/albumImage/**
+            - Path=/category/**,/column/**,/comment/**,/post/**,/favorites/**,/moment/**,/momentComment/**,/momentCommentLike/**,/momentLike/**,/noteChapter/**,/note/**,/album/**,/albumImage/**,/manage/analysis/**,/message/**
 
         - id: file-service
           uri: lb://file-service

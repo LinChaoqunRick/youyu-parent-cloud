@@ -7,28 +7,24 @@ import com.youyu.annotation.Log;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.user.*;
 import com.youyu.entity.auth.Route;
-import com.youyu.entity.user.PositionInfo;
+import com.youyu.entity.result.AmapLocationResult;
+import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.entity.user.ProfileMenu;
 import com.youyu.entity.user.User;
-import com.youyu.entity.user.UserFollow;
-import com.youyu.enums.AdCode;
-import com.youyu.enums.BusinessType;
+import com.youyu.enums.AreaCode;
+import com.youyu.enums.LogType;
 import com.youyu.enums.RoleEnum;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
-import com.youyu.service.UserFollowService;
 import com.youyu.service.UserService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.RequestUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -106,7 +102,7 @@ public class UserOpenController {
     @RequestMapping("/selectById")
     public ResponseResult<User> selectById(@RequestParam Long userId) {
         User user = userService.getById(userId);
-        user.setAdname(AdCode.getDescByCode(user.getAdcode()));
+        user.setAdname(AreaCode.getDescByCode(user.getAdcode()));
         return ResponseResult.success(user);
     }
 
@@ -131,14 +127,14 @@ public class UserOpenController {
     }
 
     @RequestMapping("/ipLocation")
-    public ResponseResult<PositionInfo> getUserPositionInfo() {
-        PositionInfo positionInfo = locateUtils.getUserPositionByIP();
-        log.info("当前访问IP:{}{}", RequestUtils.getClientIp(), positionInfo.toString());
-        return ResponseResult.success(positionInfo);
+    public ResponseResult<TencentLocationResult> getUserPositionInfo() {
+        TencentLocationResult tencentLocationResult = locateUtils.queryTencentIp();
+        // log.info("当前访问IP:{}{}", RequestUtils.getClientIp(), tencentLocationResult.toString());
+        return ResponseResult.success(tencentLocationResult);
     }
 
     @RequestMapping("/getAuthRoutes")
-    @Log(title = "获取权限路由", type = BusinessType.LOGIN)
+    @Log(title = "获取权限路由", type = LogType.ACCESS)
     public ResponseResult<List<Route>> getAuthRoutes() {
         Long userId = SecurityUtils.getUserId();
         if (Objects.isNull(userId)) {

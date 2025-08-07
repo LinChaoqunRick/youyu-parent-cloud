@@ -1,7 +1,7 @@
 package com.youyu.feign;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.youyu.entity.user.PositionInfo;
+import com.youyu.entity.result.AmapLocationResult;
 import com.youyu.entity.user.ProfileMenu;
 import com.youyu.entity.user.User;
 import com.youyu.result.ResponseResult;
@@ -14,6 +14,9 @@ import java.util.List;
 
 @FeignClient(value = "user-service")
 public interface UserServiceClient {
+    @PostMapping(value = "/user/getUserTotal")
+    ResponseResult<Long> getUserTotal();
+
     @PostMapping(value = "/user/open/selectById")
     ResponseResult<User> selectById(@RequestParam Long userId);
 
@@ -42,5 +45,5 @@ public interface UserServiceClient {
     ResponseResult<Page<User>> pageUserByUserIds(@RequestParam long current, @RequestParam long size, @RequestParam List<Long> userIds);
 
     @RequestMapping("/user/open/ipLocation")
-    ResponseResult<PositionInfo> ipLocation();
+    ResponseResult<AmapLocationResult> ipLocation();
 }

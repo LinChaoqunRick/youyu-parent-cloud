@@ -1,7 +1,7 @@
 package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.entity.BusinessLog;
+import com.youyu.entity.Logs;
 
 /**
  * (Message)表服务接口
@@ -9,5 +9,5 @@ import com.youyu.entity.BusinessLog;
  * @author makejava
  * @since 2024-02-20 22:04:04
  */
-public interface LogService extends IService<BusinessLog> {
+public interface LogService extends IService<Logs> {
 }

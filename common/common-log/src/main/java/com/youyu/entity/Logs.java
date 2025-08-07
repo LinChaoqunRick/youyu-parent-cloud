@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("bs_logs")
-public class BusinessLog {
+public class Logs {
     @TableId
     private Long id;
     /**

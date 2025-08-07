@@ -1,6 +1,7 @@
 package com.youyu.utils;
 
 import cn.hutool.core.convert.Convert;
+import com.youyu.bean.DelegatingSecurityContextSupplier;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import org.springframework.security.core.Authentication;
@@ -10,6 +11,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.function.Supplier;
 
 public class SecurityUtils {
 
@@ -79,4 +83,10 @@ public class SecurityUtils {
             throw new SystemException(ResultCode.FORBIDDEN);
         }
     }
+
+    public static <T> CompletableFuture<T> supplyAsyncWithSecurityContext(Supplier<T> supplier, Executor executor) {
+        Supplier<T> contextSupplier = new DelegatingSecurityContextSupplier<>(supplier);
+        return CompletableFuture.supplyAsync(contextSupplier, executor);
+    }
+
 }

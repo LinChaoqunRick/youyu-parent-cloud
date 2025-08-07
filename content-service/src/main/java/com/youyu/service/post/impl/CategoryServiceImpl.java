@@ -1,4 +1,4 @@
-package com.youyu.service.impl;
+package com.youyu.service.post.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.mapper.post.CategoryMapper;

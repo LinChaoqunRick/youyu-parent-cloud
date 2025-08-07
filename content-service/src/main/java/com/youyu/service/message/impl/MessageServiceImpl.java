@@ -1,12 +1,12 @@
-package com.youyu.service.impl;
+package com.youyu.service.message.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.dto.message.MessageUserOutput;
 import com.youyu.entity.user.User;
-import com.youyu.mapper.MessageMapper;
 import com.youyu.entity.user.Message;
-import com.youyu.service.MessageService;
-import com.youyu.service.UserService;
+import com.youyu.feign.UserServiceClient;
+import com.youyu.mapper.message.MessageMapper;
+import com.youyu.service.message.MessageService;
 import com.youyu.utils.BeanCopyUtils;
 import org.springframework.stereotype.Service;
 
@@ -22,13 +22,12 @@ import jakarta.annotation.Resource;
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> implements MessageService {
 
     @Resource
-    private UserService userService;
+    private UserServiceClient userServiceClient;
 
     @Override
     public MessageUserOutput getUserDetail(Long userId) {
-        User user = userService.getById(userId);
-        MessageUserOutput userOutput = BeanCopyUtils.copyBean(user, MessageUserOutput.class);
-        return userOutput;
+        User user = userServiceClient.selectById(userId).getData();
+        return BeanCopyUtils.copyBean(user, MessageUserOutput.class);
     }
 }
 

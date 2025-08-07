@@ -1,4 +1,4 @@
-package com.youyu.service;
+package com.youyu.service.message;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.youyu.dto.message.MessageUserOutput;

@@ -1,7 +1,7 @@
 package com.youyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.youyu.entity.BusinessLog;
+import com.youyu.entity.Logs;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
  */
 @Mapper
 @Repository
-public interface LogMapper extends BaseMapper<BusinessLog> {
+public interface LogMapper extends BaseMapper<Logs> {
 
 }

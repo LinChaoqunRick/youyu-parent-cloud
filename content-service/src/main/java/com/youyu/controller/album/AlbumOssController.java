@@ -5,11 +5,12 @@ import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.common.utils.BinaryUtil;
 import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
+import com.youyu.config.OssProperties;
 import com.youyu.entity.album.Album;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.album.AlbumService;
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +24,7 @@ import java.util.Map;
 
 @RefreshScope
 @Data
-@ConfigurationProperties(prefix = "aliyun.oss")
+@EnableConfigurationProperties(OssProperties.class)
 @RestController
 @RequestMapping("/album/oss")
 public class AlbumOssController {

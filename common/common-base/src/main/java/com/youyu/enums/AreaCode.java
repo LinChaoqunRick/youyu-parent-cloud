@@ -1,6 +1,6 @@
 package com.youyu.enums;
 
-public enum AdCode {
+public enum AreaCode {
     Beijing("北京", "北京市", 110000),
     Tianjin("天津", "天津市", 120000),
     Hebei("河北", "河北省", 130000),
@@ -39,7 +39,7 @@ public enum AdCode {
     private String fullName;
     private Integer adcode;
 
-    AdCode(String name, String fullName, int adcode) {
+    AreaCode(String name, String fullName, int adcode) {
         this.name = name;
         this.fullName = fullName;
         this.adcode = adcode;
@@ -74,7 +74,7 @@ public enum AdCode {
             return null;
         }
         String areaName = null;
-        for (AdCode type : AdCode.values()) {
+        for (AreaCode type : AreaCode.values()) {
             if (type.getAdcode() <= adcode) {
                 areaName = type.getName();
             } else {

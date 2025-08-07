@@ -7,6 +7,7 @@ import com.aliyun.oss.model.GeneratePresignedUrlRequest;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.youyu.config.OssProperties;
 import com.youyu.dto.album.AlbumListOutput;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.post.post.PostUserOutput;
@@ -21,7 +22,7 @@ import com.youyu.service.album.AlbumService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.PageUtils;
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -40,7 +41,7 @@ import java.util.Objects;
 @RefreshScope
 @Data
 @Service("albumService")
-@ConfigurationProperties(prefix = "aliyun.oss")
+@EnableConfigurationProperties(OssProperties.class)
 public class AlbumServiceImpl extends ServiceImpl<AlbumMapper, Album> implements AlbumService {
     private String bucket;
     // 签名方式

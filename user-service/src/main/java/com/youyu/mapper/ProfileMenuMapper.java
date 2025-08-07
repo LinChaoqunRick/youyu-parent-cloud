@@ -1,19 +1,19 @@
 package com.youyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.youyu.entity.user.Message;
+import com.youyu.entity.user.ProfileMenu;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 /**
- * (Message)表数据库访问层
+ * (ProfileMenu)表数据库访问层
  *
  * @author makejava
- * @since 2024-02-20 22:03:57
+ * @since 2023-05-07 12:13:44
  */
 @Mapper
 @Repository
-public interface MessageMapper extends BaseMapper<Message> {
+public interface ProfileMenuMapper extends BaseMapper<ProfileMenu> {
 
 }
 

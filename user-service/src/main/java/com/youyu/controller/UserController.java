@@ -3,8 +3,9 @@ package com.youyu.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.youyu.entity.auth.UserFramework;
+import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.entity.user.*;
-import com.youyu.enums.AdCode;
+import com.youyu.enums.AreaCode;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
@@ -172,18 +173,23 @@ public class UserController {
         } else {
             throw new SystemException(ResultCode.USER_NOT_EXIST);
         }
-        PositionInfo position = locateUtils.getUserPositionByIP();
-        if (position.getAdcode() != null) {
+        TencentLocationResult position = locateUtils.queryTencentIp();
+        if (position.getAdcode() > -1) {
             // 更新用户adcode
             LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
             updateWrapper.eq(User::getId, user.getId());
             updateWrapper.set(User::getAdcode, position.getAdcode());
             userService.update(updateWrapper);
         }
-        user.setAdname(AdCode.getDescByCode(user.getAdcode()));
+        user.setAdname(AreaCode.getDescByCode(user.getAdcode()));
         return ResponseResult.success(user);
     }
 
+    @RequestMapping("/getUserTotal")
+    public ResponseResult<Long> getUserTotal() {
+        long count = userService.count();
+        return ResponseResult.success(count);
+    }
 
     @PreAuthorize("hasAuthority('test')")
     @RequestMapping("/hasAuthTest")

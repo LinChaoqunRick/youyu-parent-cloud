@@ -1,19 +1,19 @@
-package com.youyu.mapper;
+package com.youyu.mapper.message;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.youyu.entity.BusinessLog;
+import com.youyu.entity.user.Message;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 /**
- * (Logs)表数据库访问层
+ * (Message)表数据库访问层
  *
  * @author makejava
- * @since 2025-06-27 23:34:13
+ * @since 2024-02-20 22:03:57
  */
 @Mapper
 @Repository
-public interface BusinessLogMapper extends BaseMapper<BusinessLog> {
+public interface MessageMapper extends BaseMapper<Message> {
 
 }
 

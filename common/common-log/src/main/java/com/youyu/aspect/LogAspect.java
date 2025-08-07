@@ -2,8 +2,8 @@ package com.youyu.aspect;
 
 import com.alibaba.fastjson.JSON;
 import com.youyu.annotation.Log;
-import com.youyu.entity.BusinessLog;
-import com.youyu.service.BusinessLogService;
+import com.youyu.entity.Logs;
+import com.youyu.service.LogsService;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.RequestUtils;
 import com.youyu.utils.SecurityUtils;
@@ -26,7 +26,7 @@ import java.util.*;
 public class LogAspect {
 
     @Resource
-    private BusinessLogService businessLogService;
+    private LogsService logsService;
 
     @Resource
     private LocateUtils locateUtils;
@@ -41,7 +41,7 @@ public class LogAspect {
         Log logAnnotation = method.getAnnotation(Log.class);
 
         long startTime = System.currentTimeMillis();
-        BusinessLog actionLog = new BusinessLog();
+        Logs actionLog = new Logs();
         Object result;
 
         try {
@@ -73,21 +73,21 @@ public class LogAspect {
             throw ex;
         } finally {
             actionLog.setDuration(System.currentTimeMillis() - startTime);
-            businessLogService.saveLog(actionLog);
+            logsService.saveLog(actionLog);
         }
     }
 
 
-    private void fillLogBefore(ProceedingJoinPoint joinPoint, Log logAnnotation, BusinessLog businessLog) {
+    private void fillLogBefore(ProceedingJoinPoint joinPoint, Log logAnnotation, Logs logs) {
         HttpServletRequest request = RequestUtils.getRequest();
 
-        businessLog.setUserId(SecurityUtils.getUserId());
-        businessLog.setIp(RequestUtils.getClientIp());
-        businessLog.setAdcode(locateUtils.getUserPositionByIP().getAdcode());
-        businessLog.setPath(request != null ? request.getRequestURI() : "");
-        businessLog.setName(logAnnotation.title());
-        businessLog.setType(logAnnotation.type().getCode());
-        businessLog.setMethod(request != null ? request.getMethod() : "");
+        logs.setUserId(SecurityUtils.getUserId());
+        logs.setIp(RequestUtils.getClientIp());
+        logs.setAdcode(locateUtils.queryTencentIp().getAdcode());
+        logs.setPath(request != null ? request.getRequestURI() : "");
+        logs.setName(logAnnotation.title());
+        logs.setType(logAnnotation.type().getCode());
+        logs.setMethod(request != null ? request.getMethod() : "");
 
         // 请求参数处理
         if (logAnnotation.savaRequestData()) {
@@ -103,9 +103,9 @@ public class LogAspect {
             }
 
             try {
-                businessLog.setRequestData(JSON.toJSONString(params));
+                logs.setRequestData(JSON.toJSONString(params));
             } catch (Exception e) {
-                businessLog.setRequestData("[参数序列化失败]");
+                logs.setRequestData("[参数序列化失败]");
             }
         }
     }

@@ -5,7 +5,7 @@ import com.youyu.dto.*;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.connect.GithubConstants;
 import com.youyu.entity.connect.QQConstants;
-import com.youyu.enums.BusinessType;
+import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.mapper.UserFrameworkMapper;
@@ -46,13 +46,13 @@ public class LoginController {
     private UserFrameworkMapper userFrameworkMapper;
 
     @RequestMapping("/logout")
-    @Log(title = "退出登陆", type = BusinessType.LOGOUT)
+    @Log(title = "退出登陆", type = LogType.LOGOUT)
     public ResponseResult<String> logout() {
         loginService.logout();
         return ResponseResult.success("注销成功");
     }
 
-    @Log(title = "注册", type = BusinessType.REGISTER)
+    @Log(title = "注册", type = LogType.REGISTER)
     @RequestMapping("/register")
     @Transactional
     public ResponseResult<Boolean> register(@Valid RegisterInput input) {

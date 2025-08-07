@@ -6,6 +6,7 @@ import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.GeneratePresignedUrlRequest;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.youyu.config.OssProperties;
 import com.youyu.dto.album.AlbumImageListInput;
 import com.youyu.dto.album.AlbumImageListOutput;
 import com.youyu.dto.album.AlbumImageSaveInput;
@@ -21,7 +22,7 @@ import com.youyu.service.album.AlbumService;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +45,7 @@ import java.util.Objects;
  */
 @RefreshScope
 @Data
-@ConfigurationProperties(prefix = "aliyun.oss")
+@EnableConfigurationProperties(OssProperties.class)
 @RestController
 @RequestMapping("albumImage")
 public class AlbumImageController {

@@ -1,19 +1,18 @@
-package com.youyu.entity.user;
+package com.youyu.entity.result;
 
-import com.youyu.enums.AdCode;
+import com.youyu.enums.AreaCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.Optional;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Slf4j
-public class PositionInfo {
+public class AmapLocationResult {
     /**
      * 若为直辖市则显示直辖市名称；
      * 如果在局域网 IP网段内，则返回“局域网”；
@@ -75,7 +74,7 @@ public class PositionInfo {
     public String getAdname() {
         Integer adcode = getAdcode();
         if (adcode != null) {
-            return AdCode.getDescByCode(adcode);
+            return AreaCode.getDescByCode(adcode);
         }
         return null;
     }

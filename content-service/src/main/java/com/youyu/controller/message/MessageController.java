@@ -1,4 +1,4 @@
-package com.youyu.controller;
+package com.youyu.controller.message;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -6,15 +6,15 @@ import com.youyu.dto.common.PageBase;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.message.MessageListOutput;
 import com.youyu.dto.message.MessageUserOutput;
+import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.entity.user.Message;
-import com.youyu.entity.user.PositionInfo;
-import com.youyu.enums.AdCode;
+import com.youyu.entity.result.AmapLocationResult;
+import com.youyu.enums.AreaCode;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
-import com.youyu.mapper.MessageMapper;
+import com.youyu.mapper.message.MessageMapper;
 import com.youyu.result.ResponseResult;
-import com.youyu.service.MessageService;
-import com.youyu.service.UserService;
+import com.youyu.service.message.MessageService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.PageUtils;
@@ -41,9 +41,6 @@ public class MessageController {
     private MessageMapper messageMapper;
 
     @Resource
-    private UserService userService;
-
-    @Resource
     private LocateUtils locateUtils;
 
     @RequestMapping("/open/create")
@@ -57,7 +54,7 @@ public class MessageController {
                 throw new SystemException(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), "邮箱不能为空");
             }
         }
-        PositionInfo position = locateUtils.getUserPositionByIP();
+        TencentLocationResult position = locateUtils.queryTencentIp();
         message.setAdcode(position.getAdcode());
         messageService.save(message);
         MessageListOutput output = BeanCopyUtils.copyBean(message, MessageListOutput.class);
@@ -85,7 +82,7 @@ public class MessageController {
         PageOutput<MessageListOutput> pageOutput = PageUtils.setPageResult(messagePage, MessageListOutput.class);
 
         pageOutput.getList().forEach(item -> {
-            item.setAdname(AdCode.getDescByCode(item.getAdcode()));
+            item.setAdname(AreaCode.getDescByCode(item.getAdcode()));
             if (Objects.nonNull(item.getUserId())) {
                 MessageUserOutput userDetail = messageService.getUserDetail(item.getUserId());
                 item.setUserInfo(userDetail);
@@ -100,7 +97,7 @@ public class MessageController {
         Message message = messageService.getById(id);
         MessageListOutput output = BeanCopyUtils.copyBean(message, MessageListOutput.class);
 
-        output.setAdname(AdCode.getDescByCode(output.getAdcode()));
+        output.setAdname(AreaCode.getDescByCode(output.getAdcode()));
         if (Objects.nonNull(output.getUserId())) {
             MessageUserOutput userDetail = messageService.getUserDetail(output.getUserId());
             output.setUserInfo(userDetail);

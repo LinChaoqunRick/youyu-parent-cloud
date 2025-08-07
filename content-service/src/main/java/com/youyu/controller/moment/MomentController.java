@@ -5,7 +5,7 @@ import com.youyu.dto.moment.MomentListInput;
 import com.youyu.dto.moment.MomentListOutput;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentUserOutput;
-import com.youyu.entity.user.PositionInfo;
+import com.youyu.entity.result.AmapLocationResult;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.moment.MomentService;
@@ -41,10 +41,10 @@ public class MomentController {
     @RequestMapping("/create")
     public ResponseResult<MomentListOutput> create(@Valid @RequestBody Moment input) {
         input.setUserId(SecurityUtils.getUserId());
-        PositionInfo positionInfo = userServiceClient.ipLocation().getData();
-        input.setAdcode(positionInfo.getAdcode());
+        AmapLocationResult amapLocationResult = userServiceClient.ipLocation().getData();
+        input.setAdcode(amapLocationResult.getAdcode());
         MomentListOutput output = momentService.create(input);
-        output.setAdname(positionInfo.getAdname());
+        output.setAdname(amapLocationResult.getAdname());
         return ResponseResult.success(output);
     }
 

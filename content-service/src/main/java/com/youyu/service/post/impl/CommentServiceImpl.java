@@ -1,4 +1,4 @@
-package com.youyu.service.mail.impl;
+package com.youyu.service.post.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;

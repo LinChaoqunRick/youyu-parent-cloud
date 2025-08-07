@@ -1,6 +1,6 @@
 package com.youyu.annotation;
 
-import com.youyu.enums.BusinessType;
+import com.youyu.enums.LogType;
 
 import java.lang.annotation.*;
 
@@ -17,7 +17,7 @@ public @interface Log
     /**
      * 功能
      */
-    BusinessType type() default BusinessType.OTHER;
+    LogType type() default LogType.OTHER;
 
     /**
      * 是否保存请求的参数
