@@ -6,10 +6,10 @@ import com.youyu.dto.moment.MomentCommentListInput;
 import com.youyu.dto.moment.MomentCommentListOutput;
 import com.youyu.dto.moment.MomentReplyListInput;
 import com.youyu.entity.moment.MomentComment;
-import com.youyu.entity.result.AmapLocationResult;
-import com.youyu.feign.UserServiceClient;
+import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.moment.MomentCommentService;
+import com.youyu.utils.LocateUtils;
 import com.youyu.utils.SecurityUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,15 +34,15 @@ public class MomentCommentController {
     private MomentCommentService momentCommentService;
 
     @Resource
-    private UserServiceClient userServiceClient;
+    private LocateUtils locateUtils;
 
     @RequestMapping("/create")
     public ResponseResult<MomentCommentListOutput> create(@Valid MomentComment input) {
         input.setUserId(SecurityUtils.getUserId());
-        AmapLocationResult amapLocationResult = userServiceClient.ipLocation().getData();
-        input.setAdcode(amapLocationResult.getAdcode());
+        TencentLocationResult locationResult = locateUtils.queryTencentIp();
+        input.setAdcode(locationResult.getAdcode());
         MomentCommentListOutput detail = momentCommentService.createComment(input);
-        detail.setAdname(amapLocationResult.getAdname());
+        detail.setAdname(LocateUtils.getShortNameByCode(String.valueOf(locationResult.getAdcode())));
         return ResponseResult.success(detail);
     }
 

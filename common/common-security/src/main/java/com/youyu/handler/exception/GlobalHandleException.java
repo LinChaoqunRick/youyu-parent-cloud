@@ -36,13 +36,13 @@ public class GlobalHandleException {
 
     @ExceptionHandler(SystemException.class)
     public ResponseResult<?> systemExceptionHandler(SystemException ex) {
-        log.error("出现异常!SystemException: {}", getErrorMsg(ex), ex);
+        // log.error("出现异常!SystemException: {}", getErrorMsg(ex), ex);
         return ResponseResult.error(ex.getCode(), getErrorMsg(ex));
     }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseResult<?> authenticationExceptionHandler(AuthenticationException ex) {
-        log.error("出现异常!AuthenticationException: {}", getErrorMsg(ex), ex);
+        // log.error("出现异常!AuthenticationException: {}", getErrorMsg(ex), ex);
         return ResponseResult.error(ResultCode.INTERNAL_SERVER_ERROR.getCode(), getErrorMsg(ex));
     }
 

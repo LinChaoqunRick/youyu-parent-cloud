@@ -5,10 +5,11 @@ import com.youyu.dto.moment.MomentListInput;
 import com.youyu.dto.moment.MomentListOutput;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentUserOutput;
-import com.youyu.entity.result.AmapLocationResult;
+import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.moment.MomentService;
+import com.youyu.utils.LocateUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,13 +39,16 @@ public class MomentController {
     @Resource
     private UserServiceClient userServiceClient;
 
+    @Resource
+    private LocateUtils locateUtils;
+
     @RequestMapping("/create")
     public ResponseResult<MomentListOutput> create(@Valid @RequestBody Moment input) {
         input.setUserId(SecurityUtils.getUserId());
-        AmapLocationResult amapLocationResult = userServiceClient.ipLocation().getData();
-        input.setAdcode(amapLocationResult.getAdcode());
+        TencentLocationResult locationResult = locateUtils.queryTencentIp();
+        input.setAdcode(locationResult.getAdcode());
         MomentListOutput output = momentService.create(input);
-        output.setAdname(amapLocationResult.getAdname());
+        output.setAdname(LocateUtils.getShortNameByCode(String.valueOf(locationResult.getAdcode())));
         return ResponseResult.success(output);
     }
 

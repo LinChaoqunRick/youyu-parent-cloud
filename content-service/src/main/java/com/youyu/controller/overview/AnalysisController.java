@@ -1,7 +1,9 @@
 package com.youyu.controller.overview;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.youyu.dto.analysis.AnalysisOverview;
+import com.youyu.dto.overview.AreaAccessInput;
 import com.youyu.entity.Logs;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
@@ -15,13 +17,17 @@ import com.youyu.service.note.NoteService;
 import com.youyu.service.post.PostService;
 import com.youyu.utils.SecurityUtils;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/manage/analysis")
@@ -117,4 +123,22 @@ public class AnalysisController {
         }
     }
 
+    @RequestMapping("/areaAccess")
+    public ResponseResult<Map<String, Long>> areaAccess(@Valid AreaAccessInput input) {
+        QueryWrapper<Logs> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("adcode", "COUNT(*) AS cnt")
+                .eq("type", LogType.ACCESS.getCode())
+                .ge("create_time", input.getStartTime())
+                .lt("create_time", input.getEndTime())
+                .groupBy("adcode");
+
+        List<Map<String, Object>> result = logsService.listMaps(queryWrapper);
+
+        Map<String, Long> areaCountMap = result.stream()
+                .collect(Collectors.toMap(
+                        m -> String.valueOf(m.get("adcode")),
+                        m -> ((Number) m.get("cnt")).longValue()
+                ));
+        return ResponseResult.success(areaCountMap);
+    }
 }

@@ -7,11 +7,8 @@ import com.youyu.annotation.Log;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.user.*;
 import com.youyu.entity.auth.Route;
-import com.youyu.entity.result.AmapLocationResult;
-import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.entity.user.ProfileMenu;
 import com.youyu.entity.user.User;
-import com.youyu.enums.AreaCode;
 import com.youyu.enums.LogType;
 import com.youyu.enums.RoleEnum;
 import com.youyu.result.ResponseResult;
@@ -19,7 +16,6 @@ import com.youyu.service.ProfileMenuService;
 import com.youyu.service.UserService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.LocateUtils;
-import com.youyu.utils.RequestUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -102,7 +98,7 @@ public class UserOpenController {
     @RequestMapping("/selectById")
     public ResponseResult<User> selectById(@RequestParam Long userId) {
         User user = userService.getById(userId);
-        user.setAdname(AreaCode.getDescByCode(user.getAdcode()));
+        user.setAdname(LocateUtils.getShortNameByCode(String.valueOf(user.getAdcode())));
         return ResponseResult.success(user);
     }
 
@@ -126,12 +122,13 @@ public class UserOpenController {
         return ResponseResult.success(userService.listByIds(userIds));
     }
 
-    @RequestMapping("/ipLocation")
-    public ResponseResult<TencentLocationResult> getUserPositionInfo() {
-        TencentLocationResult tencentLocationResult = locateUtils.queryTencentIp();
-        // log.info("当前访问IP:{}{}", RequestUtils.getClientIp(), tencentLocationResult.toString());
-        return ResponseResult.success(tencentLocationResult);
-    }
+    // TODO... 新建文件放置此接口
+//    @RequestMapping("/ipLocation")
+//    public ResponseResult<TencentLocationResult> getUserPositionInfo() {
+//        TencentLocationResult tencentLocationResult = locateUtils.queryTencentIp();
+//        // log.info("当前访问IP:{}{}", RequestUtils.getClientIp(), tencentLocationResult.toString());
+//        return ResponseResult.success(tencentLocationResult);
+//    }
 
     @RequestMapping("/getAuthRoutes")
     @Log(title = "获取权限路由", type = LogType.ACCESS)

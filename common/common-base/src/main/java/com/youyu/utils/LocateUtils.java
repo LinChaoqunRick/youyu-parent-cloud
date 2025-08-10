@@ -2,6 +2,8 @@ package com.youyu.utils;
 
 import com.youyu.entity.result.AmapLocationResult;
 import com.youyu.entity.result.TencentLocationResult;
+import com.youyu.enums.AreaCode;
+import com.youyu.enums.NationCode;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -81,11 +83,40 @@ public class LocateUtils {
 
     public static String queryIP(String ip) {
         String url = "https://api.ip138.com/ipdata/?ip=" + ip + "&datatype=" + DATATYPE;
-        String token = "a9890c8a06ce99062045b2b644a9dc9b";
+        String token = "aaaaaaaaaaaaaaaaaaaaaaaaaa";
         return get(url, token);
     }
 
+    /**
+     * 获取全称：如：福建省厦门市、美国
+     * @param code 行政编码/国家代码
+     * @return 区域名称
+     */
+    public static String getNameByCode(String code) {
+        int length = code.length();
+        if (length == 6) {
+            return AreaCode.getNameByCode(Integer.valueOf(code));
+        } else {
+            return NationCode.getNameByCode(code);
+        }
+    }
+
+    /**
+     * 获取简称：如：福建、美国
+     * @param code 行政编码/国家代码
+     * @return 区域名称
+     */
+    public static String getShortNameByCode(String code) {
+        int length = code.length();
+        if (length == 6) {
+            return AreaCode.getProvinceNameByCode(Integer.valueOf(code));
+        } else {
+            return NationCode.getNameByCode(code);
+        }
+    }
+
     public static void main(String[] args) {
-        String data = queryIP("110.87.98.58");
+        String nameByCode = getNameByCode("8400");
+        System.out.println(nameByCode);
     }
 }

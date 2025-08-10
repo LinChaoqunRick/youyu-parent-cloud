@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.entity.user.*;
-import com.youyu.enums.AreaCode;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
@@ -181,7 +180,8 @@ public class UserController {
             updateWrapper.set(User::getAdcode, position.getAdcode());
             userService.update(updateWrapper);
         }
-        user.setAdname(AreaCode.getDescByCode(user.getAdcode()));
+        user.setAdcode(position.getAdcode());
+        user.setAdname(LocateUtils.getNameByCode(String.valueOf(user.getAdcode())));
         return ResponseResult.success(user);
     }
 

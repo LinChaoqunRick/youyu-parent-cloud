@@ -12,7 +12,6 @@ import com.youyu.entity.moment.MomentLike;
 import com.youyu.entity.moment.MomentUserExtraInfo;
 import com.youyu.entity.moment.MomentUserOutput;
 import com.youyu.entity.user.User;
-import com.youyu.enums.AreaCode;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.feign.UserServiceClient;
@@ -22,6 +21,7 @@ import com.youyu.service.moment.MomentCommentService;
 import com.youyu.service.moment.MomentLikeService;
 import com.youyu.service.moment.MomentService;
 import com.youyu.utils.BeanCopyUtils;
+import com.youyu.utils.LocateUtils;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -181,7 +181,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
         moment.setUser(getMomentUserDetailById(moment.getUserId(), false));
         moment.setCommentCount(momentCommentService.getCommentCountByMomentId(moment.getId()));
         moment.setMomentLike(isMomentLike(moment.getId()));
-        moment.setAdname(AreaCode.getDescByCode(moment.getAdcode()));
+        moment.setAdname(LocateUtils.getShortNameByCode(String.valueOf(moment.getAdcode())));
         // 设置点赞用户信息
         MomentLikeUserListInput likeUserListInput = new MomentLikeUserListInput(moment.getId());
         PageOutput<MomentUserOutput> output = momentLikeService.likeUsers(likeUserListInput);

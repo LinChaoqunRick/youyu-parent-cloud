@@ -11,10 +11,11 @@ public class TencentLocationResult {
     private String request_id;
     private Result result;
 
-    public int getAdcode() {
+    // 如果没有adcode(国外ip)，就返回nation_code
+    public Integer getAdcode() {
         return Optional.ofNullable(result)
                 .map(Result::getAd_info)
-                .map(AdInfo::getAdcode)
+                .map(ad -> ad.getAdcode() != -1 ? ad.getAdcode() : ad.getNation_code())
                 .orElse(-1);
     }
 }

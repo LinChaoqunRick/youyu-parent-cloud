@@ -8,8 +8,6 @@ import com.youyu.dto.message.MessageListOutput;
 import com.youyu.dto.message.MessageUserOutput;
 import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.entity.user.Message;
-import com.youyu.entity.result.AmapLocationResult;
-import com.youyu.enums.AreaCode;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.mapper.message.MessageMapper;
@@ -82,7 +80,7 @@ public class MessageController {
         PageOutput<MessageListOutput> pageOutput = PageUtils.setPageResult(messagePage, MessageListOutput.class);
 
         pageOutput.getList().forEach(item -> {
-            item.setAdname(AreaCode.getDescByCode(item.getAdcode()));
+            item.setAdname(LocateUtils.getShortNameByCode(String.valueOf(item.getAdcode())));
             if (Objects.nonNull(item.getUserId())) {
                 MessageUserOutput userDetail = messageService.getUserDetail(item.getUserId());
                 item.setUserInfo(userDetail);
@@ -97,7 +95,7 @@ public class MessageController {
         Message message = messageService.getById(id);
         MessageListOutput output = BeanCopyUtils.copyBean(message, MessageListOutput.class);
 
-        output.setAdname(AreaCode.getDescByCode(output.getAdcode()));
+        output.setAdname(LocateUtils.getShortNameByCode(String.valueOf(output.getAdcode())));
         if (Objects.nonNull(output.getUserId())) {
             MessageUserOutput userDetail = messageService.getUserDetail(output.getUserId());
             output.setUserInfo(userDetail);

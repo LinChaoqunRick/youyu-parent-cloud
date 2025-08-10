@@ -14,17 +14,19 @@ import com.youyu.service.LoginService;
 import com.youyu.service.mail.impl.GithubAuthServiceImpl;
 import com.youyu.service.mail.impl.QQAuthServiceImpl;
 import com.youyu.utils.SecurityUtils;
+import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/oauth2")
+@Validated
 public class LoginController {
 
     @Resource
@@ -55,7 +57,7 @@ public class LoginController {
     @Log(title = "注册", type = LogType.REGISTER)
     @RequestMapping("/register")
     @Transactional
-    public ResponseResult<Boolean> register(@Valid RegisterInput input) {
+    public ResponseResult<Boolean> register(@Validated RegisterInput input) {
         if (input.getType() == 0) {
             if (Objects.isNull(input.getUsername())) {
                 throw new SystemException("800", "手机号不能为空");

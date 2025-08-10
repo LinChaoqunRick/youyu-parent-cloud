@@ -11,7 +11,6 @@ import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentComment;
 import com.youyu.entity.moment.MomentCommentLike;
 import com.youyu.entity.moment.MomentUserOutput;
-import com.youyu.enums.AreaCode;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.mapper.moment.MomentCommentMapper;
@@ -19,6 +18,7 @@ import com.youyu.service.moment.MomentCommentLikeService;
 import com.youyu.service.moment.MomentCommentService;
 import com.youyu.service.moment.MomentService;
 import com.youyu.utils.BeanCopyUtils;
+import com.youyu.utils.LocateUtils;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -193,7 +193,7 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
         list.forEach(item -> {
             item.setUser(userMap.get(item.getUserId()));
             item.setUserTo(userMap.get(item.getUserIdTo()));
-            item.setAdname(AreaCode.getDescByCode(item.getAdcode()));
+            item.setAdname(LocateUtils.getShortNameByCode(String.valueOf(item.getAdcode())));
 
             // 是否点赞了
             if (!Objects.isNull(userId)) {
