@@ -12,13 +12,13 @@ import com.youyu.service.moment.MomentService;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +31,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/moment")
+@Validated
 public class MomentController {
 
     @Resource
@@ -43,7 +44,7 @@ public class MomentController {
     private LocateUtils locateUtils;
 
     @RequestMapping("/create")
-    public ResponseResult<MomentListOutput> create(@Valid @RequestBody Moment input) {
+    public ResponseResult<MomentListOutput> create(@Validated @RequestBody Moment input) {
         input.setUserId(SecurityUtils.getUserId());
         TencentLocationResult locationResult = locateUtils.queryTencentIp();
         input.setAdcode(locationResult.getAdcode());
@@ -53,7 +54,7 @@ public class MomentController {
     }
 
     @RequestMapping("/update")
-    public ResponseResult<MomentListOutput> update(@Valid @RequestBody Moment input) {
+    public ResponseResult<MomentListOutput> update(@Validated @RequestBody Moment input) {
         input.setUpdateTime(new Date());
         momentService.updateById(input);
         MomentListOutput moment = momentService.getMoment(input.getId());

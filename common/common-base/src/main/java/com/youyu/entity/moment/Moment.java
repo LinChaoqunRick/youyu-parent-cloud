@@ -15,10 +15,9 @@ import jakarta.validation.constraints.NotBlank;
  * @author makejava
  * @since 2023-05-21 23:22:11
  */
-@SuppressWarnings("serial")
 @TableName("bs_moment")
 @Data
-public class Moment extends Model<Moment> {
+public class Moment {
     //主键
     @TableId
     private Long id;
