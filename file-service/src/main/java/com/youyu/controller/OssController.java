@@ -15,10 +15,10 @@ import com.aliyuncs.sts.model.v20150401.AssumeRoleResponse;
 import com.youyu.config.OssProperties;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
+import com.youyu.factory.OssClientFactory;
 import com.youyu.result.ResponseResult;
+import jakarta.annotation.Resource;
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,22 +32,15 @@ import java.util.Map;
 
 @RefreshScope
 @Data
-@EnableConfigurationProperties(OssProperties.class)
 @RestController
 @RequestMapping("/oss")
 public class OssController {
 
-    private String bucket;
-    // 签名方式
-    private String accessKeyId;
-    private String accessKeySecret;
-    private String endPoint;
-    private String host;
-    //STS方式
-    private String roleArn;
-    private String accessKeyIdRAM;
-    private String accessKeySecretRAM;
-    private String endPointRAM;
+    @Resource
+    private OssProperties ossProperties;
+
+    @Resource
+    private OssClientFactory ossClientFactory;
 
     /**
      * 服务端签名后直传
@@ -56,15 +49,15 @@ public class OssController {
      */
     @RequestMapping("/policy")
     public ResponseResult<Map<String, String>> policy(@RequestParam(defaultValue = "post/images") String base) {
-        Date date = new Date();
-        int first = date.getYear();
+        // date = new Date();
+        // int first = date.getYear();
 
         String format = new SimpleDateFormat("yyyy/MMdd").format(new Date());
         String dir = base + "/" + format + "/"; // 用户上传文件时指定的前缀。
 
-        Map<String, String> respMap = new LinkedHashMap<String, String>();
+        Map<String, String> respMap = new LinkedHashMap<>();
         // 创建OSSClient实例。
-        OSS ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, accessKeySecret);
+        OSS ossClient = ossClientFactory.getClient();
         try {
             long expireTime = 30;
             long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
@@ -79,12 +72,12 @@ public class OssController {
             String encodedPolicy = BinaryUtil.toBase64String(binaryData);
             String postSignature = ossClient.calculatePostSignature(postPolicy);
 
-            respMap.put("OSSAccessKeyId", accessKeyId);
+            respMap.put("OSSAccessKeyId", ossProperties.getAccessKeyId());
             respMap.put("policy", encodedPolicy);
             respMap.put("signature", postSignature);
             respMap.put("dir", dir);
             /*respMap.put("key", dir);*/ // 文件路径+文件名，前端确定
-            respMap.put("host", host);
+            respMap.put("host", ossProperties.getHost());
             respMap.put("expire", String.valueOf(expireEndTime / 1000));
 
         } catch (Exception e) {
@@ -125,14 +118,14 @@ public class OssController {
             // regionId表示RAM的地域ID。以华东1（杭州）地域为例，regionID填写为cn-hangzhou。也可以保留默认值，默认值为空字符串（""）。
             String regionId = "";
             // 添加endpoint。
-            DefaultProfile.addEndpoint("", "", "Sts", endPoint);
+            DefaultProfile.addEndpoint("", "", "Sts", ossProperties.getEndPoint());
             // 构造default profile。
-            IClientProfile profile = DefaultProfile.getProfile(regionId, accessKeyIdRAM, accessKeySecretRAM);
+            IClientProfile profile = DefaultProfile.getProfile(regionId, ossProperties.getAccessKeyIdRAM(), ossProperties.getAccessKeySecretRAM());
             // 构造client。
             DefaultAcsClient client = new DefaultAcsClient(profile);
             final AssumeRoleRequest request = new AssumeRoleRequest();
             request.setMethod(MethodType.POST);
-            request.setRoleArn(roleArn);
+            request.setRoleArn(ossProperties.getRoleArn());
             request.setRoleSessionName(roleSessionName);
             request.setPolicy(policy); // 如果policy为空，则用户将获得该角色下所有权限。
             request.setDurationSeconds(3600L); // 设置临时访问凭证的有效时间为3600秒。

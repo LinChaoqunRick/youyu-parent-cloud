@@ -22,7 +22,6 @@ import com.youyu.service.album.AlbumService;
 import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.Data;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
@@ -45,21 +45,12 @@ import java.util.Objects;
  */
 @RefreshScope
 @Data
-@EnableConfigurationProperties(OssProperties.class)
 @RestController
 @RequestMapping("albumImage")
 public class AlbumImageController {
-    private String bucket;
-    // 签名方式
-    private String accessKeyId;
-    private String accessKeySecret;
-    private String endPoint;
-    private String host;
-    //STS方式
-    private String roleArn;
-    private String accessKeyIdRAM;
-    private String accessKeySecretRAM;
-    private String endPointRAM;
+
+    @Resource
+    private OssProperties ossProperties;
 
     @Resource
     private AlbumImageService albumImageService;
@@ -123,11 +114,11 @@ public class AlbumImageController {
     @RequestMapping("/open/origin")
     public ResponseResult<String> getOriginUrl(@RequestParam Long id) {
         AlbumImage albumImage = albumImageService.getById(id);
-        OSS ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, accessKeySecret);
+        OSS ossClient = new OSSClientBuilder().build(ossProperties.getEndPoint(), ossProperties.getAccessKeyId(), ossProperties.getAccessKeySecret());
 
         // 指定签名URL过期时间为10分钟。
         Date expiration = new Date(new Date().getTime() + 1000 * 60 * 10);
-        GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(bucket, albumImage.getPath(), HttpMethod.GET);
+        GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(ossProperties.getBucket(), albumImage.getPath(), HttpMethod.GET);
         req.setExpiration(expiration);
         URL signedOriginalUrl = ossClient.generatePresignedUrl(req);
         return ResponseResult.success(signedOriginalUrl.toString());
@@ -147,12 +138,12 @@ public class AlbumImageController {
      * @param imageList 图片列表;
      */
     public void generateOSSUrl(List<AlbumImageListOutput> imageList) {
-        OSS ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, accessKeySecret);
+        OSS ossClient = new OSSClientBuilder().build(ossProperties.getEndPoint(), ossProperties.getAccessKeyId(), ossProperties.getAccessKeySecret());
 
         imageList.forEach(item -> {
             // 指定签名URL过期时间为10分钟。
             Date expiration = new Date(new Date().getTime() + 1000 * 60 * 10);
-            GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(bucket, item.getPath(), HttpMethod.GET);
+            GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(ossProperties.getBucket(), item.getPath(), HttpMethod.GET);
             req.setExpiration(expiration);
 //            URL signedOriginalUrl = ossClient.generatePresignedUrl(req);
 //            item.setOriginUrl(signedOriginalUrl.toString());

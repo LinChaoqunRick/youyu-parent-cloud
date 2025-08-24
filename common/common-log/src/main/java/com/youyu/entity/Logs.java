@@ -44,6 +44,11 @@ public class Logs {
      */
     private Integer adcode;
     /**
+     * 访问ip所在区域名称
+     */
+    @TableField(exist = false)
+    private String adName;
+    /**
      * 持续时间
      */
     private Long duration;

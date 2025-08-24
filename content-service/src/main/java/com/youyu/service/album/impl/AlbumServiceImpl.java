@@ -22,7 +22,6 @@ import com.youyu.service.album.AlbumService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.PageUtils;
 import lombok.Data;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -41,14 +40,10 @@ import java.util.Objects;
 @RefreshScope
 @Data
 @Service("albumService")
-@EnableConfigurationProperties(OssProperties.class)
 public class AlbumServiceImpl extends ServiceImpl<AlbumMapper, Album> implements AlbumService {
-    private String bucket;
-    // 签名方式
-    private String accessKeyId;
-    private String accessKeySecret;
-    private String endPoint;
-    private String host;
+
+    @Resource
+    private OssProperties ossProperties;
 
     @Resource
     private AlbumMapper albumMapper;
@@ -67,7 +62,7 @@ public class AlbumServiceImpl extends ServiceImpl<AlbumMapper, Album> implements
         PageOutput<AlbumListOutput> pageOutput = PageUtils.setPageResult(albumPage, AlbumListOutput.class);
 
         // 生成ossClient
-        OSS ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, accessKeySecret);
+        OSS ossClient = new OSSClientBuilder().build(ossProperties.getEndPoint(), ossProperties.getAccessKeyId(), ossProperties.getAccessKeySecret());
 
         // 清除授权信息
         pageOutput.getList().forEach(item -> {
@@ -96,7 +91,7 @@ public class AlbumServiceImpl extends ServiceImpl<AlbumMapper, Album> implements
             if (StringUtils.hasText(cover)) {
                 // 指定签名URL过期时间为10分钟。
                 Date expiration = new Date(new Date().getTime() + 1000 * 60 * 10);
-                GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(bucket, cover, HttpMethod.GET);
+                GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(ossProperties.getBucket(), cover, HttpMethod.GET);
                 req.setExpiration(expiration);
                 if (item.getOpen() == 1) {
                     req.setProcess("style/thumbnail");

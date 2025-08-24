@@ -10,7 +10,6 @@ import com.youyu.entity.album.Album;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.album.AlbumService;
 import lombok.Data;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,22 +23,12 @@ import java.util.Map;
 
 @RefreshScope
 @Data
-@EnableConfigurationProperties(OssProperties.class)
 @RestController
 @RequestMapping("/album/oss")
 public class AlbumOssController {
 
-    private String bucket;
-    // 签名方式
-    private String accessKeyId;
-    private String accessKeySecret;
-    private String endPoint;
-    private String host;
-    //STS方式
-    private String roleArn;
-    private String accessKeyIdRAM;
-    private String accessKeySecretRAM;
-    private String endPointRAM;
+    @Resource
+    private OssProperties ossProperties;
 
     @Resource
     private AlbumService albumService;
@@ -57,7 +46,7 @@ public class AlbumOssController {
 
         Map<String, String> respMap = new LinkedHashMap<>();
         // 创建OSSClient实例。
-        OSS ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, accessKeySecret);
+        OSS ossClient = new OSSClientBuilder().build(ossProperties.getEndPoint(), ossProperties.getAccessKeyId(), ossProperties.getAccessKeySecret());
         try {
             long expireTime = 180;
             long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
@@ -72,11 +61,11 @@ public class AlbumOssController {
             String encodedPolicy = BinaryUtil.toBase64String(binaryData);
             String postSignature = ossClient.calculatePostSignature(postPolicy);
 
-            respMap.put("OSSAccessKeyId", accessKeyId);
+            respMap.put("OSSAccessKeyId", ossProperties.getAccessKeyId());
             respMap.put("policy", encodedPolicy);
             respMap.put("signature", postSignature);
             respMap.put("dir", dir);
-            respMap.put("host", host);
+            respMap.put("host", ossProperties.getHost());
             respMap.put("expire", String.valueOf(expireEndTime / 1000));
 
         } catch (Exception e) {
