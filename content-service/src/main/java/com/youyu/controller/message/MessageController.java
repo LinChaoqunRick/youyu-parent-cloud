@@ -2,12 +2,14 @@ package com.youyu.controller.message;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.youyu.annotation.Log;
 import com.youyu.dto.common.PageBase;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.message.MessageListOutput;
 import com.youyu.dto.message.MessageUserOutput;
 import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.entity.user.Message;
+import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.mapper.message.MessageMapper;
@@ -42,6 +44,7 @@ public class MessageController {
     private LocateUtils locateUtils;
 
     @RequestMapping("/open/create")
+    @Log(title = "新增留言", type = LogType.INSERT)
     ResponseResult<MessageListOutput> create(@Valid Message message) {
         if (Objects.isNull(message.getUserId())) { // 如果是游客
             if (Objects.isNull(message.getNickname())) {
@@ -64,6 +67,7 @@ public class MessageController {
     }
 
     @RequestMapping("/open/update")
+    @Log(title = "更新留言", type = LogType.UPDATE)
     ResponseResult<Message> update(@Valid Message message) {
         boolean update = messageService.updateById(message);
         return ResponseResult.success(message);
@@ -105,6 +109,7 @@ public class MessageController {
     }
 
     @RequestMapping("/delete")
+    @Log(title = "删除留言", type = LogType.DELETE)
     ResponseResult<Boolean> delete(@Valid Message message) {
         boolean delete = messageService.removeById(message);
         return ResponseResult.success(delete);

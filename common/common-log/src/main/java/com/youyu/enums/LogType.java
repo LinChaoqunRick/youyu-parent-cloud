@@ -12,6 +12,8 @@ public enum LogType {
     LOGOUT(6, "登出日志"),
     REGISTER(7, "注册日志"),
     ACCESS(8, "访问网站"),
+    NOTIFY(9, "通知"),
+    UPLOAD(10, "文件上传"),
     OTHER(66, "其他"),
     ;
 

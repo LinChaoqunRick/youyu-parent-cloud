@@ -1,11 +1,13 @@
 package com.youyu.controller.moment;
 
+import com.youyu.annotation.Log;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.moment.MomentListInput;
 import com.youyu.dto.moment.MomentListOutput;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentUserOutput;
 import com.youyu.entity.result.TencentLocationResult;
+import com.youyu.enums.LogType;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.moment.MomentService;
@@ -44,6 +46,7 @@ public class MomentController {
     private LocateUtils locateUtils;
 
     @RequestMapping("/create")
+    @Log(title = "新增时刻", type = LogType.INSERT)
     public ResponseResult<MomentListOutput> create(@Validated @RequestBody Moment input) {
         input.setUserId(SecurityUtils.getUserId());
         TencentLocationResult locationResult = locateUtils.queryTencentIp();
@@ -54,6 +57,7 @@ public class MomentController {
     }
 
     @RequestMapping("/update")
+    @Log(title = "更新时刻", type = LogType.UPDATE)
     public ResponseResult<MomentListOutput> update(@Validated @RequestBody Moment input) {
         input.setUpdateTime(new Date());
         momentService.updateById(input);
@@ -62,6 +66,7 @@ public class MomentController {
     }
 
     @RequestMapping("/delete")
+    @Log(title = "删除时刻", type = LogType.DELETE)
     public ResponseResult<Boolean> delete(@RequestParam Long momentId) {
         boolean remove = momentService.delete(momentId);
         return ResponseResult.success(remove);

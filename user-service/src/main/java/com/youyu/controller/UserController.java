@@ -2,9 +2,11 @@ package com.youyu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.youyu.annotation.Log;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.entity.user.*;
+import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
@@ -51,12 +53,14 @@ public class UserController {
     private LocateUtils locateUtils;
 
     @RequestMapping("/follow")
+    @Log(title = "关注用户", type = LogType.INSERT)
     ResponseResult<Boolean> userFollow(UserFollow input) {
         boolean save = userFollowService.save(input);
         return ResponseResult.success(save);
     }
 
     @RequestMapping("/unfollow")
+    @Log(title = "取消关注", type = LogType.DELETE)
     ResponseResult<Boolean> userUnFollow(UserFollow input) {
         LambdaQueryWrapper<UserFollow> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserFollow::getUserId, input.getUserId());
@@ -73,6 +77,7 @@ public class UserController {
     }
 
     @RequestMapping("/saveBasicInfo")
+    @Log(title = "更新用户", type = LogType.UPDATE)
     ResponseResult<Boolean> saveBasicInfo(@Valid User user) {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getNickname, user.getNickname());
@@ -93,6 +98,7 @@ public class UserController {
     }
 
     @RequestMapping("/saveHomepage")
+    @Log(title = "更新用户", type = LogType.UPDATE)
     ResponseResult<Boolean> saveHomepage(@Valid User user) {
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(User::getId, user.getId());
@@ -105,6 +111,7 @@ public class UserController {
     }
 
     @RequestMapping("/saveTelephone")
+    @Log(title = "更新用户", type = LogType.UPDATE)
     ResponseResult<Boolean> saveHomepage(@RequestParam String oldTel, @RequestParam String newTel) {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUsername, newTel);
@@ -124,6 +131,7 @@ public class UserController {
     }
 
     @RequestMapping("/saveEmail")
+    @Log(title = "更新用户", type = LogType.UPDATE)
     ResponseResult<Boolean> saveEmail(@RequestParam Long userId, @RequestParam String email, @RequestParam String code) {
         //从redis中获取用户信息
         String redisKey = "emailCode:" + email;
@@ -142,6 +150,7 @@ public class UserController {
     }
 
     @RequestMapping("/savePassword")
+    @Log(title = "修改密码", type = LogType.UPDATE)
     ResponseResult<Boolean> savePassword(@RequestParam String telephone, @RequestParam String password) {
         password = passwordEncoder.encode(password);
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
@@ -156,6 +165,7 @@ public class UserController {
     }
 
     @RequestMapping("/setProfileMenu")
+    @Log(title = "更新主页菜单权限", type = LogType.UPDATE)
     ResponseResult<Boolean> getProfileMenu(@Valid ProfileMenu profileMenu) {
         LambdaUpdateWrapper<ProfileMenu> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(ProfileMenu::getUserId, profileMenu.getUserId());

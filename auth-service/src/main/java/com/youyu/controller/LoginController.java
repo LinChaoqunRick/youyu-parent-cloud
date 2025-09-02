@@ -48,14 +48,21 @@ public class LoginController {
     private UserFrameworkMapper userFrameworkMapper;
 
     @RequestMapping("/logout")
-    @Log(title = "退出登陆", type = LogType.LOGOUT)
+    @Log(title = "登出", type = LogType.LOGOUT)
     public ResponseResult<String> logout() {
         loginService.logout();
         return ResponseResult.success("注销成功");
     }
 
-    @Log(title = "注册", type = LogType.REGISTER)
+    @Log(title = "登出", type = LogType.LOGOUT)
+    @RequestMapping("/manage/logout")
+    public ResponseResult<String> manageLogout() {
+        loginService.logout();
+        return ResponseResult.success("注销成功");
+    }
+
     @RequestMapping("/register")
+    @Log(title = "注册", type = LogType.REGISTER)
     @Transactional
     public ResponseResult<Boolean> register(@Validated RegisterInput input) {
         if (input.getType() == 0) {
@@ -72,6 +79,7 @@ public class LoginController {
     }
 
     @GetMapping("/connect/getUrl")
+    @Log(title = "第三方登录", type = LogType.LOGIN)
     public ResponseResult<String> getConnectURL(@Valid ConnectUrlInput input) {
         String url = "";
         String authorizeURL = "";
@@ -99,6 +107,7 @@ public class LoginController {
     }
 
     @RequestMapping("/connect/bind")
+    @Log(title = "绑定第三方账号", type = LogType.UPDATE)
     public ResponseResult<Integer> connectBind(@Valid ConnectBindInput input) {
         Integer result = null;
         String type = input.getType();

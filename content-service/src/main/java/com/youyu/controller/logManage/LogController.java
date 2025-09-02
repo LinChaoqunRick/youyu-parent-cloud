@@ -38,8 +38,13 @@ public class LogController {
 
         LambdaQueryWrapper<Logs> wrapper = new LambdaQueryWrapper<>();
 
-        if (input.getType() != 0) {
-            wrapper.eq(Logs::getType, input.getType());
+        if (StringUtils.hasText(input.getType())) {
+            String[] types = input.getType().split(",");
+            wrapper.in(Logs::getType, Arrays.asList(types));
+        }
+
+        if (input.getStatus() != null) {
+            wrapper.eq(Logs::getResult, input.getStatus());
         }
 
         if (StringUtils.hasText(input.getAreaCodes())) {
@@ -59,7 +64,7 @@ public class LogController {
             wrapper.and(q -> q.like(Logs::getName, keyword)
                     .or().like(Logs::getIp, keyword)
                     .or().like(Logs::getPath, keyword)
-                    .or().like(Logs::getMethod, keyword));
+                    .or().like(Logs::getUserId, keyword));
         }
 
         // 按时间倒序

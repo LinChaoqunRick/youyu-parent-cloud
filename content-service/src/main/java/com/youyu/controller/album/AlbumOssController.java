@@ -5,8 +5,10 @@ import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.common.utils.BinaryUtil;
 import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
+import com.youyu.annotation.Log;
 import com.youyu.config.OssProperties;
 import com.youyu.entity.album.Album;
+import com.youyu.enums.LogType;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.album.AlbumService;
 import lombok.Data;
@@ -39,6 +41,7 @@ public class AlbumOssController {
      * @return
      */
     @RequestMapping("/policy")
+    @Log(title = "获取相册OSS Policy", type = LogType.UPLOAD)
     public ResponseResult<Map<String, String>> policy(@RequestParam Long albumId) {
         Album album = albumService.getById(albumId);
 

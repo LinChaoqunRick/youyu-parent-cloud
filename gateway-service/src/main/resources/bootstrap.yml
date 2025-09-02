@@ -45,5 +45,4 @@ spring:
         - id: notify-service
           uri: lb://notify-service
           predicates:
-            - Path=/mail/**
-            - Path=/sms/**
+            - Path=/mail/**,/sms/**

@@ -1,9 +1,11 @@
 package com.youyu.controller.note;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.youyu.annotation.Log;
 import com.youyu.dto.note.detail.NoteChapterDetailOutput;
 import com.youyu.dto.note.list.ChapterListOutput;
 import com.youyu.entity.note.NoteChapter;
+import com.youyu.enums.LogType;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.note.NoteChapterService;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +31,7 @@ public class NoteChapterController {
     private NoteChapterService noteChapterService;
 
     @RequestMapping("/create")
+    @Log(title = "新增笔记章节", type = LogType.INSERT)
     public ResponseResult<Boolean> createChapter(@Valid NoteChapter chapter) {
         boolean save = noteChapterService.save(chapter);
         return ResponseResult.success(save);
@@ -47,6 +50,7 @@ public class NoteChapterController {
     }
 
     @RequestMapping("/update")
+    @Log(title = "更新笔记章节", type = LogType.UPDATE)
     public ResponseResult<Boolean> updateChapter(@Valid NoteChapter chapter) {
         chapter.setUpdateTime(new Date());
         LambdaUpdateWrapper<NoteChapter> updateWrapper = new LambdaUpdateWrapper<>();
@@ -56,6 +60,7 @@ public class NoteChapterController {
     }
 
     @RequestMapping("/delete")
+    @Log(title = "删除笔记章节", type = LogType.UPDATE)
     public ResponseResult<Boolean> deleteChapter(Long id) {
         boolean delete = noteChapterService.removeById(id);
         return ResponseResult.success(delete);

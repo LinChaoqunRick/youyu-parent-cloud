@@ -1,6 +1,13 @@
 package com.youyu.oauth2.handler;
 
+import com.youyu.entity.Logs;
+import com.youyu.entity.auth.UserFramework;
+import com.youyu.enums.LogType;
 import com.youyu.result.ResponseResult;
+import com.youyu.service.LogsService;
+import com.youyu.utils.LocateUtils;
+import com.youyu.utils.RequestUtils;
+import com.youyu.utils.SecurityUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +26,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 认证成功处理器
@@ -34,6 +43,14 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
      */
     private final HttpMessageConverter<Object> accessTokenHttpResponseConverter = new MappingJackson2HttpMessageConverter();
     private final Converter<OAuth2AccessTokenResponse, Map<String, Object>> accessTokenResponseParametersConverter = new DefaultOAuth2AccessTokenResponseMapConverter();
+
+    private final LogsService logsService;
+    private final LocateUtils locateUtils;
+
+    public MyAuthenticationSuccessHandler(LogsService logsService, LocateUtils locateUtils) {
+        this.logsService = logsService;
+        this.locateUtils = locateUtils;
+    }
 
 
     /**
@@ -54,6 +71,28 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
         OAuth2AccessToken accessToken = accessTokenAuthentication.getAccessToken();
         OAuth2RefreshToken refreshToken = accessTokenAuthentication.getRefreshToken();
         Map<String, Object> additionalParameters = accessTokenAuthentication.getAdditionalParameters();
+
+        // 记录登录成功日志（不影响响应流程）
+        try {
+            Logs log = new Logs();
+            Object userInfo = additionalParameters != null ? additionalParameters.get("userInfo") : null;
+            if (userInfo instanceof UserFramework) {
+                log.setUserId(((UserFramework) userInfo).getId());
+            }
+            log.setClientId(SecurityUtils.getClientId());
+            log.setIp(RequestUtils.getClientIp());
+            try {
+                log.setAdcode(locateUtils.queryTencentIp().getAdcode());
+            } catch (Exception ignored) {}
+            log.setPath("/oauth2/token");
+            log.setName("登录");
+            log.setType(LogType.LOGIN.getCode());
+            log.setMethod(request != null ? request.getMethod() : "");
+            Date issuedAt = Date.from(Objects.requireNonNull(accessToken.getIssuedAt())); // 获取发行时间
+            log.setDuration(System.currentTimeMillis() - issuedAt.getTime());
+            log.setResult(1);
+            logsService.saveLog(log);
+        } catch (Exception ignored) {}
 
         OAuth2AccessTokenResponse.Builder builder =
                 OAuth2AccessTokenResponse.withToken(accessToken.getTokenValue())

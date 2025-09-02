@@ -1,7 +1,9 @@
 package com.youyu.controller.mail;
 
+import com.youyu.annotation.Log;
 import com.youyu.dto.moment.MomentCommentListOutput;
 import com.youyu.dto.post.comment.CommentListOutput;
+import com.youyu.enums.LogType;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.mail.MailService;
 import jakarta.mail.MessagingException;
@@ -16,22 +18,10 @@ public class MailController {
     private MailService mailService;
 
     @RequestMapping("/open/sendRegisterCode")
+    @Log(title = "发送注册邮件验证码", type = LogType.NOTIFY)
     public ResponseResult<Boolean> sendRegisterCode(@RequestParam String target,
-                                                    @RequestParam(required = false, defaultValue = "false") boolean repeat)
-            throws MessagingException {
+                                                    @RequestParam(required = false, defaultValue = "false") boolean repeat) {
         Boolean result = mailService.sendRegisterCode(target, repeat);
-        return ResponseResult.success(result);
-    }
-
-    @RequestMapping("/sendMomentCommentMailNotice")
-    public ResponseResult<Boolean> sendMomentCommentMailNotice(MomentCommentListOutput detail) {
-        Boolean result = mailService.sendMomentCommentMailNotice(detail);
-        return ResponseResult.success(result);
-    }
-
-    @RequestMapping("/sendPostCommentMailNotice")
-    public ResponseResult<Boolean> sendPostCommentMailNotice(CommentListOutput input) throws MessagingException {
-        Boolean result = mailService.sendPostCommentMailNotice(input);
         return ResponseResult.success(result);
     }
 }

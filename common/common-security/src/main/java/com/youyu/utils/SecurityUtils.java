@@ -42,7 +42,7 @@ public class SecurityUtils {
     }
 
     /**
-     * 用户已登录，获取clientId
+     * 用户未登录，获取clientId
      * @return 客户端id
      */
     public static String getJwtClientId() {

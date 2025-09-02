@@ -1,11 +1,17 @@
 package com.youyu.config;
 
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * 文章通知消息队列配置
+ */
+
 @Configuration
+@EnableRabbit
 public class PostRabbitConfiguration {
 
     @Bean("postCommentMailQueue")     //定义消息队列

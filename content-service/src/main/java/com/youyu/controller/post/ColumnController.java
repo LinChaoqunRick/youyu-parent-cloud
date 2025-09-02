@@ -1,11 +1,13 @@
 package com.youyu.controller.post;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.youyu.annotation.Log;
 import com.youyu.dto.post.column.ColumnListOutput;
 import com.youyu.dto.post.column.ColumnPostInput;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.post.post.PostListOutput;
 import com.youyu.entity.user.Column;
+import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
@@ -51,6 +53,7 @@ public class ColumnController {
     }
 
     @RequestMapping("/create")
+    @Log(title = "新增专栏", type = LogType.INSERT)
     public ResponseResult<Column> createColumn(@Valid Column column) {
         LambdaQueryWrapper<Column> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Column::getUserId, SecurityUtils.getUserId());
@@ -64,6 +67,7 @@ public class ColumnController {
     }
 
     @RequestMapping("/update")
+    @Log(title = "更新专栏", type = LogType.UPDATE)
     public ResponseResult<Column> updateColumn(@Valid Column column) {
         column.setUpdateTime(new Date());
         columnService.updateById(column);
@@ -71,6 +75,7 @@ public class ColumnController {
     }
 
     @RequestMapping("/delete")
+    @Log(title = "删除专栏", type = LogType.DELETE)
     public ResponseResult<Boolean> deleteColumn(@RequestParam Long columnId) {
         columnService.removeById(columnId);
         return ResponseResult.success(true);

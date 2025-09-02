@@ -1,7 +1,9 @@
 package com.youyu.controller.moment;
 
 
+import com.youyu.annotation.Log;
 import com.youyu.entity.moment.MomentLike;
+import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
@@ -29,6 +31,7 @@ public class MomentLikeController {
     private MomentLikeService momentLikeService;
 
     @RequestMapping("/setMomentLike")
+    @Log(title = "点赞时刻", type = LogType.INSERT)
     public ResponseResult<Boolean> setMomentLike(@Valid MomentLike input) {
         boolean like = momentLikeService.setMomentLike(input);
         return ResponseResult.success(like);
@@ -41,6 +44,7 @@ public class MomentLikeController {
     }
 
     @RequestMapping("/cancelMomentLike")
+    @Log(title = "取消点赞时刻", type = LogType.DELETE)
     public ResponseResult<Boolean> cancelPostLike(@Valid MomentLike input) {
         boolean remove = momentLikeService.cancelMomentLike(input);
         if (remove) {
@@ -51,6 +55,7 @@ public class MomentLikeController {
     }
 
     @RequestMapping("/rectifySupportCount")
+    @Log(title = "校正时刻点赞信息", type = LogType.OTHER)
     public ResponseResult<String> rectifySupportCount() {
         momentLikeService.rectifySupportCount();
         return ResponseResult.success("校正完成！");

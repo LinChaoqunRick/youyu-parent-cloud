@@ -82,6 +82,7 @@ public class LogAspect {
         HttpServletRequest request = RequestUtils.getRequest();
 
         logs.setUserId(SecurityUtils.getUserId());
+        logs.setClientId(SecurityUtils.getJwtClientId());
         logs.setIp(RequestUtils.getClientIp());
         logs.setAdcode(locateUtils.queryTencentIp().getAdcode());
         logs.setPath(request != null ? request.getRequestURI() : "");

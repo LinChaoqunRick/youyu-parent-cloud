@@ -12,7 +12,9 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.aliyuncs.sts.model.v20150401.AssumeRoleRequest;
 import com.aliyuncs.sts.model.v20150401.AssumeRoleResponse;
+import com.youyu.annotation.Log;
 import com.youyu.config.OssProperties;
+import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.factory.OssClientFactory;
@@ -48,6 +50,7 @@ public class OssController {
      * @return
      */
     @RequestMapping("/policy")
+    @Log(title = "文件上传(policy)", type = LogType.UPLOAD)
     public ResponseResult<Map<String, String>> policy(@RequestParam(defaultValue = "post/images") String base) {
         // date = new Date();
         // int first = date.getYear();
@@ -95,6 +98,7 @@ public class OssController {
      * @return
      */
     @RequestMapping("/sts")
+    @Log(title = "文件上传(sts)", type = LogType.UPLOAD)
     public ResponseResult<AssumeRoleResponse.Credentials> sts() {
         AssumeRoleResponse.Credentials credentials = null;
         String roleSessionName = "SessionTest";

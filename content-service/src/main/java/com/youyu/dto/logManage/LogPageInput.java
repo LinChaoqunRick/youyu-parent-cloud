@@ -11,8 +11,9 @@ import java.util.Date;
 @Getter
 @Setter
 public class LogPageInput extends PageBase {
-    @NotNull(message = "类型不能为空")
-    private int type;
+    private String type;
+
+    private Integer status;
 
     private String areaCodes;
 

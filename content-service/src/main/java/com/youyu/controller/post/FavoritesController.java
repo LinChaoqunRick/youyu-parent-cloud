@@ -2,6 +2,7 @@ package com.youyu.controller.post;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.youyu.annotation.Log;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.post.FavoritesPageInput;
 import com.youyu.dto.post.favorites.FavoritesListOutput;
@@ -10,6 +11,7 @@ import com.youyu.entity.post.Favorites;
 import com.youyu.entity.post.Post;
 import com.youyu.entity.post.PostCollect;
 import com.youyu.entity.user.ProfileMenu;
+import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.feign.UserServiceClient;
@@ -56,6 +58,7 @@ public class FavoritesController {
     private Long favoritesMaxNum;
 
     @RequestMapping("/create")
+    @Log(title = "新增收藏夹", type = LogType.INSERT)
     public ResponseResult<Favorites> create(@Valid @RequestBody Favorites input) {
         LambdaQueryWrapper<Favorites> queryWrapper = new LambdaQueryWrapper<>();
         Long userId = SecurityUtils.getUserId();
@@ -75,6 +78,7 @@ public class FavoritesController {
     }
 
     @RequestMapping("/update")
+    @Log(title = "更新收藏夹", type = LogType.UPDATE)
     public ResponseResult<Favorites> update(@RequestBody Favorites input) {
         Favorites favorites = favoritesService.getById(input.getId());
         SecurityUtils.authAuthorizationUser(favorites.getUserId());
@@ -93,6 +97,7 @@ public class FavoritesController {
     }
 
     @RequestMapping("/delete")
+    @Log(title = "删除收藏夹", type = LogType.DELETE)
     public ResponseResult<Boolean> delete(@RequestParam Long id) {
         Favorites favorites = favoritesService.getById(id);
         SecurityUtils.authAuthorizationUser(favorites.getUserId());

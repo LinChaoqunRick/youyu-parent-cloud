@@ -3,11 +3,13 @@ package com.youyu.controller.post;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.youyu.annotation.Log;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.post.post.*;
 import com.youyu.entity.post.Post;
 import com.youyu.entity.post.PostCollect;
 import com.youyu.entity.post.PostLike;
+import com.youyu.enums.LogType;
 import com.youyu.enums.post.CreateType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -75,12 +77,14 @@ public class PostController {
     }
 
     @RequestMapping("/create")
+    @Log(title = "新增文章", type = LogType.INSERT)
     public ResponseResult<Long> create(@Valid @RequestBody Post post) {
         boolean save = postService.save(post);
         return ResponseResult.success(post.getId());
     }
 
     @RequestMapping("/update")
+    @Log(title = "编辑文章", type = LogType.UPDATE)
     public ResponseResult<Boolean> update(@Valid @RequestBody Post post) {
         Long userId = SecurityUtils.getUserId();
         if (!userId.equals(post.getUserId())) {
@@ -92,6 +96,7 @@ public class PostController {
     }
 
     @RequestMapping("/hide")
+    @Log(title = "隐藏文章", type = LogType.UPDATE)
     public ResponseResult<Boolean> hide(@RequestParam Long postId, @RequestParam Integer status) {
         Post post = postService.get(postId);
         if (!Objects.equals(SecurityUtils.getUserId(), post.getUserId())) {
@@ -105,6 +110,7 @@ public class PostController {
     }
 
     @RequestMapping("/delete")
+    @Log(title = "删除文章", type = LogType.DELETE)
     public ResponseResult<Boolean> delete(@RequestParam Long postId) {
         Post post = postService.getById(postId);
         Long currentUserId = SecurityUtils.getUserId();
@@ -117,6 +123,7 @@ public class PostController {
 
     @RequestMapping("/setPostLike")
     // @PreAuthorize("hasAuthority('test')")
+    @Log(title = "点赞文章", type = LogType.INSERT)
     public ResponseResult<Boolean> setPostLike(@Valid PostLike postLike) {
         boolean result = postLikeService.save(postLike);
         return ResponseResult.success(result);
@@ -132,6 +139,7 @@ public class PostController {
     }
 
     @RequestMapping("/cancelPostLike")
+    @Log(title = "取消点赞文章", type = LogType.DELETE)
     public ResponseResult<Boolean> cancelPostLike(@Valid PostLike postLike) {
         LambdaQueryWrapper<PostLike> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PostLike::getPostId, postLike.getPostId());
@@ -153,6 +161,7 @@ public class PostController {
     }
 
     @RequestMapping("/postCollect")
+    @Log(title = "收藏文章", type = LogType.INSERT)
     public ResponseResult<Boolean> postCollect(@Valid PostCollect postCollect) {
         Long userId = SecurityUtils.getUserId();
         postCollect.setUserId(userId);
@@ -194,6 +203,7 @@ public class PostController {
     }
 
     @RequestMapping("/cancelPostCollect")
+    @Log(title = "取消收藏文章", type = LogType.DELETE)
     public ResponseResult<Boolean> cancelPostCollect(@Valid PostCollect postCollect) {
         SecurityUtils.authAuthorizationUser(postCollect.getUserId());
 

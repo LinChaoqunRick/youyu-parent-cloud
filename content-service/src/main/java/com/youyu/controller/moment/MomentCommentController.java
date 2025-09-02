@@ -1,12 +1,14 @@
 package com.youyu.controller.moment;
 
 
+import com.youyu.annotation.Log;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.moment.MomentCommentListInput;
 import com.youyu.dto.moment.MomentCommentListOutput;
 import com.youyu.dto.moment.MomentReplyListInput;
 import com.youyu.entity.moment.MomentComment;
 import com.youyu.entity.result.TencentLocationResult;
+import com.youyu.enums.LogType;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.moment.MomentCommentService;
 import com.youyu.utils.LocateUtils;
@@ -37,6 +39,7 @@ public class MomentCommentController {
     private LocateUtils locateUtils;
 
     @RequestMapping("/create")
+    @Log(title = "新增时刻评论", type = LogType.INSERT)
     public ResponseResult<MomentCommentListOutput> create(@Valid MomentComment input) {
         input.setUserId(SecurityUtils.getUserId());
         TencentLocationResult locationResult = locateUtils.queryTencentIp();
@@ -47,6 +50,7 @@ public class MomentCommentController {
     }
 
     @RequestMapping("/delete")
+    @Log(title = "删除时刻评论", type = LogType.DELETE)
     public ResponseResult<Boolean> delete(Long commentId) {
         boolean remove = momentCommentService.deleteComment(commentId);
         return ResponseResult.success(remove);

@@ -1,19 +1,25 @@
 package com.youyu.config;
 
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * 时刻通知消息队列配置
+ */
+
 @Configuration
+@EnableRabbit
 public class MomentRabbitConfiguration {
 
     @Bean("momentCommentMailQueue")     //定义消息队列
     public Queue queue() {
         return QueueBuilder
-                .durable("momentCommentMail")   //非持久化类型
-                .deadLetterExchange("dlx.direct")
-                .deadLetterRoutingKey("dl-MomentComment")
+                .durable("momentCommentMail")   // 队列名称
+                .deadLetterExchange("dlx.direct")  // 死信交换机名称
+                .deadLetterRoutingKey("dl-MomentComment") // 死信路由键
                 .build();
     }
 

@@ -9,8 +9,11 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.youyu.entity.LoginUser;
+import com.youyu.filter.OAuth2TokenFilter;
 import com.youyu.oauth2.handler.MyAuthenticationFailureHandler;
 import com.youyu.oauth2.handler.MyAuthenticationSuccessHandler;
+import com.youyu.service.LogsService;
+import com.youyu.utils.LocateUtils;
 import com.youyu.oauth2.extensition.password.PasswordAuthenticationConverter;
 import com.youyu.oauth2.extensition.password.PasswordAuthenticationProvider;
 import com.youyu.oauth2.jackson.SysUserMixin;
@@ -55,6 +58,8 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
 import java.security.KeyPair;
@@ -100,7 +105,9 @@ public class AuthorizationServerConfig {
             HttpSecurity http,
             AuthenticationManager authenticationManager,
             OAuth2AuthorizationService authorizationService,
-            OAuth2TokenGenerator<?> tokenGenerator
+            OAuth2TokenGenerator<?> tokenGenerator,
+            AuthenticationSuccessHandler myAuthenticationSuccessHandler,
+            AuthenticationFailureHandler myAuthenticationFailureHandler
 
     ) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
@@ -127,8 +134,8 @@ public class AuthorizationServerConfig {
                                                 )
                                         )
                         )
-                        .accessTokenResponseHandler(new MyAuthenticationSuccessHandler()) // 自定义成功响应
-                        .errorResponseHandler(new MyAuthenticationFailureHandler()) // 自定义失败响应
+                        .accessTokenResponseHandler(myAuthenticationSuccessHandler) // 自定义成功响应
+                        .errorResponseHandler(myAuthenticationFailureHandler) // 自定义失败响应
                 )
                 // Enable OpenID Connect 1.0 自定义
                 .oidc(oidcCustomizer ->
@@ -148,7 +155,18 @@ public class AuthorizationServerConfig {
                         )
                 )
                 .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()));
+        // http.addFilterAfter(oAuth2TokenFilter, SecurityContextHolderFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler myAuthenticationSuccessHandler(LogsService logsService, LocateUtils locateUtils) {
+        return new MyAuthenticationSuccessHandler(logsService, locateUtils);
+    }
+
+    @Bean
+    public AuthenticationFailureHandler myAuthenticationFailureHandler(LogsService logsService, LocateUtils locateUtils) {
+        return new MyAuthenticationFailureHandler(logsService, locateUtils);
     }
 
     @Bean // <5>

@@ -1,10 +1,12 @@
 package com.youyu.controller.note;
 
+import com.youyu.annotation.Log;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.note.detail.NoteDetailOutput;
 import com.youyu.dto.note.list.NoteListInput;
 import com.youyu.dto.note.list.NoteListOutput;
 import com.youyu.entity.note.Note;
+import com.youyu.enums.LogType;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.note.NoteChapterService;
 import com.youyu.service.note.NoteService;
@@ -35,6 +37,7 @@ public class NoteController {
     private NoteChapterService noteChapterService;
 
     @RequestMapping("/create")
+    @Log(title = "新增笔记", type = LogType.INSERT)
     public ResponseResult<Boolean> createNote(@Valid Note note) {
         boolean save = noteService.save(note);
         return ResponseResult.success(save);
@@ -53,6 +56,7 @@ public class NoteController {
     }
 
     @RequestMapping("/update")
+    @Log(title = "更新笔记", type = LogType.UPDATE)
     public ResponseResult<Boolean> getNote(@Valid Note note) {
         note.setUpdateTime(new Date());
         boolean update = noteService.updateById(note);
@@ -60,6 +64,7 @@ public class NoteController {
     }
 
     @RequestMapping("/delete")
+    @Log(title = "删除笔记", type = LogType.DELETE)
     public ResponseResult<Boolean> deleteNote(@RequestParam Long noteId) {
         Note note = noteService.getById(noteId);
         SecurityUtils.authAuthorizationUser(note.getUserId());

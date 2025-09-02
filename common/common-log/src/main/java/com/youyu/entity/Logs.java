@@ -2,6 +2,7 @@ package com.youyu.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,10 @@ public class Logs {
      * 用户id
      */
     private Long userId;
+    /**
+     * 客户端Id
+     */
+    private String clientId;
     /**
      * 操作名称
      */
@@ -83,5 +88,6 @@ public class Logs {
     /**
      * 删除标志
      */
+    @JsonIgnore
     private Integer deleted;
 }

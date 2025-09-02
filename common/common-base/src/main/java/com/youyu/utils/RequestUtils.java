@@ -21,7 +21,10 @@ public class RequestUtils {
      * @return 调用者IP
      */
     public static String getClientIp() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpServletRequest request = getRequest();
+        if (Objects.isNull(request)) {
+            return "N/A";
+        }
         String ipAddress = null;
 
         // 优先使用 X-Real-IP（如果你在网关或代理层设置了）

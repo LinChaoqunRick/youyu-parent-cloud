@@ -1,11 +1,13 @@
 package com.youyu.controller.post;
 
+import com.youyu.annotation.Log;
 import com.youyu.dto.post.comment.CommentListInput;
 import com.youyu.dto.post.comment.CommentListOutput;
 import com.youyu.dto.post.comment.PostReplyListInput;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.entity.post.Comment;
 import com.youyu.entity.post.CommentLike;
+import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
@@ -45,18 +47,21 @@ public class CommentController {
     }
 
     @RequestMapping("/createComment")
+    @Log(title = "新增文章评论", type = LogType.INSERT)
     ResponseResult<CommentListOutput> createPostComment(Comment comment) {
         CommentListOutput output = commentService.createPostComment(comment);
         return ResponseResult.success(output);
     }
 
     @RequestMapping("/deleteComment")
+    @Log(title = "删除文章评论", type = LogType.DELETE)
     ResponseResult<Boolean> deleteComment(Long commentId) {
         boolean status = commentService.deleteComment(commentId);
         return ResponseResult.success(status);
     }
 
     @RequestMapping("/setLike")
+    @Log(title = "点赞文章评论", type = LogType.INSERT)
     ResponseResult<CommentLike> setCommentLike(@Valid CommentLike commentLike) {
         boolean status = commentLikeService.setPostCommentLike(commentLike);
         if (status) {
@@ -66,6 +71,7 @@ public class CommentController {
         }
     }
 
+    @Log(title = "取消点赞文章评论", type = LogType.DELETE)
     @RequestMapping("/cancelLike")
     ResponseResult<Boolean> cancelCommentLike(@Valid CommentLike commentLike) {
         boolean cancel = commentLikeService.cancelPostCommentLike(commentLike);
@@ -77,6 +83,7 @@ public class CommentController {
     }
 
     @RequestMapping("/rectifySupportCount")
+    @Log(title = "校正文章评论", type = LogType.OTHER)
     ResponseResult<String> rectifySupportCount() {
         commentLikeService.rectifySupportCount();
         return ResponseResult.success("校正完成");

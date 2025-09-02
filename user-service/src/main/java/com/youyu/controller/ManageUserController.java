@@ -1,7 +1,9 @@
 package com.youyu.controller;
 
+import com.youyu.annotation.Log;
 import com.youyu.entity.auth.Route;
 import com.youyu.entity.user.ManageUser;
+import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
@@ -25,6 +27,7 @@ public class ManageUserController {
     private ManageUserService manageUserService;
 
     @RequestMapping("/getAuthRoutes")
+    @Log(title = "获取权限路由", type = LogType.ACCESS)
     public ResponseResult<List<Route>> getAuthRoutes() {
         Long userId = SecurityUtils.getUserId();
         List<Route> manageAuthRoutes = userService.getManageAuthRoutes(userId);

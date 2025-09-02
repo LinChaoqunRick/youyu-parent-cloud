@@ -63,6 +63,7 @@ services:
     depends_on:
       - gateway-service
       - user-service
+      - notify-service
 
   notify-service:
     container_name: notify-service

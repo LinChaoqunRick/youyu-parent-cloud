@@ -3,6 +3,7 @@ package com.youyu.controller.album;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.youyu.annotation.Log;
 import com.youyu.dto.album.AlbumListInput;
 import com.youyu.dto.album.AlbumListOutput;
 import com.youyu.dto.common.PageOutput;
@@ -10,6 +11,7 @@ import com.youyu.dto.post.post.PostUserOutput;
 import com.youyu.entity.album.Album;
 import com.youyu.entity.album.AlbumImage;
 import com.youyu.entity.user.User;
+import com.youyu.enums.LogType;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.album.AlbumImageService;
@@ -116,6 +118,7 @@ public class AlbumController {
     }
 
     @RequestMapping("/open/accessible")
+    @Log(title = "修改相册公开权限", type = LogType.UPDATE)
     public ResponseResult<Boolean> accessible(@RequestParam Long id) {
         Album album = albumService.getById(id);
         if (album.getOpen() == 1) {
@@ -138,6 +141,7 @@ public class AlbumController {
     }
 
     @RequestMapping("/create")
+    @Log(title = "新增相册", type = LogType.INSERT)
     public ResponseResult<Boolean> create(@Valid Album input) {
         input.setUserId(SecurityUtils.getUserId());
         boolean save = albumService.save(input);
@@ -145,6 +149,7 @@ public class AlbumController {
     }
 
     @RequestMapping("/update")
+    @Log(title = "更新相册", type = LogType.UPDATE)
     public ResponseResult<Boolean> update(@Valid Album input) {
         input.setUpdateTime(new Date());
         Album album = albumService.getById(input.getId());
@@ -155,6 +160,7 @@ public class AlbumController {
     }
 
     @RequestMapping("/remove")
+    @Log(title = "删除相册", type = LogType.DELETE)
     public ResponseResult<Boolean> remove(@Valid Album input) {
         Album album = albumService.getById(input.getId());
         // 水平越权校验
@@ -164,6 +170,7 @@ public class AlbumController {
     }
 
     @RequestMapping("/setCover")
+    @Log(title = "设置相册封面", type = LogType.UPDATE)
     public ResponseResult<Boolean> setCover(@RequestParam Long id, @RequestParam Long coverImageId) {
         LambdaUpdateWrapper<Album> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(Album::getId, id);

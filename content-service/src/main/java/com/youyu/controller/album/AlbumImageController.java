@@ -6,6 +6,7 @@ import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.GeneratePresignedUrlRequest;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.youyu.annotation.Log;
 import com.youyu.config.OssProperties;
 import com.youyu.dto.album.AlbumImageListInput;
 import com.youyu.dto.album.AlbumImageListOutput;
@@ -13,6 +14,7 @@ import com.youyu.dto.album.AlbumImageSaveInput;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.entity.album.Album;
 import com.youyu.entity.album.AlbumImage;
+import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
@@ -87,6 +89,7 @@ public class AlbumImageController {
     }
 
     @RequestMapping("/create")
+    @Log(title = "新增相册图片", type = LogType.INSERT)
     public ResponseResult<Boolean> create(@Valid @RequestBody AlbumImageSaveInput input) {
         Album album = albumService.getById(input.getAlbumId());
         SecurityUtils.authAuthorizationUser(album.getUserId());
@@ -96,6 +99,7 @@ public class AlbumImageController {
     }
 
     @RequestMapping("/update")
+    @Log(title = "编辑相册图片", type = LogType.UPDATE)
     public ResponseResult<Boolean> update(AlbumImage input) {
         Album album = albumService.getById(input.getAlbumId());
         SecurityUtils.authAuthorizationUser(album.getUserId());
@@ -104,6 +108,7 @@ public class AlbumImageController {
     }
 
     @RequestMapping("/remove")
+    @Log(title = "删除相册图片", type = LogType.DELETE)
     public ResponseResult<Boolean> remove(String ids) {
         //TODO... 如何进行水平越权校验？
         List<String> idsList = Arrays.stream(ids.split(",")).toList();
@@ -112,6 +117,7 @@ public class AlbumImageController {
     }
 
     @RequestMapping("/open/origin")
+    @Log(title = "查看原图", type = LogType.OTHER)
     public ResponseResult<String> getOriginUrl(@RequestParam Long id) {
         AlbumImage albumImage = albumImageService.getById(id);
         OSS ossClient = new OSSClientBuilder().build(ossProperties.getEndPoint(), ossProperties.getAccessKeyId(), ossProperties.getAccessKeySecret());

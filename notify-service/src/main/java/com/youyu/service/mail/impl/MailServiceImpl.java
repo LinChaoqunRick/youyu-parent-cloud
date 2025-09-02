@@ -1,15 +1,16 @@
-package com.youyu.service.impl;
+package com.youyu.service.mail.impl;
 
+import com.youyu.annotation.Log;
 import com.youyu.dto.moment.MomentCommentListOutput;
 import com.youyu.dto.post.comment.CommentListOutput;
 import com.youyu.dto.post.post.PostDetailOutput;
 import com.youyu.dto.post.post.PostUserOutput;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentUserOutput;
+import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
-import com.youyu.feign.MomentServiceClient;
-import com.youyu.feign.PostServiceClient;
+import com.youyu.feign.ContentServiceClient;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.service.mail.MailService;
 import com.youyu.utils.MailUtils;
@@ -31,10 +32,7 @@ public class MailServiceImpl implements MailService {
     private UserServiceClient userServiceClient;
 
     @Resource
-    private MomentServiceClient momentServiceClient;
-
-    @Resource
-    private PostServiceClient postServiceClient;
+    private ContentServiceClient contentServiceClient;
 
     @Resource
     private MailUtils mailUtils;
@@ -70,10 +68,11 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
+    @Log(title = "发送文章评论通知邮件", type = LogType.NOTIFY)
     public Boolean sendPostCommentMailNotice(CommentListOutput input) {
         PostUserOutput user = input.getUser();
         PostUserOutput userTo = input.getUserTo();
-        PostDetailOutput post = postServiceClient.selectById(input.getPostId()).getData();
+        PostDetailOutput post = contentServiceClient.selectById(input.getPostId()).getData();
 
         Context context = new Context();
         context.setVariable("nickname", userTo.getNickname());
@@ -92,11 +91,12 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
+    @Log(title = "发送时刻评论通知邮件", type = LogType.NOTIFY)
     public Boolean sendMomentCommentMailNotice(MomentCommentListOutput detail) {
         // 获取双方用户信息
         MomentUserOutput user = detail.getUser();
         MomentUserOutput userTo = detail.getUserTo();
-        Moment moment = momentServiceClient.getMomentById(detail.getMomentId()).getData();
+        Moment moment = contentServiceClient.getMomentById(detail.getMomentId()).getData();
 
         // 回复人已绑定邮箱
         Context context = new Context();
