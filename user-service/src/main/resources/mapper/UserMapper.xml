@@ -26,6 +26,7 @@
                WHERE sys_role_route.role_id =
                      (SELECT role_id FROM sys_user_role WHERE user_id = #{id}))
           AND deleted != 1
+        ORDER BY id ASC;
     </select>
 
     <select id="getManageAuthRoutes" resultMap="route">
@@ -37,6 +38,7 @@
                WHERE manage_role_route.role_id =
                      (SELECT role_id FROM manage_user_role WHERE user_id = #{id}))
           AND deleted != 1
+        ORDER BY id ASC;
     </select>
 
     <select id="getRoutesByRoleId" resultMap="route">

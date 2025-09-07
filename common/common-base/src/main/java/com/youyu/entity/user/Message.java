@@ -42,6 +42,8 @@ public class Message extends Model<Message> {
     //省份编号
     private Integer adcode;
 
+    private Integer status;
+
     private Long supportCount;
 
     private Long opposeCount;

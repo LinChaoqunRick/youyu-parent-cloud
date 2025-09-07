@@ -48,6 +48,9 @@ public class LogAspect {
             fillLogBefore(joinPoint, logAnnotation, actionLog);
 
             result = joinPoint.proceed();
+            if (logAnnotation.saveResponseData()) {
+                actionLog.setResponseData(JSON.toJSONString(result));
+            }
             actionLog.setResult(1); // 成功
 
             // 保存响应结果

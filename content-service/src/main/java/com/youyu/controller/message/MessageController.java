@@ -77,6 +77,7 @@ public class MessageController {
     ResponseResult<PageOutput<MessageListOutput>> list(PageBase input) {
         LambdaQueryWrapper<Message> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Message::getRootId, -1);
+        queryWrapper.eq(Message::getStatus, 1);
         queryWrapper.orderByDesc(Message::getCreateTime);
 
         Page<Message> page = new Page<>(input.getPageNum(), input.getPageSize());
