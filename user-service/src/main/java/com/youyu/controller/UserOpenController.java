@@ -2,7 +2,6 @@ package com.youyu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.pagehelper.PageInfo;
 import com.youyu.annotation.Log;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.user.*;
@@ -65,9 +64,10 @@ public class UserOpenController {
         return ResponseResult.success(menu);
     }
 
-    @RequestMapping("/getDynamics")
-    ResponseResult<PageInfo<Object>> getDynamics(@Valid DynamicListInput input) {
-        PageInfo<Object> pageInfo = userService.getUserDynamics(input);
+    @RequestMapping("/listUserActivities")
+    ResponseResult<PageOutput<Object>> listUserActivities(@Valid UserActivitiesInput input) {
+        input.setAuthorizationUserId(SecurityUtils.getUserId());
+        PageOutput<Object> pageInfo = userService.listUserActivities(input);
         return ResponseResult.success(pageInfo);
     }
 

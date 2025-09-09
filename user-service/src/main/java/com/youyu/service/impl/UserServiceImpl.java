@@ -1,10 +1,9 @@
 package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.moment.MomentListOutput;
 import com.youyu.dto.note.list.ChapterListOutput;
@@ -153,42 +152,41 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public PageInfo<Object> getUserDynamics(DynamicListInput input) {
-        PageHelper.startPage(input.getPageNum(), input.getPageSize());
-        List<DynamicInfo> dynamics = userMapper.getUserDynamics(input);
-        PageInfo<DynamicInfo> pageInfo = new PageInfo<>(dynamics);
+    public PageOutput<Object> listUserActivities(UserActivitiesInput input) {
+        Page<UserActivities> page = new Page<>(input.getPageNum(), input.getPageSize());
+        IPage<UserActivities> activities = userMapper.listUserActivities(page, input);
 
-        Map<Integer, List<DynamicInfo>> collect = pageInfo.getList().stream().collect(Collectors.groupingBy(DynamicInfo::getType));
+        Map<Integer, List<UserActivities>> collect = activities.getRecords().stream().collect(Collectors.groupingBy(UserActivities::getType));
         List<Object> resultList = new ArrayList<>();
 
         collect.keySet().forEach(key -> {
             if (key == 1) { // 文章
-                List<Long> postIds = collect.get(key).stream().map(DynamicInfo::getId).collect(Collectors.toList());
+                List<Long> postIds = collect.get(key).stream().map(UserActivities::getId).collect(Collectors.toList());
                 List<PostListOutput> postList = contentServiceClient.postListByIds(postIds).getData();
                 resultList.addAll(postList);
             } else if (key == 2) { // 时刻
-                List<Long> momentIds = collect.get(key).stream().map(DynamicInfo::getId).collect(Collectors.toList());
+                List<Long> momentIds = collect.get(key).stream().map(UserActivities::getId).collect(Collectors.toList());
                 List<MomentListOutput> momentList = contentServiceClient.momentListByIds(momentIds).getData();
                 resultList.addAll(momentList);
             } else if (key == 3) { // 笔记
-                List<Long> noteIds = collect.get(key).stream().map(DynamicInfo::getId).collect(Collectors.toList());
+                List<Long> noteIds = collect.get(key).stream().map(UserActivities::getId).collect(Collectors.toList());
                 List<NoteListOutput> noteList = contentServiceClient.noteListByIds(noteIds).getData();
                 resultList.addAll(noteList);
             } else if (key == 4) { // 章节
-                List<Long> chapterIds = collect.get(key).stream().map(DynamicInfo::getId).collect(Collectors.toList());
+                List<Long> chapterIds = collect.get(key).stream().map(UserActivities::getId).collect(Collectors.toList());
                 List<ChapterListOutput> chapterList = contentServiceClient.listChapterByIds(chapterIds).getData();
                 resultList.addAll(chapterList);
             }
         });
 
-        PageInfo<Object> resultPageInfo = BeanCopyUtils.copyBean(pageInfo, PageInfo.class);
+        PageOutput<Object> output = PageUtils.setPageResult(page, Object.class);
         resultList.sort((a, b) -> {
             Long aTime = ((Date) Objects.requireNonNull(BeanUtils.getFieldValueByFieldName(a, "createTime"))).getTime();
             Long bTime = ((Date) Objects.requireNonNull(BeanUtils.getFieldValueByFieldName(b, "createTime"))).getTime();
             return bTime.compareTo(aTime);
         });
-        resultPageInfo.setList(resultList);
-        return resultPageInfo;
+        output.setList(resultList);
+        return output;
     }
 
     private void setFollow(Long currentUserId, List<UserListOutput> list) {

@@ -68,7 +68,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    @Log(title = "发送文章评论通知邮件", type = LogType.NOTIFY)
+    @Log(title = "发送文章评论通知邮件", type = LogType.NOTIFY_MAIL)
     public Boolean sendPostCommentMailNotice(CommentListOutput input) {
         PostUserOutput user = input.getUser();
         PostUserOutput userTo = input.getUserTo();
@@ -91,7 +91,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    @Log(title = "发送时刻评论通知邮件", type = LogType.NOTIFY)
+    @Log(title = "发送时刻评论通知邮件", type = LogType.NOTIFY_MAIL)
     public Boolean sendMomentCommentMailNotice(MomentCommentListOutput detail) {
         // 获取双方用户信息
         MomentUserOutput user = detail.getUser();

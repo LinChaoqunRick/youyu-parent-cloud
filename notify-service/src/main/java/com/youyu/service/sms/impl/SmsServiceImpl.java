@@ -1,6 +1,7 @@
 package com.youyu.service.sms.impl;
 
 import com.aliyuncs.exceptions.ClientException;
+import com.youyu.annotation.LogContext;
 import com.youyu.config.SendCode;
 import com.youyu.dto.sms.SmsSendInput;
 import com.youyu.dto.sms.SmsVerifyInput;
@@ -42,6 +43,7 @@ public class SmsServiceImpl implements SmsService {
         String code = NumberUtils.createRandomNumber(6);
         // 短信模板id
         String templateCode = SMSTemplate.getCodeById(input.getType());
+        LogContext.put("SMSCode", code);
 
         boolean send = false;
         try {

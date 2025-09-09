@@ -21,6 +21,7 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * 认证失败处理器
@@ -48,23 +49,26 @@ public class MyAuthenticationFailureHandler implements AuthenticationFailureHand
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         OAuth2Error error = ((OAuth2AuthenticationException) exception).getError();
         long startTime = System.currentTimeMillis();
-        // 登录失败日志（不影响响应流程）
-        try {
-            Logs log = new Logs();
-            log.setClientId(SecurityUtils.getClientId());
-            log.setIp(RequestUtils.getClientIp());
+        String refreshToken = Objects.requireNonNull(RequestUtils.getRequest()).getParameter("refresh_token");
+        // 登录失败日志（不影响响应流程），refresh_token不记录
+        if (refreshToken == null) {
             try {
-                log.setAdcode(locateUtils.queryTencentIp().getAdcode());
+                Logs log = new Logs();
+                log.setClientId(SecurityUtils.getClientId());
+                log.setIp(RequestUtils.getClientIp());
+                try {
+                    log.setAdcode(locateUtils.queryTencentIp().getAdcode());
+                } catch (Exception ignored) {}
+                log.setPath("/oauth2/token");
+                log.setName("登录");
+                log.setType(LogType.LOGIN.getCode());
+                log.setMethod(request != null ? request.getMethod() : "");
+                log.setDuration(System.currentTimeMillis() - startTime);
+                log.setResult(0);
+                log.setError(error != null ? error.getErrorCode() : exception.getMessage());
+                logsService.saveLog(log);
             } catch (Exception ignored) {}
-            log.setPath("/oauth2/token");
-            log.setName("登录");
-            log.setType(LogType.LOGIN.getCode());
-            log.setMethod(request != null ? request.getMethod() : "");
-            log.setDuration(System.currentTimeMillis() - startTime);
-            log.setResult(0);
-            log.setError(error != null ? error.getErrorCode() : exception.getMessage());
-            logsService.saveLog(log);
-        } catch (Exception ignored) {}
+        }
 
         ServletServerHttpResponse httpResponse = new ServletServerHttpResponse(response);
         ResponseResult<?> result = ResponseResult.error(ResultCode.FORBIDDEN.getCode(), error.getErrorCode());

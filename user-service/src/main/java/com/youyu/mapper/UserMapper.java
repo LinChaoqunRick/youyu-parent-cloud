@@ -1,9 +1,11 @@
 package com.youyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.youyu.dto.user.DynamicListInput;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.youyu.dto.user.UserActivitiesInput;
 import com.youyu.entity.auth.Route;
-import com.youyu.entity.user.DynamicInfo;
+import com.youyu.entity.user.UserActivities;
 import com.youyu.entity.user.User;
 import com.youyu.entity.auth.UserFramework;
 import org.apache.ibatis.annotations.Mapper;
@@ -25,6 +27,6 @@ public interface UserMapper extends BaseMapper<User> {
     List<Route> getManageAuthRoutes(@Param("id") Long id);
     List<Route> getRoutesByRoleId(@Param("roleId") Long roleId);
     UserFramework getUserById(@Param("id") Long id);
-    List<DynamicInfo> getUserDynamics(DynamicListInput input);
+    IPage<UserActivities> listUserActivities(Page<?> page, @Param("input") UserActivitiesInput input);
 }
 

@@ -2,6 +2,7 @@ package com.youyu.aspect;
 
 import com.alibaba.fastjson.JSON;
 import com.youyu.annotation.Log;
+import com.youyu.annotation.LogContext;
 import com.youyu.entity.Logs;
 import com.youyu.service.LogsService;
 import com.youyu.utils.LocateUtils;
@@ -54,9 +55,10 @@ public class LogAspect {
             actionLog.setResult(1); // 成功
 
             // 保存响应结果
-            if (logAnnotation.saveResponseData() && result != null) {
+            if (logAnnotation.saveResponseData()) {
+                Map<String, Object> all = LogContext.getAll();
                 try {
-                    actionLog.setResponseData(JSON.toJSONString(result));
+                    actionLog.setResponseData(JSON.toJSONString(!all.isEmpty() ? all : result));
                 } catch (Exception e) {
                     actionLog.setResponseData("[响应序列化失败]");
                 }

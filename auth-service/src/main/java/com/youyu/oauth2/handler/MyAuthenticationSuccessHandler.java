@@ -71,28 +71,31 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
         OAuth2AccessToken accessToken = accessTokenAuthentication.getAccessToken();
         OAuth2RefreshToken refreshToken = accessTokenAuthentication.getRefreshToken();
         Map<String, Object> additionalParameters = accessTokenAuthentication.getAdditionalParameters();
+        String refreshToken_old = Objects.requireNonNull(RequestUtils.getRequest()).getParameter("refresh_token");
 
         // 记录登录成功日志（不影响响应流程）
-        try {
-            Logs log = new Logs();
-            Object userInfo = additionalParameters != null ? additionalParameters.get("userInfo") : null;
-            if (userInfo instanceof UserFramework) {
-                log.setUserId(((UserFramework) userInfo).getId());
-            }
-            log.setClientId(SecurityUtils.getClientId());
-            log.setIp(RequestUtils.getClientIp());
+        if (refreshToken_old == null) {
             try {
-                log.setAdcode(locateUtils.queryTencentIp().getAdcode());
+                Logs log = new Logs();
+                Object userInfo = additionalParameters != null ? additionalParameters.get("userInfo") : null;
+                if (userInfo instanceof UserFramework) {
+                    log.setUserId(((UserFramework) userInfo).getId());
+                }
+                log.setClientId(SecurityUtils.getClientId());
+                log.setIp(RequestUtils.getClientIp());
+                try {
+                    log.setAdcode(locateUtils.queryTencentIp().getAdcode());
+                } catch (Exception ignored) {}
+                log.setPath("/oauth2/token");
+                log.setName("登录");
+                log.setType(LogType.LOGIN.getCode());
+                log.setMethod(request != null ? request.getMethod() : "");
+                Date issuedAt = Date.from(Objects.requireNonNull(accessToken.getIssuedAt())); // 获取发行时间
+                log.setDuration(System.currentTimeMillis() - issuedAt.getTime());
+                log.setResult(1);
+                logsService.saveLog(log);
             } catch (Exception ignored) {}
-            log.setPath("/oauth2/token");
-            log.setName("登录");
-            log.setType(LogType.LOGIN.getCode());
-            log.setMethod(request != null ? request.getMethod() : "");
-            Date issuedAt = Date.from(Objects.requireNonNull(accessToken.getIssuedAt())); // 获取发行时间
-            log.setDuration(System.currentTimeMillis() - issuedAt.getTime());
-            log.setResult(1);
-            logsService.saveLog(log);
-        } catch (Exception ignored) {}
+        }
 
         OAuth2AccessTokenResponse.Builder builder =
                 OAuth2AccessTokenResponse.withToken(accessToken.getTokenValue())

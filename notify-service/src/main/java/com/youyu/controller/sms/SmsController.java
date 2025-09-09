@@ -22,7 +22,7 @@ public class SmsController {
     private SmsService smsService;
 
     @RequestMapping(value = "/open/send")
-    @Log(title = "发送短信验证码", type = LogType.NOTIFY)
+    @Log(title = "发送短信验证码", type = LogType.NOTIFY_SMS, saveResponseData = true)
     public ResponseResult<Boolean> send(@Valid SmsSendInput input) {
         boolean send = smsService.send(input);
         return ResponseResult.success(send);

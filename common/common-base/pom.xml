@@ -58,21 +58,6 @@
             <artifactId>lombok</artifactId>
             <scope>compile</scope>
         </dependency>
-        <!-- pagehelper 分页插件 (排除依赖，避免依赖冲突)-->
-        <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper-spring-boot-starter</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.mybatis</groupId>
-                    <artifactId>mybatis-spring</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.mybatis</groupId>
-                    <artifactId>mybatis</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <!--aop-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

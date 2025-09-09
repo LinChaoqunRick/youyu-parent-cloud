@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 public class SendCode {
 
     // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
-    @Value("${aliyun.oss.accessKeyId}")
+    @Value("${aliyun.sms.accessKeyId}")
     private String accessKeyId;
-    @Value("${aliyun.oss.accessKeySecret}")
+    @Value("${aliyun.sms.accessKeySecret}")
     private String accessKeySecret;
 
     static final String product = "Dysmsapi";
