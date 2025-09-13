@@ -7,7 +7,7 @@ import com.youyu.dto.logManage.LogPageInput;
 import com.youyu.entity.Logs;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.LogsService;
-import com.youyu.utils.LocateUtils;
+import com.youyu.utils.DateUtils;
 import com.youyu.utils.PageUtils;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -22,7 +22,7 @@ import java.util.Date;
 
 @RestController
 @RequestMapping("/manage/logs")
-public class LogController {
+public class LogsController {
 
     @Resource
     private LogsService logsService;
@@ -30,12 +30,7 @@ public class LogController {
     @RequestMapping("/page")
     public ResponseResult<PageOutput<Logs>> areaAccess(@Valid LogPageInput input) {
         // 处理结束时间（左闭右开：endTime +1 天）
-        LocalDate endDate = input.getEndTime().toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate()
-                .plusDays(1);
-        Date endTimePlusOne = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-
+        Date endTimePlusOne = DateUtils.datePlusOne(input.getEndTime());
         LambdaQueryWrapper<Logs> wrapper = new LambdaQueryWrapper<>();
 
         if (StringUtils.hasText(input.getType())) {
