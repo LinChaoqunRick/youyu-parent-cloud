@@ -29,13 +29,7 @@ public class Message extends Model<Message> {
 
     private Long userId;
 
-    private Long userIdTo;
-
-    private String nickname;
-
-    private String email;
-
-    private String avatar;
+    private Long visitorId;
 
     @NotBlank(message = "内容不能为空")
     private String content;
@@ -58,5 +52,7 @@ public class Message extends Model<Message> {
 
     //删除标志
     private Integer deleted;
+
+
 }
 

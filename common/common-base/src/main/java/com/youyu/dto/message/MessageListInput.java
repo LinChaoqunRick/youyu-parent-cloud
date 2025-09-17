@@ -14,6 +14,8 @@ public class MessageListInput extends PageBase {
 
     private String keyword;
 
+    private Long rootId = -1L;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd") // 解析字符串成 Date
     private Date startTime;
 

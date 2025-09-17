@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.annotation.Log;
 import com.youyu.dto.common.PageBase;
 import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.message.CreateMessageInput;
+import com.youyu.dto.message.MessageListInput;
 import com.youyu.dto.message.MessageListOutput;
 import com.youyu.dto.message.MessageUserOutput;
+import com.youyu.entity.Visitor;
 import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.entity.user.Message;
 import com.youyu.enums.LogType;
@@ -15,13 +18,19 @@ import com.youyu.exception.SystemException;
 import com.youyu.mapper.message.MessageMapper;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.message.MessageService;
+import com.youyu.service.message.VisitorService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.PageUtils;
+import com.youyu.utils.SecurityUtils;
 import jakarta.annotation.Resource;
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -38,75 +47,59 @@ public class MessageController {
     private MessageService messageService;
 
     @Resource
-    private MessageMapper messageMapper;
+    private LocateUtils locateUtils;
 
     @Resource
-    private LocateUtils locateUtils;
+    private VisitorService visitorService;
 
     @RequestMapping("/open/create")
     @Log(title = "新增留言", type = LogType.INSERT)
-    ResponseResult<MessageListOutput> create(@Valid Message message) {
-        if (Objects.isNull(message.getUserId())) { // 如果是游客
-            if (Objects.isNull(message.getNickname())) {
+    ResponseResult<Boolean> create(@Valid CreateMessageInput input) throws InvocationTargetException, IllegalAccessException {
+        Message message = BeanCopyUtils.copyBean(input, Message.class);
+        boolean isVisitor = SecurityUtils.getUserId() == null; // 未登录，游客
+        TencentLocationResult position = locateUtils.queryTencentIp();
+        // 校验
+        if (isVisitor) {
+            if (Objects.isNull(input.getNickname())) {
                 throw new SystemException(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), "昵称不能为空");
-            } else if (Objects.isNull(message.getAvatar())) {
+            } else if (Objects.isNull(input.getAvatar())) {
                 throw new SystemException(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), "头像不能为空");
-            } else if (Objects.isNull(message.getEmail())) {
+            } else if (Objects.isNull(input.getEmail())) {
                 throw new SystemException(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), "邮箱不能为空");
             }
+
+            Visitor visitor = visitorService.getVisitorByEmail(input.getEmail());
+            if (visitor == null) {
+                // 新增：新游客留言
+                visitor = BeanCopyUtils.copyBean(input, Visitor.class);
+            } else {
+                // 更新：旧游客留言
+                BeanUtils.copyProperties(visitor, input);
+            }
+            visitor.setAdcode(position.getAdcode());
+            visitorService.saveOrUpdate(visitor);
+            message.setVisitorId(visitor.getId());
+        } else {
+            message.setUserId(SecurityUtils.getUserId());
         }
-        TencentLocationResult position = locateUtils.queryTencentIp();
+
         message.setAdcode(position.getAdcode());
-        messageService.save(message);
-        MessageListOutput output = BeanCopyUtils.copyBean(message, MessageListOutput.class);
-        if (Objects.nonNull(output.getUserId())) {
-            MessageUserOutput userDetail = messageService.getUserDetail(message.getUserId());
-            output.setUserInfo(userDetail);
-        }
-        return ResponseResult.success(output);
+        boolean save = messageService.save(message);
+
+        return ResponseResult.success(save);
     }
 
     @RequestMapping("/open/update")
     @Log(title = "更新留言", type = LogType.UPDATE)
-    ResponseResult<Message> update(@Valid Message message) {
+    ResponseResult<Boolean> update(@Valid Message message) {
         boolean update = messageService.updateById(message);
-        return ResponseResult.success(message);
+        return ResponseResult.success(update);
     }
 
     @RequestMapping("/open/list")
-    ResponseResult<PageOutput<MessageListOutput>> list(PageBase input) {
-        LambdaQueryWrapper<Message> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Message::getRootId, -1);
-        queryWrapper.eq(Message::getStatus, 1);
-        queryWrapper.orderByDesc(Message::getCreateTime);
-
-        Page<Message> page = new Page<>(input.getPageNum(), input.getPageSize());
-        Page<Message> messagePage = messageMapper.selectPage(page, queryWrapper);
-        PageOutput<MessageListOutput> pageOutput = PageUtils.setPageResult(messagePage, MessageListOutput.class);
-
-        pageOutput.getList().forEach(item -> {
-            item.setAdname(LocateUtils.getShortNameByCode(String.valueOf(item.getAdcode())));
-            if (Objects.nonNull(item.getUserId())) {
-                MessageUserOutput userDetail = messageService.getUserDetail(item.getUserId());
-                item.setUserInfo(userDetail);
-            }
-        });
-
-        return ResponseResult.success(pageOutput);
-    }
-
-    @RequestMapping("/open/getById")
-    ResponseResult<MessageListOutput> getById(Long id) {
-        Message message = messageService.getById(id);
-        MessageListOutput output = BeanCopyUtils.copyBean(message, MessageListOutput.class);
-
-        output.setAdname(LocateUtils.getShortNameByCode(String.valueOf(output.getAdcode())));
-        if (Objects.nonNull(output.getUserId())) {
-            MessageUserOutput userDetail = messageService.getUserDetail(output.getUserId());
-            output.setUserInfo(userDetail);
-        }
-
-        return ResponseResult.success(output);
+    ResponseResult<PageOutput<MessageListOutput>> list(MessageListInput input) {
+        input.setStatus(1);
+        return ResponseResult.success(messageService.pageMessage(input));
     }
 
     @RequestMapping("/delete")
@@ -114,6 +107,12 @@ public class MessageController {
     ResponseResult<Boolean> delete(@Valid Message message) {
         boolean delete = messageService.removeById(message);
         return ResponseResult.success(delete);
+    }
+
+    @RequestMapping("/open/getVisitorByEmail")
+    ResponseResult<Visitor> getVisitorByEmail(@RequestParam String email) {
+        Visitor visitor = visitorService.getVisitorByEmail(email);
+        return ResponseResult.success(visitor);
     }
 }
 
