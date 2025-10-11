@@ -31,6 +31,7 @@ public class SecurityUtils {
 
     /**
      * 获取当前认证用户id
+     *
      * @return 用户id
      */
     public static Long getUserId() {
@@ -42,7 +43,18 @@ public class SecurityUtils {
     }
 
     /**
+     * 是否内容系统管理员
+     *
+     * @return
+     */
+    public static boolean isContentAdmin() {
+        Long contentAdminId = 10000L;
+        return Objects.equals(getUserId(), contentAdminId);
+    }
+
+    /**
      * 用户未登录，获取clientId
+     *
      * @return 客户端id
      */
     public static String getJwtClientId() {
@@ -53,8 +65,10 @@ public class SecurityUtils {
         }
         return null;
     }
+
     /**
      * 用户已登录，获取clientId
+     *
      * @return 客户端id
      */
     public static String getClientId() {
@@ -76,6 +90,7 @@ public class SecurityUtils {
 
     /**
      * 水平越权检验，无权限错误
+     *
      * @param userId 用户id，将与认证的用户id进行比较
      */
     public static void authAuthorizationUser(Long userId) {

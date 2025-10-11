@@ -119,6 +119,9 @@ public class UserOpenController {
 
     @RequestMapping("/listByIds")
     public ResponseResult<List<User>> listByIds(@RequestParam("userIds") List<Long> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return ResponseResult.success(new ArrayList<>());
+        }
         return ResponseResult.success(userService.listByIds(userIds));
     }
 

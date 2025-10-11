@@ -1,27 +1,21 @@
 package com.youyu.controller.message;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.annotation.Log;
-import com.youyu.dto.common.PageBase;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.message.CreateMessageInput;
 import com.youyu.dto.message.MessageListInput;
 import com.youyu.dto.message.MessageListOutput;
-import com.youyu.dto.message.MessageUserOutput;
 import com.youyu.entity.Visitor;
 import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.entity.user.Message;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
-import com.youyu.mapper.message.MessageMapper;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.message.MessageService;
 import com.youyu.service.message.VisitorService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.LocateUtils;
-import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.beanutils.BeanUtils;
@@ -30,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -56,6 +49,9 @@ public class MessageController {
     @Log(title = "新增留言", type = LogType.INSERT)
     ResponseResult<Boolean> create(@Valid CreateMessageInput input) throws InvocationTargetException, IllegalAccessException {
         Message message = BeanCopyUtils.copyBean(input, Message.class);
+        if (SecurityUtils.isContentAdmin()) {
+            message.setStatus(1);
+        }
         boolean isVisitor = SecurityUtils.getUserId() == null; // 未登录，游客
         TencentLocationResult position = locateUtils.queryTencentIp();
         // 校验

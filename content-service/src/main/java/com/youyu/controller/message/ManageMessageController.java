@@ -35,6 +35,7 @@ public class ManageMessageController {
 
     @RequestMapping("/page")
     ResponseResult<PageOutput<MessageListOutput>> list(@Valid MessageListInput input) {
+        input.setRootId(null);
         return ResponseResult.success(messageService.pageMessage(input));
     }
 
