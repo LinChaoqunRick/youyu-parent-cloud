@@ -18,10 +18,8 @@ import java.util.List;
 public interface MomentCommentService extends IService<MomentComment> {
     MomentCommentListOutput createComment(MomentComment input);
     PageOutput<MomentCommentListOutput> listMomentCommentPage(MomentCommentListInput input);
-    List<MomentCommentListOutput> listMomentCommentAll(MomentCommentListInput input);
     MomentCommentListOutput getCommentDetailByCommentId(Long commentId);
     int getCommentCountByMomentId(Long momentId);
     boolean deleteComment(Long momentId);
-    PageOutput<MomentCommentListOutput> listMomentReplyPage(MomentReplyListInput input);
 }
 

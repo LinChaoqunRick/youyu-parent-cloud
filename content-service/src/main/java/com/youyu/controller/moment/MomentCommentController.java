@@ -67,17 +67,5 @@ public class MomentCommentController {
         PageOutput<MomentCommentListOutput> comments = momentCommentService.listMomentCommentPage(input);
         return ResponseResult.success(comments);
     }
-
-    @RequestMapping("/open/listMomentCommentAll")
-    public ResponseResult<List<MomentCommentListOutput>> listMomentCommentAll(@Valid MomentCommentListInput input) {
-        List<MomentCommentListOutput> outputList = momentCommentService.listMomentCommentAll(input);
-        return ResponseResult.success(outputList);
-    }
-
-    @RequestMapping("/open/listMomentReplyPage")
-    public ResponseResult<PageOutput<MomentCommentListOutput>> listMomentReplyPage(@Valid MomentReplyListInput input) {
-        PageOutput<MomentCommentListOutput> comments = momentCommentService.listMomentReplyPage(input);
-        return ResponseResult.success(comments);
-    }
 }
 

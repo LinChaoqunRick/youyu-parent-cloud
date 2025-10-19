@@ -1,13 +1,14 @@
 package com.youyu.dto.moment;
 
 import com.youyu.dto.common.PageBase;
-import lombok.Data;
 
-import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class MomentCommentListInput extends PageBase {
-    @NotNull(message = "时刻id不能为空")
-    private Long momentId;
+    Long momentId;
+    Long rootId;
     String orderBy = "create_time";
 }

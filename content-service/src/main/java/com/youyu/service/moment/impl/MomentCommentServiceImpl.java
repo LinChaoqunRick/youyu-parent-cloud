@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.moment.MomentCommentListInput;
 import com.youyu.dto.moment.MomentCommentListOutput;
-import com.youyu.dto.moment.MomentReplyListInput;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentComment;
 import com.youyu.entity.moment.MomentCommentLike;
@@ -25,8 +24,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
+
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * (MomentComment)表服务实现类
@@ -66,38 +67,69 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
     @Override
     public PageOutput<MomentCommentListOutput> listMomentCommentPage(MomentCommentListInput input) {
         LambdaQueryWrapper<MomentComment> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(MomentComment::getMomentId, input.getMomentId());
-        queryWrapper.eq(MomentComment::getRootId, -1);
+        // 子评论只需要rootId就可以查询
+        if (input.getRootId() != null) {
+            queryWrapper.eq(MomentComment::getRootId, input.getRootId());
+        } else {
+            queryWrapper.eq(MomentComment::getMomentId, input.getMomentId());
+            queryWrapper.eq(MomentComment::getRootId, -1);
+        }
         queryWrapper.last("order by" + " " + input.getOrderBy() + " " + (input.isAsc() ? "asc" : "desc"));
         // 分页查询
         Page<MomentComment> page = new Page<>(input.getPageNum(), input.getPageSize());
         page(page, queryWrapper);
-
         // 封装查询结果
         PageOutput<MomentCommentListOutput> pageOutput = PageUtils.setPageResult(page, MomentCommentListOutput.class);
-
-        List<Long> userIds = pageOutput.getList().stream().map(MomentComment::getUserId).collect(Collectors.toList());
+        // 收集所有用户id，一次性查询
+        List<Long> userIds = pageOutput.getList().stream()
+                .flatMap(c -> Stream.of(c.getUserId(), c.getUserIdTo()))
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        Long userId = SecurityUtils.getUserId();
+        // 处理额外信息
+        pageOutput.getList().forEach(item -> {
+            item.setAdname(LocateUtils.getShortNameByCode(String.valueOf(item.getAdcode())));
+            // 查询是否点赞
+            if (!Objects.isNull(userId)) {
+                MomentCommentLike momentCommentLike = new MomentCommentLike();
+                momentCommentLike.setCommentId(item.getId());
+                boolean like = momentCommentLikeService.isMomentCommentLike(momentCommentLike);
+                item.setCommentLike(like);
+            }
+            // 查询回复数量
+            LambdaQueryWrapper<MomentComment> replyQueryWrapper = new LambdaQueryWrapper<>();
+            replyQueryWrapper.eq(MomentComment::getRootId, item.getId());
+            replyQueryWrapper.orderByDesc(MomentComment::getCreateTime);
+            Long replyCount = momentCommentMapper.selectCount(replyQueryWrapper);
+            item.setReplyCount(replyCount);
+            // 查询最早的n条回复
+            if (replyCount > 0) {
+                List<MomentComment> repliesList = momentCommentMapper.selectList(replyQueryWrapper.last("LIMIT 2"));
+                List<MomentCommentListOutput> children = BeanCopyUtils.copyBeanList(repliesList, MomentCommentListOutput.class);
+                children.forEach(child -> {
+                    child.setAdname(LocateUtils.getShortNameByCode(String.valueOf(child.getAdcode())));
+                    userIds.add(child.getUserId());
+                    userIds.add(child.getUserIdTo());
+                });
+                item.setChildren(children);
+            }
+        });
+        // 查询所有涉及到的用户信息
         Map<Long, MomentUserOutput> userMap = createUserMap(userIds);
-
-        setExtraData(pageOutput.getList(), userMap);
+        // 填充用户信息
+        pageOutput.getList().forEach(item -> {
+            item.setUser(userMap.get(item.getUserId()));
+            item.setUserTo(userMap.get(item.getUserIdTo()));
+            if (item.getChildren() != null) {
+                item.getChildren().forEach(child -> {
+                    child.setUser(userMap.get(child.getUserId()));
+                    child.setUserTo(userMap.get(child.getUserIdTo()));
+                });
+            }
+        });
 
         return pageOutput;
-    }
-
-    @Override
-    public List<MomentCommentListOutput> listMomentCommentAll(MomentCommentListInput input) {
-        LambdaQueryWrapper<MomentComment> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(MomentComment::getMomentId, input.getMomentId());
-        queryWrapper.eq(MomentComment::getRootId, -1);
-        queryWrapper.last("order by" + " " + input.getOrderBy() + " " + (input.isAsc() ? "asc" : "desc"));
-        List<MomentComment> list = momentCommentMapper.selectList(queryWrapper);
-        List<Long> userIds = list.stream().map(MomentComment::getUserId).collect(Collectors.toList());
-        Map<Long, MomentUserOutput> userMap = createUserMap(userIds);
-
-        List<MomentCommentListOutput> outputList = BeanCopyUtils.copyBeanList(list, MomentCommentListOutput.class);
-
-        setExtraData(outputList, userMap);
-        return outputList;
     }
 
     @Override
@@ -121,10 +153,10 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
         int commentCount = 0;
         List<MomentCommentListOutput> commentList = momentCommentMapper.getCommentCountByMomentId(momentId);
         commentCount += commentList.size();
-        Long subRepliesCount = commentList.stream()
+        long subRepliesCount = commentList.stream()
                 .mapToLong(MomentCommentListOutput::getReplyCount)
                 .sum();
-        commentCount += subRepliesCount;
+        commentCount += (int) subRepliesCount;
         return commentCount;
     }
 
@@ -148,28 +180,6 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
         }
     }
 
-    @Override
-    public PageOutput<MomentCommentListOutput> listMomentReplyPage(MomentReplyListInput input) {
-        LambdaQueryWrapper<MomentComment> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(MomentComment::getRootId, input.getId());
-        queryWrapper.last("order by" + " " + input.getOrderBy() + " " + (input.isAsc() ? "asc" : "desc"));
-        // 分页查询
-        Page<MomentComment> page = new Page<>(input.getPageNum(), input.getPageSize());
-        page(page, queryWrapper);
-
-        // 封装查询结果
-        PageOutput<MomentCommentListOutput> pageOutput = PageUtils.setPageResult(page, MomentCommentListOutput.class);
-
-        List<Long> userIds = new ArrayList<>();
-        userIds.addAll(pageOutput.getList().stream().map(MomentComment::getUserId).collect(Collectors.toList()));
-        userIds.addAll(pageOutput.getList().stream().map(MomentComment::getUserIdTo).collect(Collectors.toList()));
-        Map<Long, MomentUserOutput> userMap = createUserMap(userIds);
-
-        setExtraData(pageOutput.getList(), userMap);
-
-        return pageOutput;
-    }
-
     /**
      * 根据userIds获取map信息
      *
@@ -185,29 +195,6 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
                     userMap.put(id, momentService.getMomentUserDetailById(id, false));
                 });
         return userMap;
-    }
-
-    public void setExtraData(List<MomentCommentListOutput> list, Map<Long, MomentUserOutput> userMap) {
-        Long userId = SecurityUtils.getUserId();
-
-        list.forEach(item -> {
-            item.setUser(userMap.get(item.getUserId()));
-            item.setUserTo(userMap.get(item.getUserIdTo()));
-            item.setAdname(LocateUtils.getShortNameByCode(String.valueOf(item.getAdcode())));
-
-            // 是否点赞了
-            if (!Objects.isNull(userId)) {
-                MomentCommentLike momentCommentLike = new MomentCommentLike();
-                momentCommentLike.setCommentId(item.getId());
-                boolean like = momentCommentLikeService.isMomentCommentLike(momentCommentLike);
-                item.setCommentLike(like);
-            }
-
-            // 设置回复数量
-            LambdaQueryWrapper<MomentComment> replyQueryWrapper = new LambdaQueryWrapper<>();
-            replyQueryWrapper.eq(MomentComment::getRootId, item.getId());
-            item.setReplyCount(momentCommentMapper.selectCount(replyQueryWrapper));
-        });
     }
 }
 

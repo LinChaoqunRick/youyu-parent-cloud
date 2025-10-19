@@ -7,11 +7,9 @@ public class MomentUserOutput {
     private Long id;
     private String nickname;
     private String avatar;
-    private String email;
     private Integer sex;
     private Integer level;
     private String signature;
-    private String status;
     private MomentUserExtraInfo extraInfo;
     private boolean follow;
 }
