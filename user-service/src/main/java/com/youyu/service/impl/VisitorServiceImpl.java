@@ -1,12 +1,14 @@
-package com.youyu.service.message.impl;
+package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.entity.Visitor;
-import com.youyu.mapper.message.VisitorMapper;
-import com.youyu.service.message.VisitorService;
+import com.youyu.entity.user.Visitor;
+import com.youyu.mapper.VisitorMapper;
+import com.youyu.service.VisitorService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * (Visitor)表服务实现类
@@ -25,6 +27,21 @@ public class VisitorServiceImpl extends ServiceImpl<VisitorMapper, Visitor> impl
         LambdaQueryWrapper<Visitor> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Visitor::getEmail, email);
         return visitorMapper.selectOne(queryWrapper);
+    }
+
+    @Override
+    public Visitor saveOrUpdateByEmail(Visitor visitor) {
+        LambdaQueryWrapper<Visitor> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Visitor::getEmail, visitor.getEmail());
+        Visitor selectOne = visitorMapper.selectOne(queryWrapper);
+        if (selectOne != null) {
+            visitor.setUpdateTime(new Date());
+            visitor.setId(selectOne.getId());
+            visitorMapper.updateById(visitor);
+        } else {
+            visitorMapper.insert(visitor);
+        }
+        return visitor;
     }
 }
 

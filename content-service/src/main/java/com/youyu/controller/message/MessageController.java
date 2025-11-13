@@ -5,15 +5,15 @@ import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.message.CreateMessageInput;
 import com.youyu.dto.message.MessageListInput;
 import com.youyu.dto.message.MessageListOutput;
-import com.youyu.entity.Visitor;
+import com.youyu.entity.user.Visitor;
 import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.entity.user.Message;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
+import com.youyu.feign.UserServiceClient;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.message.MessageService;
-import com.youyu.service.message.VisitorService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.SecurityUtils;
@@ -43,7 +43,7 @@ public class MessageController {
     private LocateUtils locateUtils;
 
     @Resource
-    private VisitorService visitorService;
+    private UserServiceClient userServiceClient;
 
     @RequestMapping("/open/create")
     @Log(title = "新增留言", type = LogType.INSERT)
@@ -64,7 +64,7 @@ public class MessageController {
                 throw new SystemException(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), "邮箱不能为空");
             }
 
-            Visitor visitor = visitorService.getVisitorByEmail(input.getEmail());
+            Visitor visitor = userServiceClient.getVisitorByEmail(input.getEmail()).getData();
             if (visitor == null) {
                 // 新增：新游客留言
                 visitor = BeanCopyUtils.copyBean(input, Visitor.class);
@@ -73,7 +73,7 @@ public class MessageController {
                 BeanUtils.copyProperties(visitor, input);
             }
             visitor.setAdcode(position.getAdcode());
-            visitorService.saveOrUpdate(visitor);
+            userServiceClient.saveOrUpdateByEmail(visitor);
             message.setVisitorId(visitor.getId());
         } else {
             message.setUserId(SecurityUtils.getUserId());
@@ -107,7 +107,7 @@ public class MessageController {
 
     @RequestMapping("/open/getVisitorByEmail")
     ResponseResult<Visitor> getVisitorByEmail(@RequestParam String email) {
-        Visitor visitor = visitorService.getVisitorByEmail(email);
+        Visitor visitor = userServiceClient.getVisitorByEmail(email).getData();
         return ResponseResult.success(visitor);
     }
 }

@@ -1,15 +1,11 @@
 package com.youyu.entity.moment;
 
-import lombok.Data;
+import com.youyu.entity.user.Actor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class MomentUserOutput {
-    private Long id;
-    private String nickname;
-    private String avatar;
-    private Integer sex;
-    private Integer level;
-    private String signature;
+@Getter
+@Setter
+public class MomentUserOutput extends Actor {
     private MomentUserExtraInfo extraInfo;
-    private boolean follow;
 }

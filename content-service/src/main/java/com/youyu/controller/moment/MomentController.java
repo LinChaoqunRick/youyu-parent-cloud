@@ -7,6 +7,7 @@ import com.youyu.dto.moment.MomentListOutput;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentUserOutput;
 import com.youyu.entity.result.TencentLocationResult;
+import com.youyu.enums.ActorType;
 import com.youyu.enums.LogType;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.result.ResponseResult;
@@ -91,7 +92,7 @@ public class MomentController {
 
     @RequestMapping("/open/getMomentUserDetailById")
     public ResponseResult<MomentUserOutput> getMomentUserDetailById(Long userId) {
-        MomentUserOutput userDetailById = momentService.getMomentUserDetailById(userId, true);
+        MomentUserOutput userDetailById = momentService.getMomentActor(userId, ActorType.USER.getCode(), true);
         return ResponseResult.success(userDetailById);
     }
 

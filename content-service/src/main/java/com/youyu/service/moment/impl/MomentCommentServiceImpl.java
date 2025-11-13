@@ -6,12 +6,16 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.moment.MomentCommentListInput;
 import com.youyu.dto.moment.MomentCommentListOutput;
+import com.youyu.dto.user.ActorBase;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentComment;
 import com.youyu.entity.moment.MomentCommentLike;
 import com.youyu.entity.moment.MomentUserOutput;
+import com.youyu.entity.user.Actor;
+import com.youyu.enums.ActorType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
+import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.moment.MomentCommentMapper;
 import com.youyu.service.moment.MomentCommentLikeService;
 import com.youyu.service.moment.MomentCommentService;
@@ -26,8 +30,6 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * (MomentComment)表服务实现类
@@ -50,12 +52,16 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
     @Resource
     RabbitTemplate template;
 
+    @Resource
+    private UserServiceClient userServiceClient;
+
     @Override
     public MomentCommentListOutput createComment(MomentComment input) {
         int save = momentCommentMapper.insert(input);
         if (save > 0) {
-            MomentCommentListOutput detail = getCommentDetailByCommentId(input.getId());
-            if (!input.getUserId().equals(input.getUserIdTo())) {
+            MomentCommentListOutput detail = getCommentById(input.getId());
+            // 如果不是回复自己，发送通知邮件
+            if (!detail.getActor().getId().equals(detail.getActorTo().getId())) {
                 template.convertAndSend("amq.direct", "momentCommentMail", detail);
             }
             return detail;
@@ -65,7 +71,8 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
     }
 
     @Override
-    public PageOutput<MomentCommentListOutput> listMomentCommentPage(MomentCommentListInput input) {
+    public PageOutput<MomentCommentListOutput> momentCommentPage(MomentCommentListInput input) {
+        Long userId = SecurityUtils.getUserId();
         LambdaQueryWrapper<MomentComment> queryWrapper = new LambdaQueryWrapper<>();
         // 子评论只需要rootId就可以查询
         if (input.getRootId() != null) {
@@ -75,18 +82,16 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
             queryWrapper.eq(MomentComment::getRootId, -1);
         }
         queryWrapper.last("order by" + " " + input.getOrderBy() + " " + (input.isAsc() ? "asc" : "desc"));
-        // 分页查询
         Page<MomentComment> page = new Page<>(input.getPageNum(), input.getPageSize());
         page(page, queryWrapper);
-        // 封装查询结果
         PageOutput<MomentCommentListOutput> pageOutput = PageUtils.setPageResult(page, MomentCommentListOutput.class);
-        // 收集所有用户id，一次性查询
-        List<Long> userIds = pageOutput.getList().stream()
-                .flatMap(c -> Stream.of(c.getUserId(), c.getUserIdTo()))
-                .filter(Objects::nonNull)
-                .distinct()
-                .collect(Collectors.toList());
-        Long userId = SecurityUtils.getUserId();
+
+        // 收集所有actor信息，一次性查询
+        List<ActorBase> actorBases = new ArrayList<>(pageOutput.getList().stream().map(this::getCommentActor).toList());
+
+        // 仅临时记录被回复的评论
+        Map<Long, ActorBase> tempReplyActorMap = new HashMap<>();
+
         // 处理额外信息
         pageOutput.getList().forEach(item -> {
             item.setAdname(LocateUtils.getShortNameByCode(String.valueOf(item.getAdcode())));
@@ -97,54 +102,71 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
                 boolean like = momentCommentLikeService.isMomentCommentLike(momentCommentLike);
                 item.setCommentLike(like);
             }
-            // 查询回复数量
-            LambdaQueryWrapper<MomentComment> replyQueryWrapper = new LambdaQueryWrapper<>();
-            replyQueryWrapper.eq(MomentComment::getRootId, item.getId());
-            replyQueryWrapper.orderByDesc(MomentComment::getCreateTime);
-            Long replyCount = momentCommentMapper.selectCount(replyQueryWrapper);
-            item.setReplyCount(replyCount);
-            // 查询最早的n条回复
-            if (replyCount > 0) {
-                List<MomentComment> repliesList = momentCommentMapper.selectList(replyQueryWrapper.last("LIMIT 2"));
-                List<MomentCommentListOutput> children = BeanCopyUtils.copyBeanList(repliesList, MomentCommentListOutput.class);
-                children.forEach(child -> {
-                    child.setAdname(LocateUtils.getShortNameByCode(String.valueOf(child.getAdcode())));
-                    userIds.add(child.getUserId());
-                    userIds.add(child.getUserIdTo());
-                });
-                item.setChildren(children);
+            // 根评论，查询回复数量，最早n条回复
+            if (input.getRootId() == null) {
+                LambdaQueryWrapper<MomentComment> replyQueryWrapper = new LambdaQueryWrapper<>();
+                replyQueryWrapper.eq(MomentComment::getRootId, item.getId());
+                replyQueryWrapper.orderByDesc(MomentComment::getCreateTime);
+                Long replyCount = momentCommentMapper.selectCount(replyQueryWrapper);
+                item.setReplyCount(replyCount);
+                if (replyCount > 0) {
+                    List<MomentComment> repliesList = momentCommentMapper.selectList(replyQueryWrapper.last("LIMIT 2"));
+                    actorBases.addAll(repliesList.stream().map(this::getCommentActor).toList());
+                    List<MomentCommentListOutput> children = BeanCopyUtils.copyBeanList(repliesList, MomentCommentListOutput.class);
+                    children.forEach(child -> {
+                        child.setAdname(LocateUtils.getShortNameByCode(String.valueOf(child.getAdcode())));
+                        if (child.getReplyId() > -1) {
+                            tempReplyActorMap.put(child.getReplyId(), getCommentActor(child));
+                        }
+                    });
+                    item.setChildren(children);
+                }
+            }
+            // 子评论，如果回复是回复了某条子评论，查询被回复人信息
+            if (item.getReplyId() != -1) {
+                // 如果回复了某条评论，就把被回复人的信息查询出来
+                MomentComment repliedComment = momentCommentMapper.selectById(item.getReplyId());
+                ActorBase repliedActorBase = getCommentActor(repliedComment);
+                actorBases.add(repliedActorBase);
+                tempReplyActorMap.put(repliedComment.getId(), repliedActorBase);
             }
         });
-        // 查询所有涉及到的用户信息
-        Map<Long, MomentUserOutput> userMap = createUserMap(userIds);
-        // 填充用户信息
+        // 批量查询actor信息
+        Map<Integer, Map<Long, Actor>> actorMap = makeActorMap(actorBases);
+        // 填充actor信息
         pageOutput.getList().forEach(item -> {
-            item.setUser(userMap.get(item.getUserId()));
-            item.setUserTo(userMap.get(item.getUserIdTo()));
+            fillCommentActor(item, actorMap, tempReplyActorMap);
             if (item.getChildren() != null) {
-                item.getChildren().forEach(child -> {
-                    child.setUser(userMap.get(child.getUserId()));
-                    child.setUserTo(userMap.get(child.getUserIdTo()));
-                });
+                item.getChildren().forEach(child -> fillCommentActor(child, actorMap, tempReplyActorMap));
             }
         });
 
         return pageOutput;
     }
 
-    @Override
-    public MomentCommentListOutput getCommentDetailByCommentId(Long commentId) {
+    public MomentCommentListOutput getCommentById(Long commentId) {
         MomentComment comment = momentCommentMapper.selectById(commentId);
         MomentCommentListOutput output = BeanCopyUtils.copyBean(comment, MomentCommentListOutput.class);
-
-        MomentUserOutput user = momentService.getMomentUserDetailById(comment.getUserId(), false);
-        output.setUser(user);
-
-        if (Objects.nonNull(comment.getUserIdTo()) && comment.getUserIdTo() > -1) {
-            MomentUserOutput userTo = momentService.getMomentUserDetailById(comment.getUserIdTo(), false);
-            output.setUserTo(userTo);
+        // 评论人信息查询
+        ActorBase actorBase = getCommentActor(comment);
+        MomentUserOutput actor = momentService.getMomentActor(actorBase.getActorId(), actorBase.getActorType(), false);
+        output.setActor(actor);
+        // 被评论人信息查询
+        Long replyId = getCommentReplyId(comment);
+        if (replyId != null) {
+            // 不是根评论，而是子评论或回复了子评论
+            MomentComment replyComment = momentCommentMapper.selectById(replyId);
+            ActorBase actorBaseTo = getCommentActor(replyComment);
+            if (Objects.nonNull(actorBaseTo.getActorId())) {
+                MomentUserOutput actorTo = momentService.getMomentActor(actorBaseTo.getActorId(), actorBaseTo.getActorType(), false);
+                output.setActorTo(actorTo);
+            }
+        } else {
+            // 是根评论，就要查询时刻的发布者
+            Moment moment = momentService.getById(comment.getMomentId());
+            MomentUserOutput actorTo = momentService.getMomentActor(moment.getUserId(), ActorType.USER.getCode(), false);
+            output.setActorTo(actorTo);
         }
-
         return output;
     }
 
@@ -181,20 +203,75 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
     }
 
     /**
-     * 根据userIds获取map信息
+     * 创建操作者map，便于查询
      *
-     * @param userIds
-     * @return
+     * @param actorBases 操作人列表
+     * @return 操作人map
      */
-    public Map<Long, MomentUserOutput> createUserMap(List<Long> userIds) {
-        Map<Long, MomentUserOutput> userMap = new HashMap<>();
-        userIds.stream()
-                .distinct()
-                .filter(id -> id != -1)
-                .forEach(id -> {
-                    userMap.put(id, momentService.getMomentUserDetailById(id, false));
-                });
-        return userMap;
+    public Map<Integer, Map<Long, Actor>> makeActorMap(List<ActorBase> actorBases) {
+        return userServiceClient.getActors(actorBases).getData();
+    }
+
+    /**
+     * 从 makeActorMap 中获取具体的Actor信息
+     *
+     * @param actorId   actor id
+     * @param actorType actor类型
+     * @param actorMap  actorMap
+     * @return Actor
+     */
+    public Actor getActorWithMap(Long actorId, int actorType, Map<Integer, Map<Long, Actor>> actorMap) {
+        return Optional.ofNullable(actorMap)
+                .map(m -> m.get(actorType))
+                .map(m -> m.get(actorId))
+                .orElse(null);
+    }
+
+    /**
+     * 获取评论的子评论或跟评论的id
+     * 如果回复的是子评论，那么优先查询被回复的子评论信息，如果回复的是根评论，那么就查询被回复的根评论的信息
+     *
+     * @param comment 评论
+     * @return 被回复的评论的id
+     */
+    public Long getCommentReplyId(MomentComment comment) {
+        return comment.getReplyId() > -1 ? comment.getReplyId() : comment.getRootId() > -1 ? comment.getRootId() : null;
+    }
+
+    /**
+     * 获取评论的actor信息
+     * 如果userId存在，说明是来自用户的评论，如果visitorId存在，说明是游客的评论
+     *
+     * @param comment 时刻评论
+     * @return id
+     */
+    public ActorBase getCommentActor(MomentComment comment) {
+        ActorBase input = new ActorBase();
+        if (comment.getUserId() != null && comment.getUserId() != -1) {
+            input.setActorId(comment.getUserId());
+            input.setActorType(0);
+        } else {
+            input.setActorId(comment.getVisitorId());
+            input.setActorType(1);
+        }
+        return input;
+    }
+
+    /**
+     * 填充 comment 的 actor 信息, 根据 actorId + actorType 从 actorMap 中查询 actor 信息
+     *
+     * @param comment         评论
+     * @param actorMap        actorMap 包含用户和游客两个map
+     * @param repliedActorMap 被回复的评论的map
+     */
+    public void fillCommentActor(MomentCommentListOutput comment, Map<Integer, Map<Long, Actor>> actorMap, Map<Long, ActorBase> repliedActorMap) {
+        ActorBase topActorBase = getCommentActor(comment);
+        comment.setActor(getActorWithMap(topActorBase.getActorId(), topActorBase.getActorType(), actorMap));
+        if (comment.getReplyId() != -1) {
+            // 如果回复了某条评论，就把被回复人的信息查询出来
+            ActorBase repliedActorBase = repliedActorMap.get(comment.getReplyId());
+            comment.setActorTo(getActorWithMap(repliedActorBase.getActorId(), repliedActorBase.getActorType(), actorMap));
+        }
     }
 }
 

@@ -7,11 +7,14 @@ import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.moment.MomentLikeUserListInput;
 import com.youyu.dto.moment.MomentListInput;
 import com.youyu.dto.moment.MomentListOutput;
+import com.youyu.dto.user.ActorBase;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentLike;
 import com.youyu.entity.moment.MomentUserExtraInfo;
 import com.youyu.entity.moment.MomentUserOutput;
+import com.youyu.entity.user.Actor;
 import com.youyu.entity.user.User;
+import com.youyu.enums.ActorType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.feign.UserServiceClient;
@@ -63,8 +66,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
     @Override
     public MomentListOutput create(Moment input) {
         int insert = momentMapper.insert(input);
-        MomentListOutput moment = getMoment(input.getId());
-        return moment;
+        return getMoment(input.getId());
     }
 
     @Override
@@ -128,16 +130,16 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
     }
 
     @Override
-    public MomentUserOutput getMomentUserDetailById(Long userId, boolean enhance) {
-        User user = userServiceClient.selectById(userId).getData();
-        MomentUserOutput momentUserOutput = BeanCopyUtils.copyBean(user, MomentUserOutput.class);
+    public MomentUserOutput getMomentActor(Long actorId, int actorType, boolean enhance) {
+        Actor actor = userServiceClient.getActorById(actorId, actorType).getData();
+        MomentUserOutput momentUserOutput = BeanCopyUtils.copyBean(actor, MomentUserOutput.class);
 
-        if (enhance) {
+        if (enhance && actorType == ActorType.USER.getCode()) {
             MomentUserExtraInfo extraInfo = new MomentUserExtraInfo();
 
             // 查询时刻数量
             LambdaQueryWrapper<Moment> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(Moment::getUserId, userId);
+            queryWrapper.eq(Moment::getUserId, actorId);
             queryWrapper.select(Moment::getId);
             List<Moment> momentList = momentMapper.selectList(queryWrapper);
             extraInfo.setMomentCount(momentList.size());
@@ -145,14 +147,14 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
             // todo.. 查询点赞数量
 
             // 查询粉丝数量
-            int fansCount = userServiceClient.getUserFollowCount(userId).getData();
+            int fansCount = userServiceClient.getUserFollowCount(actorId).getData();
             extraInfo.setFansCount(fansCount);
 
             momentUserOutput.setExtraInfo(extraInfo);
         }
 
         if (Objects.nonNull(SecurityUtils.getUserId())) {
-            boolean follow = userServiceClient.isCurrentUserFollow(userId).getData();
+            boolean follow = userServiceClient.isCurrentUserFollow(actorId).getData();
             momentUserOutput.setFollow(follow);
         }
         return momentUserOutput;
@@ -178,7 +180,7 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
     }
 
     public void setExtraData(MomentListOutput moment) {
-        moment.setUser(getMomentUserDetailById(moment.getUserId(), false));
+        moment.setUser(getMomentActor(moment.getUserId(), ActorType.USER.getCode(),false));
         moment.setCommentCount(momentCommentService.getCommentCountByMomentId(moment.getId()));
         moment.setMomentLike(isMomentLike(moment.getId()));
         moment.setAdname(LocateUtils.getShortNameByCode(String.valueOf(moment.getAdcode())));

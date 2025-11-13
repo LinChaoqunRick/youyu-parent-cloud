@@ -17,8 +17,7 @@ import java.util.List;
  */
 public interface MomentCommentService extends IService<MomentComment> {
     MomentCommentListOutput createComment(MomentComment input);
-    PageOutput<MomentCommentListOutput> listMomentCommentPage(MomentCommentListInput input);
-    MomentCommentListOutput getCommentDetailByCommentId(Long commentId);
+    PageOutput<MomentCommentListOutput> momentCommentPage(MomentCommentListInput input);
     int getCommentCountByMomentId(Long momentId);
     boolean deleteComment(Long momentId);
 }

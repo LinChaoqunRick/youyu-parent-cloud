@@ -1,7 +1,7 @@
-package com.youyu.mapper.message;
+package com.youyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.youyu.entity.Visitor;
+import com.youyu.entity.user.Visitor;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 

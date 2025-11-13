@@ -7,12 +7,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.message.MessageListInput;
 import com.youyu.dto.message.MessageListOutput;
-import com.youyu.entity.Visitor;
+import com.youyu.entity.user.Visitor;
 import com.youyu.entity.user.Message;
 import com.youyu.entity.user.User;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.message.MessageMapper;
-import com.youyu.mapper.message.VisitorMapper;
 import com.youyu.service.message.MessageService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.DateUtils;
@@ -42,9 +41,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
 
     @Resource
     private MessageMapper messageMapper;
-
-    @Resource
-    private VisitorMapper visitorMapper;
 
     @Value("${message.replyCount}")
     private Long replyCount;
@@ -105,7 +101,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         List<Long> userIds = messageList.stream().map(MessageListOutput::getUserId).toList();
         List<Long> visitorIds = messageList.stream().map(MessageListOutput::getVisitorId).toList();
         List<User> users = userIds.isEmpty() ? new ArrayList<>() : userServiceClient.listByIds(userIds).getData();
-        List<Visitor> visitors = visitorIds.isEmpty() ? new ArrayList<>() : visitorMapper.selectBatchIds(visitorIds);
+        List<Visitor> visitors = visitorIds.isEmpty() ? new ArrayList<>() : userServiceClient.selectBatchIds(visitorIds).getData();
         Map<Long, User> userMap = CollStreamUtil.toMap(users, User::getId, user -> user);
         Map<Long, Visitor> visitorMap = CollStreamUtil.toMap(visitors, Visitor::getId, visitor -> visitor);
         // 填充信息

@@ -1,15 +1,17 @@
 package com.youyu.feign;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.youyu.dto.user.ActorBase;
+import com.youyu.entity.user.Actor;
 import com.youyu.entity.user.ProfileMenu;
 import com.youyu.entity.user.User;
+import com.youyu.entity.user.Visitor;
 import com.youyu.result.ResponseResult;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @FeignClient(value = "user-service")
 public interface UserServiceClient {
@@ -18,6 +20,21 @@ public interface UserServiceClient {
 
     @PostMapping(value = "/user/open/selectById")
     ResponseResult<User> selectById(@RequestParam Long userId);
+
+    @PostMapping(value = "/user/open/getActorById")
+    ResponseResult<Actor> getActorById(@RequestParam Long actorId, @RequestParam int actorType);
+
+    @PostMapping(value = "/visitor/open/getVisitorByEmail")
+    ResponseResult<Visitor> getVisitorByEmail(@RequestParam String email);
+
+    @PostMapping(value = "/visitor/open/saveOrUpdateByEmail")
+    ResponseResult<Visitor> saveOrUpdateByEmail(@RequestBody Visitor visitor);
+
+    @PostMapping(value = "/visitor/open/selectBatchIds")
+    ResponseResult<List<Visitor>> selectBatchIds(@RequestBody List<Long> ids);
+
+    @PostMapping(value = "/user/open/getActors")
+    ResponseResult<Map<Integer, Map<Long, Actor>>> getActors(@RequestBody List<ActorBase> actorBases);
 
     @PostMapping(value = "/user/open/listByIds")
     ResponseResult<List<User>> listByIds(@RequestParam("userIds") List<Long> userIds);

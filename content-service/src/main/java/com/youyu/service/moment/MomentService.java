@@ -26,7 +26,7 @@ public interface MomentService extends IService<Moment> {
 
     MomentListOutput getMoment(Long momentId);
 
-    MomentUserOutput getMomentUserDetailById(Long userId, boolean enhance);
+    MomentUserOutput getMomentActor(Long actorId, int actorType, boolean enhance);
 
     boolean isMomentLike(Long momentId);
 

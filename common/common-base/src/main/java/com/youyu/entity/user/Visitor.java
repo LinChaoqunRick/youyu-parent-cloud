@@ -1,4 +1,4 @@
-package com.youyu.entity;
+package com.youyu.entity.user;
 
 import java.util.Date;
 
@@ -7,8 +7,6 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serializable;
 
 /**
  * (Visitor)表实体类

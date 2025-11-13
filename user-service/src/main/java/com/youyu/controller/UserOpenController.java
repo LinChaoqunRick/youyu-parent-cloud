@@ -1,29 +1,38 @@
 package com.youyu.controller;
 
+import cn.hutool.core.collection.CollUtil;
+import com.alibaba.nacos.shaded.com.google.common.collect.Maps;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.annotation.Log;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.user.*;
 import com.youyu.entity.auth.Route;
+import com.youyu.entity.user.Actor;
 import com.youyu.entity.user.ProfileMenu;
 import com.youyu.entity.user.User;
+import com.youyu.entity.user.Visitor;
+import com.youyu.enums.ActorType;
 import com.youyu.enums.LogType;
 import com.youyu.enums.RoleEnum;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
 import com.youyu.service.UserService;
+import com.youyu.service.VisitorService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * (User)表控制层
@@ -40,16 +49,22 @@ public class UserOpenController {
     private UserService userService;
 
     @Resource
-    private ProfileMenuService profileMenuService;
+    private VisitorService visitorService;
 
     @Resource
-    private LocateUtils locateUtils;
+    private ProfileMenuService profileMenuService;
 
     @RequestMapping("/list")
     ResponseResult<PageOutput<UserListOutput>> list(UserListInput input) {
         return ResponseResult.success(userService.list(input));
     }
 
+    /**
+     * 获取用户主页权限菜单
+     *
+     * @param userId 用户id
+     * @return 权限菜单
+     */
     @RequestMapping("/getProfileMenu")
     ResponseResult<ProfileMenu> getProfileMenu(@RequestParam Long userId) {
         LambdaQueryWrapper<ProfileMenu> queryWrapper = new LambdaQueryWrapper<>();
@@ -64,6 +79,12 @@ public class UserOpenController {
         return ResponseResult.success(menu);
     }
 
+    /**
+     * 获取用户动态
+     *
+     * @param input 查询
+     * @return 动态分页
+     */
     @RequestMapping("/listUserActivities")
     ResponseResult<PageOutput<Object>> listUserActivities(@Valid UserActivitiesInput input) {
         input.setAuthorizationUserId(SecurityUtils.getUserId());
@@ -100,6 +121,51 @@ public class UserOpenController {
         User user = userService.getById(userId);
         user.setAdname(LocateUtils.getShortNameByCode(String.valueOf(user.getAdcode())));
         return ResponseResult.success(user);
+    }
+
+    /**
+     * 获取单个操作者信息（操作者：用户 or 游客）
+     *
+     * @param actorId   操作者id
+     * @param actorType 操作者类型 0：用户 1：游客
+     * @return 操作者信息
+     */
+    @RequestMapping("/getActorById")
+    public ResponseResult<Actor> getActorById(@RequestParam Long actorId, @RequestParam int actorType) {
+        Actor actor;
+        if (actorType == ActorType.USER.getCode()) {
+            User user = userService.getById(actorId);
+            actor = BeanCopyUtils.copyBean(user, Actor.class);
+        } else {
+            Visitor visitor = visitorService.getById(actorId);
+            actor = BeanCopyUtils.copyBean(visitor, Actor.class);
+        }
+        actor.setType(actorType);
+        actor.setAdname(LocateUtils.getShortNameByCode(String.valueOf(actor.getAdcode())));
+        return ResponseResult.success(actor);
+    }
+
+    /**
+     * 批量获取操作者信息（操作者：用户 or 游客）
+     *
+     * @param actorBases 操作者信息列表
+     * @return 操作者信息Map
+     */
+    @RequestMapping("/getActors")
+    public ResponseResult<Map<Integer, Map<Long, Actor>>> getActors(@RequestBody List<ActorBase> actorBases) {
+        // 过滤用户或游客Id
+        List<Long> userIds = actorBases.stream().filter(actor -> actor.getActorType() == ActorType.USER.getCode()).map(ActorBase::getActorId).toList();
+        List<Long> visitorIds = actorBases.stream().filter(actor -> actor.getActorType() == ActorType.VISITOR.getCode()).map(ActorBase::getActorId).toList();
+        Map<Integer, Map<Long, Actor>> resultMap = Maps.newHashMap();
+        if (CollUtil.isNotEmpty(userIds)) {
+            Map<Long, Actor> userMap = userService.listByIds(userIds).stream().collect(Collectors.toMap(User::getId, user -> BeanCopyUtils.copyBean(user, Actor.class)));
+            resultMap.put(ActorType.USER.getCode(), userMap);
+        }
+        if (CollUtil.isNotEmpty(visitorIds)) {
+            Map<Long, Actor> visitorMap = visitorService.listByIds(visitorIds).stream().collect(Collectors.toMap(Visitor::getId, visitor -> BeanCopyUtils.copyBean(visitor, Actor.class)));
+            resultMap.put(ActorType.VISITOR.getCode(), visitorMap);
+        }
+        return ResponseResult.success(resultMap);
     }
 
     @RequestMapping("/getUserBasicById")

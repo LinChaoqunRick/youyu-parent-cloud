@@ -1,8 +1,7 @@
-package com.youyu.service.message;
+package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.dto.message.MessageUserOutput;
-import com.youyu.entity.Visitor;
+import com.youyu.entity.user.Visitor;
 
 /**
  * (Visitor)表服务接口
@@ -12,5 +11,6 @@ import com.youyu.entity.Visitor;
  */
 public interface VisitorService extends IService<Visitor> {
     Visitor getVisitorByEmail(String email);
+    Visitor saveOrUpdateByEmail(Visitor visitor);
 }
 

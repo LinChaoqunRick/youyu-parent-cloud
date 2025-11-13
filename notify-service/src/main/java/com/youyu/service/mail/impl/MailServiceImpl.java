@@ -7,6 +7,7 @@ import com.youyu.dto.post.post.PostDetailOutput;
 import com.youyu.dto.post.post.PostUserOutput;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentUserOutput;
+import com.youyu.entity.user.Actor;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -94,8 +95,8 @@ public class MailServiceImpl implements MailService {
     @Log(title = "发送时刻评论通知邮件", type = LogType.NOTIFY_MAIL)
     public Boolean sendMomentCommentMailNotice(MomentCommentListOutput detail) {
         // 获取双方用户信息
-        MomentUserOutput user = detail.getUser();
-        MomentUserOutput userTo = detail.getUserTo();
+        Actor user = detail.getActor();
+        Actor userTo = detail.getActorTo();
         Moment moment = contentServiceClient.getMomentById(detail.getMomentId()).getData();
 
         // 回复人已绑定邮箱
@@ -105,13 +106,13 @@ public class MailServiceImpl implements MailService {
         context.setVariable("content", detail.getContent());
         context.setVariable("url", "https://v2.youyul.com/moment/details/" + moment.getId());
         String emailContent = templateEngine.process("MailReplyTemplate", context);
-        try {
-            mailUtils.sendHtmlMail(userTo.getEmail(), "[有语] 您有一条新的留言", emailContent);
-            log.info("时刻评论通知邮件已发送至: {}", userTo.getEmail());
-        } catch (Exception e) {
-            log.error("时刻评论通知邮件发送失败: {}", e.getMessage());
-            throw new SystemException(ResultCode.OPERATION_FAIL);
-        }
+//        try {
+//            mailUtils.sendHtmlMail(userTo.getEmail(), "[有语] 您有一条新的留言", emailContent);
+//            log.info("时刻评论通知邮件已发送至: {}", userTo.getEmail());
+//        } catch (Exception e) {
+//            log.error("时刻评论通知邮件发送失败: {}", e.getMessage());
+//            throw new SystemException(ResultCode.OPERATION_FAIL);
+//        }
         return true;
     }
 }

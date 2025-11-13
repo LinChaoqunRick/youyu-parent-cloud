@@ -49,7 +49,7 @@ public class OssController {
      *
      * @return
      */
-    @RequestMapping("/policy")
+    @RequestMapping("/open/policy")
     @Log(title = "文件上传(policy)", type = LogType.UPLOAD)
     public ResponseResult<Map<String, String>> policy(@RequestParam(defaultValue = "post/images") String base) {
         // date = new Date();
