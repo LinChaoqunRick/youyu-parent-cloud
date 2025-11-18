@@ -15,12 +15,7 @@ import com.youyu.entity.post.Comment;
  */
 public interface CommentService extends IService<Comment> {
     PageOutput<CommentListOutput> getCommentsPage(CommentListInput input);
-
-    PageOutput<CommentListOutput> getPostSubCommentsPage(PostReplyListInput input);
-
-    CommentListOutput createPostComment(Comment comment);
-
-    CommentListOutput getCommentDetailById(Long commentId);
-
+    CommentListOutput createComment(Comment comment);
+    CommentListOutput getCommentById(Long commentId);
     Boolean deleteComment(Long commentId);
 }

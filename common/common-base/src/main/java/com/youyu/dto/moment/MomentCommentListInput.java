@@ -2,6 +2,7 @@ package com.youyu.dto.moment;
 
 import com.youyu.dto.common.PageBase;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 

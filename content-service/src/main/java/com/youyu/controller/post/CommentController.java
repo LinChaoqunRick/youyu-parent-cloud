@@ -7,12 +7,18 @@ import com.youyu.dto.post.comment.PostReplyListInput;
 import com.youyu.dto.common.PageOutput;
 import com.youyu.entity.post.Comment;
 import com.youyu.entity.post.CommentLike;
+import com.youyu.entity.result.TencentLocationResult;
+import com.youyu.entity.user.Visitor;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
+import com.youyu.feign.UserServiceClient;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.post.CommentLikeService;
 import com.youyu.service.post.CommentService;
+import com.youyu.utils.LocateUtils;
+import com.youyu.utils.SecurityUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
@@ -34,22 +40,41 @@ public class CommentController {
     @Resource
     private CommentLikeService commentLikeService;
 
+    @Resource
+    private UserServiceClient userServiceClient;
+
+    @Resource
+    private LocateUtils locateUtils;
+
     @RequestMapping("/open/getCommentsPage")
     ResponseResult<PageOutput<CommentListOutput>> getCommentsPage(@Valid CommentListInput input) {
         PageOutput<CommentListOutput> output = commentService.getCommentsPage(input);
         return ResponseResult.success(output);
     }
 
-    @RequestMapping("/open/getPostSubCommentsPage")
-    ResponseResult<PageOutput<CommentListOutput>> getPostSubCommentsPage(PostReplyListInput input) {
-        PageOutput<CommentListOutput> commentsPage = commentService.getPostSubCommentsPage(input);
-        return ResponseResult.success(commentsPage);
-    }
-
-    @RequestMapping("/createComment")
+    @RequestMapping("/open/createComment")
     @Log(title = "新增文章评论", type = LogType.INSERT)
-    ResponseResult<CommentListOutput> createPostComment(Comment comment) {
-        CommentListOutput output = commentService.createPostComment(comment);
+    @Transactional
+    ResponseResult<CommentListOutput> createPostComment(Comment input) {
+        if (SecurityUtils.getUserId() == null && input.getEmail() == null) {
+            throw new SystemException(ResultCode.PARAMETER_ERROR.getCode(), "操作者不能为空");
+        }
+        if (SecurityUtils.getUserId() != null) {
+            // 用户登录
+            input.setUserId(SecurityUtils.getUserId());
+        } else {
+            // 游客
+            Visitor visitor = new Visitor();
+            visitor.setEmail(input.getEmail());
+            visitor.setNickname(input.getNickname());
+            visitor.setHomepage(input.getHomepage());
+            visitor = userServiceClient.saveOrUpdateByEmail(visitor).getData();
+            input.setVisitorId(visitor.getId());
+        }
+        TencentLocationResult locationResult = locateUtils.queryTencentIp();
+        input.setAdcode(locationResult.getAdcode());
+        CommentListOutput output = commentService.createComment(input);
+        output.setAdname(LocateUtils.getShortNameByCode(String.valueOf(locationResult.getAdcode())));
         return ResponseResult.success(output);
     }
 

@@ -1,10 +1,11 @@
 package com.youyu.dto.post.comment;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.youyu.dto.post.post.PostUserOutput;
 import com.youyu.entity.post.Comment;
+import com.youyu.entity.user.Actor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -12,23 +13,23 @@ public class CommentListOutput extends Comment {
     /**
      * 子评论数量
      */
-    @TableField(exist = false)
     private Long replyCount;
 
     /**
      * 发布人
      */
-    @TableField(exist = false)
-    private PostUserOutput user;
+    private Actor actor;
 
     /**
      * 回复人
      */
-    @TableField(exist = false)
-    private PostUserOutput userTo;
+    private Actor actorTo;
     /**
      * 当前用户点赞信息
      */
-    @TableField(exist = false)
     private boolean commentLike;
+    /**
+     * 回复数据
+     */
+    private List<CommentListOutput> children;
 }

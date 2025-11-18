@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.io.Serializable;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Date;
 
 /**
@@ -18,11 +20,10 @@ import java.util.Date;
  * @author makejava
  * @since 2023-02-12 21:19:27
  */
-@Data
+@Getter
+@Setter
 @TableName("bs_comment")
-public class Comment implements Serializable {
-    private static final long serialVersionUID = -68765964616647073L;
-
+public class Comment extends Model<Comment> {
     private Long id;
     /**
      * 文章id
@@ -36,13 +37,11 @@ public class Comment implements Serializable {
     /**
      * 用户id
      */
-    @NotNull(message = "用户不能为空")
     private Long userId;
     /**
-     * 被回复的用户id
+     * 游客id
      */
-    @NotNull(message = "被回复人不能为空")
-    private Long userIdTo;
+    private Long visitorId;
     /**
      * 被回复的评论id
      */
@@ -52,6 +51,19 @@ public class Comment implements Serializable {
      */
     @NotBlank(message = "内容不能为空")
     private String content;
+    /**
+     * 评论图片
+     */
+    private String images;
+    /**
+     * 区域编号
+     */
+    private Integer adcode;
+    /**
+     * 区域名称
+     */
+    @TableField(exist = false)
+    private String adname;
     /**
      * 支持数量
      */
@@ -77,5 +89,14 @@ public class Comment implements Serializable {
      */
     private Integer deleted;
 
+    // 游客邮箱
+    @TableField(exist = false)
+    private String email;
+    // 游客昵称
+    @TableField(exist = false)
+    private String nickname;
+    // 游客主页
+    @TableField(exist = false)
+    private String homepage;
 }
 

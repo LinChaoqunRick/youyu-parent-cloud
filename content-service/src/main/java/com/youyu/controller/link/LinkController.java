@@ -74,7 +74,7 @@ public class LinkController {
         return ResponseResult.success(remove);
     }
 
-    @RequestMapping("page")
+    @RequestMapping("/open/page")
     ResponseResult<PageOutput<Link>> pageLink(@Valid LinkListInput input) {
         LambdaQueryWrapper<Link> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StrUtil.isNotBlank(input.getName()), Link::getName, input.getName());

@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class CommentListInput extends PageBase {
-    @NotNull(message = "文章id不能为空")
     Long postId;
+    Long rootId;
     String orderBy = "create_time";
 }

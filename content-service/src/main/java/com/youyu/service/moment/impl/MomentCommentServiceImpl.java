@@ -17,13 +17,11 @@ import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.moment.MomentCommentMapper;
+import com.youyu.service.actor.ActorService;
 import com.youyu.service.moment.MomentCommentLikeService;
 import com.youyu.service.moment.MomentCommentService;
 import com.youyu.service.moment.MomentService;
-import com.youyu.utils.BeanCopyUtils;
-import com.youyu.utils.LocateUtils;
-import com.youyu.utils.PageUtils;
-import com.youyu.utils.SecurityUtils;
+import com.youyu.utils.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
@@ -50,10 +48,10 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
     private MomentCommentLikeService momentCommentLikeService;
 
     @Resource
-    RabbitTemplate template;
+    private ActorService actorService;
 
     @Resource
-    private UserServiceClient userServiceClient;
+    RabbitTemplate template;
 
     @Override
     public MomentCommentListOutput createComment(MomentComment input) {
@@ -132,7 +130,7 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
             }
         });
         // 批量查询actor信息
-        Map<Integer, Map<Long, Actor>> actorMap = makeActorMap(actorBases);
+        Map<Integer, Map<Long, Actor>> actorMap = actorService.makeActorMap(actorBases);
         // 填充actor信息
         pageOutput.getList().forEach(item -> {
             fillCommentActor(item, actorMap, tempReplyActorMap);
@@ -203,31 +201,6 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
     }
 
     /**
-     * 创建操作者map，便于查询
-     *
-     * @param actorBases 操作人列表
-     * @return 操作人map
-     */
-    public Map<Integer, Map<Long, Actor>> makeActorMap(List<ActorBase> actorBases) {
-        return userServiceClient.getActors(actorBases).getData();
-    }
-
-    /**
-     * 从 makeActorMap 中获取具体的Actor信息
-     *
-     * @param actorId   actor id
-     * @param actorType actor类型
-     * @param actorMap  actorMap
-     * @return Actor
-     */
-    public Actor getActorWithMap(Long actorId, int actorType, Map<Integer, Map<Long, Actor>> actorMap) {
-        return Optional.ofNullable(actorMap)
-                .map(m -> m.get(actorType))
-                .map(m -> m.get(actorId))
-                .orElse(null);
-    }
-
-    /**
      * 获取评论的子评论或跟评论的id
      * 如果回复的是子评论，那么优先查询被回复的子评论信息，如果回复的是根评论，那么就查询被回复的根评论的信息
      *
@@ -266,11 +239,11 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
      */
     public void fillCommentActor(MomentCommentListOutput comment, Map<Integer, Map<Long, Actor>> actorMap, Map<Long, ActorBase> repliedActorMap) {
         ActorBase topActorBase = getCommentActor(comment);
-        comment.setActor(getActorWithMap(topActorBase.getActorId(), topActorBase.getActorType(), actorMap));
+        comment.setActor(ActorUtils.getActorWithMap(topActorBase.getActorId(), topActorBase.getActorType(), actorMap));
         if (comment.getReplyId() != -1) {
             // 如果回复了某条评论，就把被回复人的信息查询出来
             ActorBase repliedActorBase = repliedActorMap.get(comment.getReplyId());
-            comment.setActorTo(getActorWithMap(repliedActorBase.getActorId(), repliedActorBase.getActorType(), actorMap));
+            comment.setActorTo(ActorUtils.getActorWithMap(repliedActorBase.getActorId(), repliedActorBase.getActorType(), actorMap));
         }
     }
 }
