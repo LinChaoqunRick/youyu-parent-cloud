@@ -16,4 +16,7 @@ public interface UserServiceClient {
 
     @PostMapping(value = "/user/open/selectCountByUsername")
     ResponseResult<Integer> selectCountByUsername(@RequestParam String username);
+
+    @PostMapping(value = "/user/open/getActorEmailById")
+    ResponseResult<String> getActorEmailById(@RequestParam Long actorId, @RequestParam int actorType);
 }

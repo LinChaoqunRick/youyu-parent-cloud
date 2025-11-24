@@ -6,6 +6,7 @@ import com.youyu.annotation.Log;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.result.TencentLocationResult;
 import com.youyu.entity.user.*;
+import com.youyu.enums.ActorType;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -13,6 +14,7 @@ import com.youyu.result.ResponseResult;
 import com.youyu.service.ProfileMenuService;
 import com.youyu.service.UserFollowService;
 import com.youyu.service.UserService;
+import com.youyu.service.VisitorService;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.RedisCache;
 import com.youyu.utils.SecurityUtils;
@@ -51,6 +53,9 @@ public class UserController {
 
     @Resource
     private LocateUtils locateUtils;
+
+    @Resource
+    private VisitorService visitorService;
 
     @RequestMapping("/follow")
     @Log(title = "关注用户", type = LogType.INSERT)

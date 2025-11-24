@@ -1,29 +1,21 @@
 package com.youyu.service.mail.impl;
 
 import com.youyu.annotation.Log;
-import com.youyu.dto.moment.MomentCommentListOutput;
-import com.youyu.dto.post.comment.CommentListOutput;
-import com.youyu.dto.post.post.PostDetailOutput;
-import com.youyu.dto.post.post.PostUserOutput;
-import com.youyu.entity.moment.Moment;
-import com.youyu.entity.moment.MomentUserOutput;
-import com.youyu.entity.user.Actor;
+import com.youyu.enums.EmailTemplate;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
-import com.youyu.feign.ContentServiceClient;
 import com.youyu.feign.UserServiceClient;
+import com.youyu.service.mail.AliyunEmailService;
 import com.youyu.service.mail.MailService;
-import com.youyu.utils.MailUtils;
 import com.youyu.utils.NumberUtils;
 import com.youyu.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 import jakarta.annotation.Resource;
-import java.util.concurrent.TimeUnit;
+
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -33,13 +25,7 @@ public class MailServiceImpl implements MailService {
     private UserServiceClient userServiceClient;
 
     @Resource
-    private ContentServiceClient contentServiceClient;
-
-    @Resource
-    private MailUtils mailUtils;
-
-    @Resource
-    private TemplateEngine templateEngine;
+    private AliyunEmailService aliyunEmailService;
 
     @Resource
     private RedisCache redisCache;
@@ -55,64 +41,22 @@ public class MailServiceImpl implements MailService {
         String subject = "邮件验证码";
         String code = NumberUtils.createRandomNumber(6);
 
-        Context context = new Context();
-        context.setVariable("content", code);
-        String emailContent = templateEngine.process("MailRegisterCodeTemplate", context);
-        try {
-            mailUtils.sendHtmlMail(target, subject, emailContent);
-            // 设置5分钟后过期
-            redisCache.setCacheObject("emailCode:" + target, code, 5, TimeUnit.MINUTES);
-        } catch (Exception e) {
-            return false;
-        }
+//        Context context = new Context();
+//        context.setVariable("content", code);
+//        String emailContent = templateEngine.process("MailRegisterCodeTemplate", context);
+//        try {
+//            mailUtils.sendHtmlMail(target, subject, emailContent);
+//            // 设置5分钟后过期
+//            redisCache.setCacheObject("emailCode:" + target, code, 5, TimeUnit.MINUTES);
+//        } catch (Exception e) {
+//            return false;
+//        }
         return true;
     }
 
     @Override
     @Log(title = "发送文章评论通知邮件", type = LogType.NOTIFY_MAIL)
-    public Boolean sendPostCommentMailNotice(CommentListOutput input) {
-        PostUserOutput user = input.getUser();
-        PostUserOutput userTo = input.getUserTo();
-        PostDetailOutput post = contentServiceClient.selectById(input.getPostId()).getData();
-
-        Context context = new Context();
-        context.setVariable("nickname", userTo.getNickname());
-        context.setVariable("caption", "用户@" + user.getNickname() + " 在你的博客《" + post.getTitle() + "》下留言了：");
-        context.setVariable("content", input.getContent());
-        context.setVariable("url", "https://v2.youyul.com/post/details/" + post.getId());
-        String emailContent = templateEngine.process("MailReplyTemplate", context);
-        try {
-            mailUtils.sendHtmlMail(userTo.getEmail(), "[有语] 您有一条新的留言", emailContent);
-            log.info("文章评论通知邮件已发送至: {}", userTo.getEmail());
-        } catch (Exception e) {
-            log.error("文章评论通知邮件发送失败：{}", e.getMessage());
-            throw new SystemException(ResultCode.OPERATION_FAIL);
-        }
-        return true;
-    }
-
-    @Override
-    @Log(title = "发送时刻评论通知邮件", type = LogType.NOTIFY_MAIL)
-    public Boolean sendMomentCommentMailNotice(MomentCommentListOutput detail) {
-        // 获取双方用户信息
-        Actor user = detail.getActor();
-        Actor userTo = detail.getActorTo();
-        Moment moment = contentServiceClient.getMomentById(detail.getMomentId()).getData();
-
-        // 回复人已绑定邮箱
-        Context context = new Context();
-        context.setVariable("nickname", userTo.getNickname());
-        context.setVariable("caption", "用户@" + user.getNickname() + " 在你的时刻《" + moment.getContent() + "》下留言了：");
-        context.setVariable("content", detail.getContent());
-        context.setVariable("url", "https://v2.youyul.com/moment/details/" + moment.getId());
-        String emailContent = templateEngine.process("MailReplyTemplate", context);
-//        try {
-//            mailUtils.sendHtmlMail(userTo.getEmail(), "[有语] 您有一条新的留言", emailContent);
-//            log.info("时刻评论通知邮件已发送至: {}", userTo.getEmail());
-//        } catch (Exception e) {
-//            log.error("时刻评论通知邮件发送失败: {}", e.getMessage());
-//            throw new SystemException(ResultCode.OPERATION_FAIL);
-//        }
-        return true;
+    public void sendCommentMail(String to, Map<String, String> templateParams) throws Exception {
+        aliyunEmailService.sendTemplateMail(EmailTemplate.COMMENT_MAIL.getCode(), to, templateParams);
     }
 }

@@ -138,10 +138,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         int insert = commentMapper.insert(comment);
         if (insert > 0) {
             CommentListOutput detail = getCommentById(comment.getId());
-            // 如果回复的是自己，不发送邮件
-            if (!detail.getActor().getId().equals(detail.getActorTo().getId())) {
-                template.convertAndSend("amq.direct", "postCommentMail", detail);
-            }
+            template.convertAndSend("amq.direct", "postCommentMail", detail);
             return detail;
         } else {
             throw new SystemException(ResultCode.OPERATION_FAIL);

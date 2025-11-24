@@ -146,6 +146,25 @@ public class UserOpenController {
     }
 
     /**
+     * 根据获取单个操作者的邮箱信息
+     * @param actorId   操作者id
+     * @param actorType 操作者类型 0：用户 1：游客
+     * @return 操作者邮箱
+     */
+    @RequestMapping("/getActorEmailById")
+    public ResponseResult<String> getActorEmailById(@RequestParam Long actorId, @RequestParam int actorType) {
+        String email;
+        if (actorType == ActorType.USER.getCode()) {
+            User user = userService.getById(actorId);
+            email = user.getEmail();
+        } else {
+            Visitor visitor = visitorService.getById(actorId);
+            email = visitor.getEmail();
+        }
+        return ResponseResult.success(email);
+    }
+
+    /**
      * 批量获取操作者信息（操作者：用户 or 游客）
      *
      * @param actorBases 操作者信息列表

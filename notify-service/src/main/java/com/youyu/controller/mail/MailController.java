@@ -1,12 +1,9 @@
 package com.youyu.controller.mail;
 
 import com.youyu.annotation.Log;
-import com.youyu.dto.moment.MomentCommentListOutput;
-import com.youyu.dto.post.comment.CommentListOutput;
 import com.youyu.enums.LogType;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.mail.MailService;
-import jakarta.mail.MessagingException;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;

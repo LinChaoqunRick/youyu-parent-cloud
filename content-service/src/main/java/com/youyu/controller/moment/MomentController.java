@@ -41,9 +41,6 @@ public class MomentController {
     private MomentService momentService;
 
     @Resource
-    private UserServiceClient userServiceClient;
-
-    @Resource
     private LocateUtils locateUtils;
 
     @RequestMapping("/create")
