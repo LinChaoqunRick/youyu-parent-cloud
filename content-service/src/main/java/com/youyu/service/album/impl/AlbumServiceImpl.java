@@ -70,9 +70,13 @@ public class AlbumServiceImpl extends ServiceImpl<AlbumMapper, Album> implements
             item.setAuthorizedUsers(null);
             PostUserOutput detail = getUserDetailById(item.getUserId());
             item.setUserInfo(detail);
-
             Long coverImageId = item.getCoverImageId();
             String cover = null;
+            // 查询照片数量
+            long imageCount = albumImageService.count(new LambdaQueryWrapper<AlbumImage>().eq(AlbumImage::getAlbumId, item.getId()));
+            item.setImageCount(imageCount);
+
+            // 设置封面
             if (Objects.nonNull(coverImageId)) {
                 AlbumImage albumImage = albumImageService.getById(coverImageId);
                 if (Objects.nonNull(albumImage)) {

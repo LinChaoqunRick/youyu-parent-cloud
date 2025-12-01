@@ -12,6 +12,8 @@ import com.youyu.entity.album.Album;
 import com.youyu.entity.album.AlbumImage;
 import com.youyu.entity.user.User;
 import com.youyu.enums.LogType;
+import com.youyu.enums.ResultCode;
+import com.youyu.exception.SystemException;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.album.AlbumImageService;
@@ -75,9 +77,22 @@ public class AlbumController {
     }
 
     @RequestMapping("/open/detail")
-    public ResponseResult<AlbumListOutput> detail(@RequestParam Long id) {
+    public ResponseResult<?> detail(@RequestParam Long id) {
         Album album = albumService.getById(id);
         List<Long> authorizedUserIds = null;
+        // 私密相册，检查是否有权限
+        if (album.getOpen() != 1) {
+            if (StringUtils.hasText(album.getAuthorizedUsers())) {
+                authorizedUserIds = Arrays.stream(album.getAuthorizedUsers().split(","))
+                        .map(String::trim)
+                        .map(Long::valueOf)
+                        .toList();
+            }
+            // 没有权限返回
+            if (!(Objects.equals(SecurityUtils.getUserId(), album.getUserId()) || (authorizedUserIds != null && authorizedUserIds.contains(SecurityUtils.getUserId())))) {
+                throw new SystemException(ResultCode.FORBIDDEN);
+            }
+        }
         List<User> users = null;
         if (StringUtils.hasText(album.getAuthorizedUsers())) {
             authorizedUserIds = Arrays.stream(album.getAuthorizedUsers().split(","))
@@ -115,29 +130,6 @@ public class AlbumController {
         output.setImageCount(count);
 
         return ResponseResult.success(output);
-    }
-
-    @RequestMapping("/open/accessible")
-    @Log(title = "修改相册公开权限", type = LogType.UPDATE)
-    public ResponseResult<Boolean> accessible(@RequestParam Long id) {
-        Album album = albumService.getById(id);
-        if (album.getOpen() == 1) {
-            return ResponseResult.success(true);
-        }
-        List<Long> authorizedUserIds = null;
-        if (StringUtils.hasText(album.getAuthorizedUsers())) {
-            authorizedUserIds = Arrays.stream(album.getAuthorizedUsers().split(","))
-                    .map(String::trim)
-                    .map(Long::valueOf)
-                    .toList();
-        }
-
-        // 没有权限返回null
-        if (!(Objects.equals(SecurityUtils.getUserId(), album.getUserId()) || (authorizedUserIds != null && authorizedUserIds.contains(SecurityUtils.getUserId())))) {
-            return ResponseResult.success(false);
-        } else {
-            return ResponseResult.success(true);
-        }
     }
 
     @RequestMapping("/create")

@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * (AlbumImage)表控制层
@@ -90,12 +91,15 @@ public class AlbumImageController {
 
     @RequestMapping("/create")
     @Log(title = "新增相册图片", type = LogType.INSERT)
-    public ResponseResult<Boolean> create(@Valid @RequestBody AlbumImageSaveInput input) {
+    public ResponseResult<List<Long>> create(@Valid @RequestBody AlbumImageSaveInput input) {
         Album album = albumService.getById(input.getAlbumId());
         SecurityUtils.authAuthorizationUser(album.getUserId());
         input.getImages().forEach(image -> image.setAlbumId(input.getAlbumId()));
         boolean save = albumImageService.saveBatch(input.getImages());
-        return ResponseResult.success(save);
+        List<Long> ids = input.getImages().stream()
+                .map(AlbumImage::getId)
+                .collect(Collectors.toList());
+        return ResponseResult.success(ids);
     }
 
     @RequestMapping("/update")
