@@ -20,4 +20,12 @@ ENV ACTIVE_ENV=prod
 EXPOSE 8120
 
 # Run the JAR file
-ENTRYPOINT ["java", "-Xmx256m", "-jar", "user-service.jar"]
+ENTRYPOINT ["java", \
+    "-Xms96m", \
+    "-Xmx192m", \
+    "-XX:MaxMetaspaceSize=128m", \
+    "-XX:MaxDirectMemorySize=16m", \
+    "-Xss512k", \
+    "-XX:ReservedCodeCacheSize=32m", \
+    "-XX:+UseSerialGC", \
+    "-jar", "user-service.jar"]

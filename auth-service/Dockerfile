@@ -20,4 +20,12 @@ ENV ACTIVE_ENV=prod
 EXPOSE 8090
 
 # Run the JAR file
-ENTRYPOINT ["java", "-Xmx256m", "-jar", "auth-service.jar"]
+ENTRYPOINT ["java", \
+    "-Xms96m", \
+    "-Xmx192m", \
+    "-XX:MaxMetaspaceSize=128m", \
+    "-XX:MaxDirectMemorySize=16m", \
+    "-Xss512k", \
+    "-XX:ReservedCodeCacheSize=32m", \
+    "-XX:+UseSerialGC", \
+    "-jar", "auth-service.jar"]
