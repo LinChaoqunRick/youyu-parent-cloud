@@ -11,6 +11,10 @@ public class AnalysisOverview {
     private Long chapterNumber;
     private Long albumNumber;
     private Long messageNumber;
+    private Long postCommentNumber;
+    private Long momentCommentNumber;
+    private Long totalVisitorNumber;
+    private Long totalVisitNumber;
     private Long todayVisitNumber;
     private Long monthVisitNumber;
 }

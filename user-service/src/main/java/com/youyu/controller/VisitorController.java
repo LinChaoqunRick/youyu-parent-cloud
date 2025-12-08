@@ -1,5 +1,7 @@
 package com.youyu.controller;
 
+import com.youyu.dto.analysis.RegionData;
+import com.youyu.dto.analysis.VisitData;
 import com.youyu.entity.user.Visitor;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.VisitorService;
@@ -50,5 +52,35 @@ public class VisitorController {
     public ResponseResult<List<Visitor>> selectBatchIds(@RequestBody List<Long> ids) {
         List<Visitor> visitors = visitorService.listByIds(ids);
         return ResponseResult.success(visitors);
+    }
+
+    /**
+     * 获取游客总数
+     * @return 游客总数
+     */
+    @RequestMapping("/getVisitorTotal")
+    public ResponseResult<Long> getVisitorTotal() {
+        Long total = visitorService.getVisitorTotal();
+        return ResponseResult.success(total);
+    }
+
+    /**
+     * 按月统计新增游客趋势（过去12个月）
+     * @return 每月新增游客数据
+     */
+    @RequestMapping("/getMonthlyNewVisitors")
+    public ResponseResult<List<VisitData>> getMonthlyNewVisitors() {
+        List<VisitData> result = visitorService.getMonthlyNewVisitors();
+        return ResponseResult.success(result);
+    }
+
+    /**
+     * 按省份统计游客地域分布
+     * @return 各省份游客数据
+     */
+    @RequestMapping("/getVisitorsByProvince")
+    public ResponseResult<List<RegionData>> getVisitorsByProvince() {
+        List<RegionData> result = visitorService.getVisitorsByProvince();
+        return ResponseResult.success(result);
     }
 }

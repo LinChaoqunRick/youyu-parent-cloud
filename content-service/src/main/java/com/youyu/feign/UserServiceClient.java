@@ -1,6 +1,8 @@
 package com.youyu.feign;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.youyu.dto.analysis.RegionData;
+import com.youyu.dto.analysis.VisitData;
 import com.youyu.dto.user.ActorBase;
 import com.youyu.entity.user.Actor;
 import com.youyu.entity.user.ProfileMenu;
@@ -59,4 +61,13 @@ public interface UserServiceClient {
 
     @RequestMapping("/user/open/pageUserByUserIds")
     ResponseResult<Page<User>> pageUserByUserIds(@RequestParam long current, @RequestParam long size, @RequestParam List<Long> userIds);
+
+    @PostMapping(value = "/visitor/open/getVisitorTotal")
+    ResponseResult<Long> getVisitorTotal();
+
+    @PostMapping(value = "/visitor/open/getMonthlyNewVisitors")
+    ResponseResult<List<VisitData>> getMonthlyNewVisitors();
+
+    @PostMapping(value = "/visitor/open/getVisitorsByProvince")
+    ResponseResult<List<RegionData>> getVisitorsByProvince();
 }
