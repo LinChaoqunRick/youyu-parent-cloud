@@ -8,8 +8,7 @@
         <module>auth-service</module>
         <module>user-service</module>
         <module>content-service</module>
-        <module>notify-service</module>
-        <module>file-service</module>
+        <module>infra-service</module>
         <module>common</module>
     </modules>
     <parent>

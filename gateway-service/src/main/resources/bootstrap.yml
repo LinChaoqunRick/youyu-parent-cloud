@@ -37,12 +37,7 @@ spring:
           predicates:
             - Path=/category/**,/column/**,/comment/**,/post/**,/favorites/**,/moment/**,/momentComment/**,/momentCommentLike/**,/momentLike/**,/noteChapter/**,/note/**,/album/**,/albumImage/**,/manage/analysis/**,/manage/monitor/**,/manage/logs/**,/message/**,/manage/message/**,/link/**
 
-        - id: file-service
-          uri: lb://file-service
+        - id: infra-service
+          uri: lb://infra-service
           predicates:
-            - Path=/oss/**
-
-        - id: notify-service
-          uri: lb://notify-service
-          predicates:
-            - Path=/mail/**,/sms/**
+            - Path=/mail/**,/sms/**,/oss/**

@@ -6,7 +6,7 @@ import com.youyu.result.ResponseResult;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@FeignClient(value = "notify-service")
+@FeignClient(value = "infra-service")
 public interface MailServiceClient {
 
     @PostMapping(value = "/mail/sendPostCommentMailNotice")

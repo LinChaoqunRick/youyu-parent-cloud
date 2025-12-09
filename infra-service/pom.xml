@@ -9,7 +9,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>file-service</artifactId>
+    <artifactId>infra-service</artifactId>
+
+    <description>
+        基础服务，包括：
+          - 文件oss
+          - 邮件、短信
+          - 日志写入
+    </description>
 
     <dependencies>
         <dependency>
@@ -27,10 +34,6 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
         <!-- 这里需要单独导入LoadBalancer依赖 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -41,7 +44,7 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
-        <!--阿里云sdk-sts-->
+        <!-- 阿里云短信 -->
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-core</artifactId>
@@ -49,6 +52,18 @@
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-sts</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>dm20151123</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>credentials-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
         </dependency>
         <!--阿里云OSS-->
         <dependency>
@@ -74,5 +89,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

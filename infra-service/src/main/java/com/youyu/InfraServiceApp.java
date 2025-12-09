@@ -7,11 +7,11 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
-@EnableFeignClients
 @EnableAsync
+@EnableFeignClients
 @RefreshScope
-public class FileServiceApp {
+public class InfraServiceApp {
     public static void main(String[] args) {
-        SpringApplication.run(FileServiceApp.class, args);
+        SpringApplication.run(InfraServiceApp.class, args);
     }
 }

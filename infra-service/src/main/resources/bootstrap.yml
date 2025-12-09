@@ -1,8 +1,8 @@
 server:
-  port: 8160
+  port: 8110
 spring:
   application:
-    name: file-service
+    name: infra-service
   cloud:
     nacos:
       discovery:

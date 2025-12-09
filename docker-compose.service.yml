@@ -87,12 +87,12 @@ services:
     depends_on:
       - gateway-service
       - user-service
-      - notify-service
+      - infra-service
 
-  notify-service:
-    container_name: notify-service
+  infra-service:
+    container_name: infra-service
     build:
-      context: ./notify-service
+      context: ./infra-service
       dockerfile: Dockerfile
     deploy:
       resources:
@@ -103,7 +103,7 @@ services:
     #    ports:
     #      - "8110:8110"
     volumes:
-      - /data/volumes/service-log/notify-service:/opt/logs
+      - /data/volumes/service-log/infra-service:/opt/logs
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
@@ -111,30 +111,7 @@ services:
     depends_on:
       - gateway-service
       - user-service
-
-  file-service:
-    container_name: file-service
-    build:
-      context: ./file-service
-      dockerfile: Dockerfile
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 128M
-    #    ports:
-    #      - "8160:8160"
-    volumes:
-      - /data/volumes/service-log/file-service:/opt/logs
-    environment:
-      TZ: Asia/Shanghai # 设置时区
-    networks:
-      - mynetwork
-    depends_on:
-      - gateway-service
-      - user-service
-
+      -
 # 网络，不定义的话就是默认网络
 networks:
   mynetwork:
