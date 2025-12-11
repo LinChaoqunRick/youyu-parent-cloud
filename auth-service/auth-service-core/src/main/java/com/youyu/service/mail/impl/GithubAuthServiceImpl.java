@@ -1,9 +1,7 @@
 package com.youyu.service.mail.impl;
 
-import com.youyu.dto.ConnectRegisterInput;
-import com.youyu.dto.GithubAccessTokenResult;
-import com.youyu.dto.GithubUserInfoResult;
-import com.youyu.entity.LoginUser;
+import cn.hutool.core.bean.BeanUtil;
+import com.youyu.dto.*;
 import com.youyu.entity.auth.AuthParamsEntity;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.connect.GithubConstants;
@@ -60,7 +58,7 @@ public class GithubAuthServiceImpl implements AuthService {
         }
 
         List<String> permission = menuMapper.selectPermsByUserId(githubUser.getId());
-        return new LoginUser(githubUser, permission);
+        return new LoginUser(BeanUtil.copyProperties(githubUser, UserDTO.class), permission);
     }
 
     /**

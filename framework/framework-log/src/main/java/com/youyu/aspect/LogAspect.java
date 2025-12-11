@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.youyu.annotation.Log;
 import com.youyu.annotation.LogContext;
 import com.youyu.entity.Logs;
-import com.youyu.service.LogsService;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.RequestUtils;
 import com.youyu.utils.SecurityUtils;
@@ -16,6 +15,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -27,7 +27,7 @@ import java.util.*;
 public class LogAspect {
 
     @Resource
-    private LogsService logsService;
+    private RabbitTemplate rabbitTemplate;
 
     @Resource
     private LocateUtils locateUtils;
@@ -78,7 +78,12 @@ public class LogAspect {
             throw ex;
         } finally {
             actionLog.setDuration(System.currentTimeMillis() - startTime);
-            logsService.saveLog(actionLog);
+            // 通过消息队列异步保存日志
+            try {
+                rabbitTemplate.convertAndSend("direct", "systemLog", actionLog);
+            } catch (Exception e) {
+                log.error("发送日志消息到队列失败", e);
+            }
         }
     }
 

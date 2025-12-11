@@ -6,12 +6,11 @@ import com.youyu.dto.column.ColumnListOutput;
 import com.youyu.dto.column.ColumnPostInput;
 import com.youyu.dto.page.PageOutput;
 import com.youyu.dto.post.PostListOutput;
-import com.youyu.entity.user.Column;
+import com.youyu.entity.column.Column;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.result.ResponseResult;
-
 import com.youyu.service.post.ColumnService;
 import com.youyu.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,5 +1,7 @@
 package com.youyu.dto.analysis;
 
+import com.youyu.dto.RegionData;
+import com.youyu.dto.VisitData;
 import lombok.Data;
 import java.util.List;
 

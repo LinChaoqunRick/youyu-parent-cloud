@@ -2,7 +2,7 @@ package com.youyu.mapper.post;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.youyu.entity.user.ColumnSubscribe;
+import com.youyu.entity.column.ColumnSubscribe;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 

@@ -1,8 +1,8 @@
 package com.youyu.feign;
 
 import com.youyu.dto.*;
-import com.youyu.dto.analysis.RegionData;
-import com.youyu.dto.analysis.VisitData;
+import com.youyu.dto.RegionData;
+import com.youyu.dto.VisitData;
 import com.youyu.dto.page.PageOutput;
 import com.youyu.result.ResponseResult;
 import org.springframework.cloud.openfeign.FeignClient;

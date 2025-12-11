@@ -1,6 +1,8 @@
 package com.youyu.service.mail.impl;
 
-import com.youyu.entity.LoginUser;
+import cn.hutool.core.bean.BeanUtil;
+import com.youyu.dto.LoginUser;
+import com.youyu.dto.UserDTO;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.auth.AuthParamsEntity;
 import com.youyu.enums.ResultCode;
@@ -40,7 +42,7 @@ public class SmsAuthServiceImpl implements AuthService {
         checkSmsCode(username, smsCode);
 
         List<String> permission = menuMapper.selectPermsByUserId(user.getId());
-        return new LoginUser(user, permission);
+        return new LoginUser(BeanUtil.copyProperties(user, UserDTO.class), permission);
     }
 
     private void checkSmsCode(String telephone, String code) {

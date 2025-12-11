@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>framework-log</artifactId>
+    <artifactId>framework-mq</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -18,20 +18,11 @@
     </properties>
 
     <dependencies>
+        <!--rabbitmq-->
         <dependency>
-            <groupId>com.youyu</groupId>
-            <artifactId>framework-mybatis</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.youyu</groupId>
-            <artifactId>framework-security</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.youyu</groupId>
-            <artifactId>framework-mq</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
     </dependencies>
+
 </project>

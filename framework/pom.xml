@@ -16,6 +16,8 @@
         <module>framework-security</module>
         <module>framework-log</module>
         <module>framework-mybatis</module>
+        <module>framework-redis</module>
+        <module>framework-mq</module>
     </modules>
 
     <properties>

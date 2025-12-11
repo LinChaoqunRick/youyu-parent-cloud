@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>framework-log</artifactId>
+    <artifactId>framework-redis</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -18,20 +18,16 @@
     </properties>
 
     <dependencies>
+        <!--redis依赖-->
         <dependency>
-            <groupId>com.youyu</groupId>
-            <artifactId>framework-mybatis</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
+        <!--fastjson-->
         <dependency>
-            <groupId>com.youyu</groupId>
-            <artifactId>framework-security</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.youyu</groupId>
-            <artifactId>framework-mq</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
         </dependency>
     </dependencies>
+
 </project>

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.youyu</groupId>
-        <artifactId>youyu-cloud</artifactId>
+        <artifactId>auth-service</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
@@ -22,6 +22,11 @@
         <dependency>
             <groupId>com.youyu</groupId>
             <artifactId>framework-log</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.youyu</groupId>
+            <artifactId>infra-service-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <!--nacos-config-->

@@ -2,7 +2,7 @@ package com.youyu.oauth2.extensition.password;
 
 
 import cn.hutool.core.lang.Assert;
-import com.youyu.entity.LoginUser;
+import com.youyu.dto.LoginUser;
 import com.youyu.util.OAuth2AuthenticationProviderUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;

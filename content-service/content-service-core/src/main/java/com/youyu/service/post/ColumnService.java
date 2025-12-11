@@ -5,7 +5,7 @@ import com.youyu.dto.column.ColumnListOutput;
 import com.youyu.dto.column.ColumnPostInput;
 import com.youyu.dto.page.PageOutput;
 import com.youyu.dto.post.PostListOutput;
-import com.youyu.entity.user.Column;
+import com.youyu.entity.column.Column;
 
 import java.util.List;
 

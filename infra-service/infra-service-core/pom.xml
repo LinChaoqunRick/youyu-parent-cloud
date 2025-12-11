@@ -26,6 +26,11 @@
         </dependency>
         <dependency>
             <groupId>com.youyu</groupId>
+            <artifactId>framework-mq</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.youyu</groupId>
             <artifactId>infra-service-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>

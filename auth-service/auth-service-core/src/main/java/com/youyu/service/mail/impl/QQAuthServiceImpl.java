@@ -1,9 +1,7 @@
 package com.youyu.service.mail.impl;
 
-import com.youyu.dto.ConnectRegisterInput;
-import com.youyu.dto.QQAccessTokenResult;
-import com.youyu.dto.QQUserInfoResult;
-import com.youyu.entity.LoginUser;
+import cn.hutool.core.bean.BeanUtil;
+import com.youyu.dto.*;
 import com.youyu.entity.auth.AuthParamsEntity;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.connect.QQConstants;
@@ -59,7 +57,7 @@ public class QQAuthServiceImpl implements AuthService {
             qqUser = loginService.connectRegister(input);
         }
         List<String> permission = menuMapper.selectPermsByUserId(qqUser.getId());
-        return new LoginUser(qqUser, permission);
+        return new LoginUser(BeanUtil.copyProperties(qqUser, UserDTO.class), permission);
     }
 
     public QQUserInfoResult getQQUserByCode(String code) {

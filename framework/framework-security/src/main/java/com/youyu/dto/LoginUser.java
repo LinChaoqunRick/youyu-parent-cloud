@@ -1,8 +1,7 @@
-package com.youyu.entity;
+package com.youyu.dto;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.youyu.entity.auth.UserFramework;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,14 +22,14 @@ import java.util.stream.Collectors;
 public class LoginUser implements UserDetails, Serializable {
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
-    private UserFramework user;
+    private UserDTO user;
 
     private List<String> permissions;
 
     @JSONField(serialize = false)
     private Set<SimpleGrantedAuthority> authorities;
 
-    public LoginUser(UserFramework user, List<String> permissions) {
+    public LoginUser(UserDTO user, List<String> permissions) {
         this.user = user;
         this.permissions = permissions;
     }

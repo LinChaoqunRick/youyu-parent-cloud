@@ -8,10 +8,9 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import com.youyu.entity.LoginUser;
+import com.youyu.dto.LoginUser;
 import com.youyu.oauth2.handler.MyAuthenticationFailureHandler;
 import com.youyu.oauth2.handler.MyAuthenticationSuccessHandler;
-import com.youyu.service.LogsService;
 import com.youyu.utils.LocateUtils;
 import com.youyu.oauth2.extensition.password.PasswordAuthenticationConverter;
 import com.youyu.oauth2.extensition.password.PasswordAuthenticationProvider;
@@ -24,6 +23,7 @@ import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -159,13 +159,13 @@ public class AuthorizationServerConfig {
     }
 
     @Bean
-    public AuthenticationSuccessHandler myAuthenticationSuccessHandler(LogsService logsService, LocateUtils locateUtils) {
-        return new MyAuthenticationSuccessHandler(logsService, locateUtils);
+    public AuthenticationSuccessHandler myAuthenticationSuccessHandler(RabbitTemplate rabbitTemplate, LocateUtils locateUtils) {
+        return new MyAuthenticationSuccessHandler(rabbitTemplate, locateUtils);
     }
 
     @Bean
-    public AuthenticationFailureHandler myAuthenticationFailureHandler(LogsService logsService, LocateUtils locateUtils) {
-        return new MyAuthenticationFailureHandler(logsService, locateUtils);
+    public AuthenticationFailureHandler myAuthenticationFailureHandler(RabbitTemplate rabbitTemplate, LocateUtils locateUtils) {
+        return new MyAuthenticationFailureHandler(rabbitTemplate, locateUtils);
     }
 
     @Bean // <5>

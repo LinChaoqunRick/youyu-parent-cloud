@@ -1,8 +1,8 @@
 package com.youyu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.dto.analysis.RegionData;
-import com.youyu.dto.analysis.VisitData;
+import com.youyu.dto.RegionData;
+import com.youyu.dto.VisitData;
 import com.youyu.entity.user.Visitor;
 
 import java.util.List;

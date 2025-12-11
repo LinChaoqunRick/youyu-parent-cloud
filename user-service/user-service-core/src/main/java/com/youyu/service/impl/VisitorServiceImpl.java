@@ -2,8 +2,8 @@ package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.dto.analysis.RegionData;
-import com.youyu.dto.analysis.VisitData;
+import com.youyu.dto.RegionData;
+import com.youyu.dto.VisitData;
 import com.youyu.entity.user.Visitor;
 import com.youyu.mapper.VisitorMapper;
 import com.youyu.service.VisitorService;

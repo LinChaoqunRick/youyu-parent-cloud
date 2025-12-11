@@ -1,18 +1,15 @@
 package com.youyu.config;
 
-import com.youyu.entity.LoginUser;
+import com.youyu.dto.LoginUser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 
-import java.util.Collections;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Configuration
 public class JwtTokenCustomizerConfig {

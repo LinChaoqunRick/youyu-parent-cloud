@@ -1,6 +1,6 @@
 package com.youyu.config;
 
-import com.youyu.entity.LoginUser;
+import com.youyu.dto.LoginUser;
 import com.youyu.utils.RedisCache;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;

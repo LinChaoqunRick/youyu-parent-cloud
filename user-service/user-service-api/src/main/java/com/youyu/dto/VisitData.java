@@ -1,4 +1,4 @@
-package com.youyu.dto.analysis;
+package com.youyu.dto;
 
 import lombok.Data;
 

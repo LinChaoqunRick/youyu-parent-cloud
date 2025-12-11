@@ -1,5 +1,6 @@
 package com.youyu.oauth2.jackson;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -7,7 +8,8 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.MissingNode;
-import com.youyu.entity.LoginUser;
+import com.youyu.dto.LoginUser;
+import com.youyu.dto.UserDTO;
 import com.youyu.entity.auth.UserFramework;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -65,7 +67,7 @@ class SysUserDeserializer extends JsonDeserializer<LoginUser> {
         List<String> permissions = mapper.convertValue(permissionNode, new TypeReference<>() {});
         UserFramework user = new UserFramework(userId, username, password, nickname, avatar, sex, adcode, adname, level, status);
 
-        return new LoginUser(user, permissions, authorities);
+        return new LoginUser(BeanUtil.copyProperties(user, UserDTO.class), permissions, authorities);
     }
 
     private JsonNode readJsonNode(JsonNode jsonNode, String field) {

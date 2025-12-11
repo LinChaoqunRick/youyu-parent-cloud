@@ -4,7 +4,6 @@ import com.youyu.entity.Logs;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.result.ResponseResult;
-import com.youyu.service.LogsService;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.RequestUtils;
 import com.youyu.utils.SecurityUtils;
@@ -12,6 +11,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpResponse;
@@ -36,11 +36,11 @@ public class MyAuthenticationFailureHandler implements AuthenticationFailureHand
      * MappingJackson2HttpMessageConverter 是 Spring 框架提供的一个 HTTP 消息转换器，用于将 HTTP 请求和响应的 JSON 数据与 Java 对象之间进行转换
      */
     private final HttpMessageConverter<Object> accessTokenHttpResponseConverter = new MappingJackson2HttpMessageConverter();
-    private final LogsService logsService;
+    private final RabbitTemplate rabbitTemplate;
     private final LocateUtils locateUtils;
 
-    public MyAuthenticationFailureHandler(LogsService logsService, LocateUtils locateUtils) {
-        this.logsService = logsService;
+    public MyAuthenticationFailureHandler(RabbitTemplate rabbitTemplate, LocateUtils locateUtils) {
+        this.rabbitTemplate = rabbitTemplate;
         this.locateUtils = locateUtils;
     }
 
@@ -66,8 +66,10 @@ public class MyAuthenticationFailureHandler implements AuthenticationFailureHand
                 log.setDuration(System.currentTimeMillis() - startTime);
                 log.setResult(0);
                 log.setError(error != null ? error.getErrorCode() : exception.getMessage());
-                logsService.saveLog(log);
-            } catch (Exception ignored) {}
+                rabbitTemplate.convertAndSend("direct", "systemLog", log);
+            } catch (Exception e) {
+                MyAuthenticationFailureHandler.log.error("发送登录失败日志到队列失败", e);
+            }
         }
 
         ServletServerHttpResponse httpResponse = new ServletServerHttpResponse(response);

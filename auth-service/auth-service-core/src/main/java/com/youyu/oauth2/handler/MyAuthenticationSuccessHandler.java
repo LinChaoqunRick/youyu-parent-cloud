@@ -4,13 +4,14 @@ import com.youyu.entity.Logs;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.enums.LogType;
 import com.youyu.result.ResponseResult;
-import com.youyu.service.LogsService;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.RequestUtils;
 import com.youyu.utils.SecurityUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -36,6 +37,7 @@ import java.util.Objects;
  * @author haoxr
  * @since 3.0.0
  */
+@Slf4j
 public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     /**
@@ -44,11 +46,11 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
     private final HttpMessageConverter<Object> accessTokenHttpResponseConverter = new MappingJackson2HttpMessageConverter();
     private final Converter<OAuth2AccessTokenResponse, Map<String, Object>> accessTokenResponseParametersConverter = new DefaultOAuth2AccessTokenResponseMapConverter();
 
-    private final LogsService logsService;
+    private final RabbitTemplate rabbitTemplate;
     private final LocateUtils locateUtils;
 
-    public MyAuthenticationSuccessHandler(LogsService logsService, LocateUtils locateUtils) {
-        this.logsService = logsService;
+    public MyAuthenticationSuccessHandler(RabbitTemplate rabbitTemplate, LocateUtils locateUtils) {
+        this.rabbitTemplate = rabbitTemplate;
         this.locateUtils = locateUtils;
     }
 
@@ -93,8 +95,10 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
                 Date issuedAt = Date.from(Objects.requireNonNull(accessToken.getIssuedAt())); // 获取发行时间
                 log.setDuration(System.currentTimeMillis() - issuedAt.getTime());
                 log.setResult(1);
-                logsService.saveLog(log);
-            } catch (Exception ignored) {}
+                rabbitTemplate.convertAndSend("direct", "systemLog", log);
+            } catch (Exception e) {
+                log.error("发送登录成功日志到队列失败", e);
+            }
         }
 
         OAuth2AccessTokenResponse.Builder builder =

@@ -1,6 +1,6 @@
 package com.youyu.service.mail.impl;
 
-import com.youyu.entity.LoginUser;
+import com.youyu.dto.LoginUser;
 import com.youyu.entity.auth.AuthParamsEntity;
 import com.youyu.mapper.UserFrameworkMapper;
 import com.youyu.service.AuthService;

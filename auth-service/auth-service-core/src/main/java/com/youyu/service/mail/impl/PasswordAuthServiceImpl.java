@@ -1,6 +1,8 @@
 package com.youyu.service.mail.impl;
 
-import com.youyu.entity.LoginUser;
+import cn.hutool.core.bean.BeanUtil;
+import com.youyu.dto.LoginUser;
+import com.youyu.dto.UserDTO;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.entity.auth.AuthParamsEntity;
 import com.youyu.mapper.MenuMapper;
@@ -63,6 +65,6 @@ public class PasswordAuthServiceImpl implements AuthService {
         } else if (Objects.equals(clientId, "youyu-manage")) {
             permission = menuMapper.selectManagePermsByUserId(user.getId());
         }
-        return new LoginUser(user, permission);
+        return new LoginUser(BeanUtil.copyProperties(user, UserDTO.class), permission);
     }
 }

@@ -1,4 +1,4 @@
-package com.youyu.entity.user;
+package com.youyu.entity.column;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 
