@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 
 import java.util.*;
 
@@ -144,7 +144,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 //                // 回复自己，不发送邮件
 //                return;
 //            }
-            template.convertAndSend("amq.direct", "postCommentMail", detail);
+            template.convertAndSend("amq.direct", "commentMail", detail);
             return detail;
         } else {
             throw new SystemException(ResultCode.OPERATION_FAIL);

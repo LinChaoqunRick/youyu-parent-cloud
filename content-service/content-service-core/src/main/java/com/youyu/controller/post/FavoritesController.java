@@ -21,7 +21,7 @@ import com.youyu.result.ResponseResult;
 import com.youyu.service.post.FavoritesService;
 import com.youyu.service.post.PostCollectService;
 import com.youyu.utils.BeanCopyUtils;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;

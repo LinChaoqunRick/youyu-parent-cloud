@@ -21,7 +21,7 @@ import com.youyu.result.ResponseResult;
 
 import com.youyu.service.album.AlbumImageService;
 import com.youyu.service.album.AlbumService;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.Data;
 import org.springframework.cloud.context.config.annotation.RefreshScope;

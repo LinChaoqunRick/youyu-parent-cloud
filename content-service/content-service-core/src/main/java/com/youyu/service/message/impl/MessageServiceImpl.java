@@ -16,7 +16,7 @@ import com.youyu.service.message.MessageService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.DateUtils;
 import com.youyu.utils.LocateUtils;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;

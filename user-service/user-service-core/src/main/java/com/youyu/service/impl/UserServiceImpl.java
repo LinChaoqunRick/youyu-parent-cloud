@@ -25,7 +25,7 @@ import com.youyu.entity.user.User;
 import com.youyu.entity.user.UserActivities;
 import com.youyu.entity.user.UserDetailOutput;
 import com.youyu.entity.user.UserFollow;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RabbitExchangeConfiguration {
+public class RabbitExchangeConfig {
     @Bean("directExchange")
     public Exchange exchange() {
         //定义交换机Bean，可以很多个

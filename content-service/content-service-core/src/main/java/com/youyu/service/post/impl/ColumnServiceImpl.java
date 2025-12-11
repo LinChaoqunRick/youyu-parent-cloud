@@ -19,7 +19,7 @@ import com.youyu.mapper.post.PostMapper;
 import com.youyu.service.post.ColumnService;
 import com.youyu.service.post.PostService;
 import com.youyu.utils.BeanCopyUtils;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;

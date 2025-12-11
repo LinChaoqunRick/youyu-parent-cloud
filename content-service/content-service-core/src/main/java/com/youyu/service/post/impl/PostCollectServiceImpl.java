@@ -15,7 +15,7 @@ import com.youyu.mapper.post.CommentMapper;
 import com.youyu.mapper.post.PostCollectMapper;
 import com.youyu.mapper.post.PostMapper;
 import com.youyu.service.post.PostCollectService;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

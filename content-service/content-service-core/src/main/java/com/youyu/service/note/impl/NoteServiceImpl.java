@@ -17,7 +17,7 @@ import com.youyu.mapper.note.NoteChapterMapper;
 import com.youyu.mapper.note.NoteMapper;
 import com.youyu.service.note.NoteService;
 import com.youyu.utils.BeanCopyUtils;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;

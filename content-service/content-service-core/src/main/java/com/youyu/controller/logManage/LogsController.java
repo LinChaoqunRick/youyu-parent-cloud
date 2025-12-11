@@ -8,7 +8,7 @@ import com.youyu.entity.Logs;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.LogsService;
 import com.youyu.utils.DateUtils;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.util.StringUtils;

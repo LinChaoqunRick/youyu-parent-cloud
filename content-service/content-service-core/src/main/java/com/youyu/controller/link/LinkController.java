@@ -11,7 +11,7 @@ import com.youyu.entity.link.Link;
 import com.youyu.enums.LogType;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.link.LinkService;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.util.StringUtils;

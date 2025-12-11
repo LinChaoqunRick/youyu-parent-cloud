@@ -26,7 +26,7 @@ import com.youyu.service.post.CategoryService;
 import com.youyu.service.post.ColumnService;
 import com.youyu.service.post.PostService;
 import com.youyu.utils.BeanCopyUtils;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
 

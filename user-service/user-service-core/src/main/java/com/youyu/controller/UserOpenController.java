@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;

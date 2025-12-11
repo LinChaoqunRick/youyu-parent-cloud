@@ -20,7 +20,7 @@ import com.youyu.mapper.album.AlbumMapper;
 import com.youyu.service.album.AlbumImageService;
 import com.youyu.service.album.AlbumService;
 import com.youyu.utils.BeanCopyUtils;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 import lombok.Data;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;

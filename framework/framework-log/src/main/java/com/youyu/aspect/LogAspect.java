@@ -80,7 +80,7 @@ public class LogAspect {
             actionLog.setDuration(System.currentTimeMillis() - startTime);
             // 通过消息队列异步保存日志
             try {
-                rabbitTemplate.convertAndSend("direct", "systemLog", actionLog);
+                rabbitTemplate.convertAndSend("amq.direct", "systemLog", actionLog);
             } catch (Exception e) {
                 log.error("发送日志消息到队列失败", e);
             }

@@ -26,7 +26,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 
 import java.util.*;
 
@@ -61,7 +61,7 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
             MomentCommentListOutput detail = getCommentById(input.getId());
             // 如果不是回复自己，发送通知邮件
             if (!detail.getActor().getId().equals(detail.getActorTo().getId())) {
-                template.convertAndSend("amq.direct", "momentCommentMail", detail);
+                template.convertAndSend("amq.direct", "commentMail", detail);
             }
             return detail;
         } else {

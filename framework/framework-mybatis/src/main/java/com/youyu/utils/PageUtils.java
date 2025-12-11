@@ -1,4 +1,4 @@
-package utils;
+package com.youyu.utils;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

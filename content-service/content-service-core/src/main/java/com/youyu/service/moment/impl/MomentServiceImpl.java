@@ -19,7 +19,7 @@ import com.youyu.service.moment.MomentLikeService;
 import com.youyu.service.moment.MomentService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.LocateUtils;
-import utils.PageUtils;
+import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;

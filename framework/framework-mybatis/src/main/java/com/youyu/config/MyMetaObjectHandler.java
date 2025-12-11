@@ -1,4 +1,4 @@
-package config;
+package com.youyu.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
