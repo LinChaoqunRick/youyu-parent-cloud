@@ -1,10 +1,10 @@
 package com.youyu.controller.note;
 
 import com.youyu.annotation.Log;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.note.NoteListOutput;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.dto.note.detail.NoteDetailOutput;
 import com.youyu.dto.note.list.NoteListInput;
-import com.youyu.dto.note.list.NoteListOutput;
 import com.youyu.entity.note.Note;
 import com.youyu.enums.LogType;
 import com.youyu.result.ResponseResult;

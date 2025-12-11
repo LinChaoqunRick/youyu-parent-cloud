@@ -3,8 +3,8 @@ package com.youyu.service.album;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.youyu.dto.album.AlbumListOutput;
-import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.post.post.PostUserOutput;
+import com.youyu.dto.page.PageOutput;
+import com.youyu.dto.post.PostUserOutput;
 import com.youyu.entity.album.Album;
 
 /**

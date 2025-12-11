@@ -1,6 +1,6 @@
 package com.youyu.dto.logManage;
 
-import com.youyu.dto.common.PageBase;
+import com.youyu.dto.page.PageBase;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;

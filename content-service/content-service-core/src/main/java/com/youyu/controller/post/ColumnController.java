@@ -2,10 +2,10 @@ package com.youyu.controller.post;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.youyu.annotation.Log;
-import com.youyu.dto.post.column.ColumnListOutput;
-import com.youyu.dto.post.column.ColumnPostInput;
-import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.post.post.PostListOutput;
+import com.youyu.dto.column.ColumnListOutput;
+import com.youyu.dto.column.ColumnPostInput;
+import com.youyu.dto.page.PageOutput;
+import com.youyu.dto.post.PostListOutput;
 import com.youyu.entity.user.Column;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;

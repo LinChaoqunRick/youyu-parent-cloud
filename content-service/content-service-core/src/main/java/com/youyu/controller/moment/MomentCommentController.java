@@ -2,12 +2,12 @@ package com.youyu.controller.moment;
 
 
 import com.youyu.annotation.Log;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.VisitorDTO;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.dto.moment.MomentCommentListInput;
 import com.youyu.dto.moment.MomentCommentListOutput;
-import com.youyu.entity.user.Visitor;
 import com.youyu.entity.moment.MomentComment;
-import com.youyu.entity.result.TencentLocationResult;
+import com.youyu.dto.result.TencentLocationResult;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -57,7 +57,7 @@ public class MomentCommentController {
             input.setUserId(SecurityUtils.getUserId());
         } else {
             // 游客
-            Visitor visitor = new Visitor();
+            VisitorDTO visitor = new VisitorDTO();
             visitor.setEmail(input.getEmail());
             visitor.setNickname(input.getNickname());
             visitor.setHomepage(input.getHomepage());

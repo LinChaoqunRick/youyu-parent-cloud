@@ -1,13 +1,13 @@
 package com.youyu.controller.message;
 
 import com.youyu.annotation.Log;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.VisitorDTO;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.dto.message.CreateMessageInput;
 import com.youyu.dto.message.MessageListInput;
 import com.youyu.dto.message.MessageListOutput;
-import com.youyu.entity.user.Visitor;
-import com.youyu.entity.result.TencentLocationResult;
-import com.youyu.entity.user.Message;
+import com.youyu.dto.result.TencentLocationResult;
+import com.youyu.entity.message.Message;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -64,10 +64,10 @@ public class MessageController {
                 throw new SystemException(ResultCode.INVALID_METHOD_ARGUMENT.getCode(), "邮箱不能为空");
             }
 
-            Visitor visitor = userServiceClient.getVisitorByEmail(input.getEmail()).getData();
+            VisitorDTO visitor = userServiceClient.getVisitorByEmail(input.getEmail()).getData();
             if (visitor == null) {
                 // 新增：新游客留言
-                visitor = BeanCopyUtils.copyBean(input, Visitor.class);
+                visitor = BeanCopyUtils.copyBean(input, VisitorDTO.class);
             } else {
                 // 更新：旧游客留言
                 BeanUtils.copyProperties(visitor, input);
@@ -106,8 +106,8 @@ public class MessageController {
     }
 
     @RequestMapping("/open/getVisitorByEmail")
-    ResponseResult<Visitor> getVisitorByEmail(@RequestParam String email) {
-        Visitor visitor = userServiceClient.getVisitorByEmail(email).getData();
+    ResponseResult<VisitorDTO> getVisitorByEmail(@RequestParam String email) {
+        VisitorDTO visitor = userServiceClient.getVisitorByEmail(email).getData();
         return ResponseResult.success(visitor);
     }
 }

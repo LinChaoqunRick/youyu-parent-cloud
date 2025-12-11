@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.youyu.annotation.Log;
 import com.youyu.entity.auth.UserFramework;
-import com.youyu.entity.result.TencentLocationResult;
-import com.youyu.entity.user.*;
-import com.youyu.enums.ActorType;
+import com.youyu.dto.result.TencentLocationResult;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -24,6 +22,11 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import com.youyu.entity.user.ProfileMenu;
+import com.youyu.entity.user.User;
+import com.youyu.entity.user.UserDetailOutput;
+import com.youyu.entity.user.UserFollow;
+
 import java.util.Objects;
 
 /**

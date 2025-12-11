@@ -1,6 +1,6 @@
 package com.youyu.dto.album;
 
-import com.youyu.dto.common.PageBase;
+import com.youyu.dto.page.PageBase;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotNull;

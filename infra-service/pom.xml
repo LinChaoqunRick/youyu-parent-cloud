@@ -7,86 +7,20 @@
         <groupId>com.youyu</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
+    <packaging>pom</packaging>
+    <modules>
+        <module>infra-service-api</module>
+        <module>infra-service-core</module>
+    </modules>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>infra-service</artifactId>
 
     <description>
-        基础服务，包括：
-          - 文件oss
-          - 邮件、短信
-          - 日志写入
+        基础设施服务
     </description>
 
     <dependencies>
-        <dependency>
-            <groupId>com.youyu</groupId>
-            <artifactId>common-log</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <!--nacos-config-->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-        </dependency>
-        <!--nacos-discovery-->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-        </dependency>
-        <!-- 这里需要单独导入LoadBalancer依赖 -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
-        </dependency>
-        <!-- spring-cloud-dependencies 2020.0.0 默认不在加载bootstrap配置文件，手动添加 -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
-        </dependency>
-        <!-- 阿里云短信 -->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-sts</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>dm20151123</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>credentials-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
-        </dependency>
-        <!--阿里云OSS-->
-        <dependency>
-            <groupId>com.aliyun.oss</groupId>
-            <artifactId>aliyun-sdk-oss</artifactId>
-        </dependency>
-    </dependencies>
 
-    <build>
-        <finalName>${project.artifactId}</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>repackage</id>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    </dependencies>
 </project>

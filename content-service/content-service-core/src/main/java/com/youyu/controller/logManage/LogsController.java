@@ -2,21 +2,19 @@ package com.youyu.controller.logManage;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.dto.logManage.LogPageInput;
 import com.youyu.entity.Logs;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.LogsService;
 import com.youyu.utils.DateUtils;
-import com.youyu.utils.PageUtils;
+import utils.PageUtils;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 

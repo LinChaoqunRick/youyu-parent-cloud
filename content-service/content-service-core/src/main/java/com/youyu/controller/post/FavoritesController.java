@@ -3,14 +3,14 @@ package com.youyu.controller.post;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.annotation.Log;
-import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.post.FavoritesPageInput;
-import com.youyu.dto.post.favorites.FavoritesListOutput;
-import com.youyu.dto.post.post.PostListOutput;
+import com.youyu.dto.ProfileMenuDTO;
+import com.youyu.dto.page.PageOutput;
+import com.youyu.dto.FavoritesPageInput;
+import com.youyu.dto.favorites.FavoritesListOutput;
+import com.youyu.dto.post.PostListOutput;
 import com.youyu.entity.post.Favorites;
 import com.youyu.entity.post.Post;
 import com.youyu.entity.post.PostCollect;
-import com.youyu.entity.user.ProfileMenu;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -21,7 +21,7 @@ import com.youyu.result.ResponseResult;
 import com.youyu.service.post.FavoritesService;
 import com.youyu.service.post.PostCollectService;
 import com.youyu.utils.BeanCopyUtils;
-import com.youyu.utils.PageUtils;
+import utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -165,7 +165,7 @@ public class FavoritesController {
      */
     public void checkFavoritesShow(Long userId) {
         Long authUserId = SecurityUtils.getUserId();
-        ProfileMenu profileMenu = userServiceClient.getProfileMenu(userId).getData();
+        ProfileMenuDTO profileMenu = userServiceClient.getProfileMenu(userId).getData();
         if (profileMenu.getShowFavorites() != 1 && !Objects.equals(userId, authUserId)) { // 私密，且不是主人
             throw new SystemException(ResultCode.FORBIDDEN);
         }

@@ -4,24 +4,29 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.dto.common.PageOutput;
 import com.youyu.dto.moment.MomentListOutput;
-import com.youyu.dto.note.list.ChapterListOutput;
-import com.youyu.dto.note.list.NoteListOutput;
-import com.youyu.dto.post.post.PostListOutput;
+import com.youyu.dto.note.ChapterListOutput;
+import com.youyu.dto.note.NoteListOutput;
+import com.youyu.dto.post.PostListOutput;
 import com.youyu.dto.user.*;
 import com.youyu.entity.auth.Route;
 import com.youyu.entity.auth.UserFramework;
-import com.youyu.entity.user.*;
 import com.youyu.feign.ContentServiceClient;
 import com.youyu.mapper.UserFollowMapper;
 import com.youyu.mapper.UserMapper;
 import com.youyu.service.UserService;
 import com.youyu.utils.*;
+import com.youyu.dto.page.PageOutput;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import com.youyu.entity.user.User;
+import com.youyu.entity.user.UserActivities;
+import com.youyu.entity.user.UserDetailOutput;
+import com.youyu.entity.user.UserFollow;
+import utils.PageUtils;
+
 import java.util.*;
 import java.util.stream.Collectors;
 

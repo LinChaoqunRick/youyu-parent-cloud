@@ -1,10 +1,10 @@
 package com.youyu.service.message;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.dto.message.MessageListInput;
 import com.youyu.dto.message.MessageListOutput;
-import com.youyu.entity.user.Message;
+import com.youyu.entity.message.Message;
 
 import java.util.List;
 

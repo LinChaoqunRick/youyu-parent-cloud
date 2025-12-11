@@ -1,6 +1,6 @@
 package com.youyu.dto.link;
 
-import com.youyu.dto.common.PageBase;
+import com.youyu.dto.page.PageBase;
 import lombok.Getter;
 import lombok.Setter;
 

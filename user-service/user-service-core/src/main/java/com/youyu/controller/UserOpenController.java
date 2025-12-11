@@ -5,10 +5,11 @@ import com.alibaba.nacos.shaded.com.google.common.collect.Maps;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.annotation.Log;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.ActorBase;
+import com.youyu.dto.UserDTO;
 import com.youyu.dto.user.*;
 import com.youyu.entity.auth.Route;
-import com.youyu.entity.user.Actor;
+import com.youyu.dto.Actor;
 import com.youyu.entity.user.ProfileMenu;
 import com.youyu.entity.user.User;
 import com.youyu.entity.user.Visitor;
@@ -22,6 +23,7 @@ import com.youyu.service.VisitorService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.SecurityUtils;
+import com.youyu.dto.page.PageOutput;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import utils.PageUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -195,11 +198,12 @@ public class UserOpenController {
     }
 
     @RequestMapping("/pageUserByUserIds")
-    public ResponseResult<Page<User>> pageUserByUserIds(@RequestParam long current, @RequestParam long size, @RequestParam List<Long> userIds) {
+    public ResponseResult<PageOutput<UserDTO>> pageUserByUserIds(@RequestParam long current, @RequestParam long size, @RequestParam List<Long> userIds) {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(User::getId, userIds);
         Page<User> page = userService.page(new Page<>(current, size), queryWrapper);
-        return ResponseResult.success(page);
+        PageOutput<UserDTO> output = PageUtils.setPageResult(page, UserDTO.class);
+        return ResponseResult.success(output);
     }
 
     @RequestMapping("/listByIds")

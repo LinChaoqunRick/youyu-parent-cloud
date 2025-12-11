@@ -1,21 +1,20 @@
 package com.youyu.service.moment.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.UserDTO;
+import com.youyu.dto.moment.MomentUserOutput;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.dto.moment.MomentLikeUserListInput;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentLike;
-import com.youyu.entity.moment.MomentUserOutput;
-import com.youyu.entity.user.User;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.moment.MomentLikeMapper;
 import com.youyu.mapper.moment.MomentMapper;
 import com.youyu.service.moment.MomentLikeService;
-import com.youyu.utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -92,9 +91,10 @@ public class MomentLikeServiceImpl extends ServiceImpl<MomentLikeMapper, MomentL
             return null;
         }
         // 分页查询
-        Page<User> postPage = userServiceClient.pageUserByUserIds(input.getPageNum(), input.getPageSize(), userIds).getData();
-        // 封装查询结果
-        return PageUtils.setPageResult(postPage, MomentUserOutput.class);
+        PageOutput<UserDTO> postPage = userServiceClient.pageUserByUserIds(input.getPageNum(), input.getPageSize(), userIds).getData();
+        // 封装查询结果 - 手动转换类型
+        List<MomentUserOutput> momentUserOutputs = BeanUtil.copyToList(postPage.getList(), MomentUserOutput.class);
+        return new PageOutput<>(momentUserOutputs, postPage.getCurrent(), postPage.getPages(), postPage.getSize(), postPage.getTotal());
     }
 
     @Override

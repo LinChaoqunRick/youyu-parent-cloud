@@ -1,9 +1,9 @@
 package com.youyu.feign;
 
 import com.youyu.dto.moment.MomentListOutput;
-import com.youyu.dto.note.list.ChapterListOutput;
-import com.youyu.dto.note.list.NoteListOutput;
-import com.youyu.dto.post.post.PostListOutput;
+import com.youyu.dto.note.ChapterListOutput;
+import com.youyu.dto.note.NoteListOutput;
+import com.youyu.dto.post.PostListOutput;
 import com.youyu.result.ResponseResult;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

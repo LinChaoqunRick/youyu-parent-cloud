@@ -1,7 +1,7 @@
 package com.youyu.mapper.post;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.youyu.dto.post.comment.CommentListOutput;
+import com.youyu.dto.comment.CommentListOutput;
 import com.youyu.entity.post.Comment;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

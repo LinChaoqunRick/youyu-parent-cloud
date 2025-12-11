@@ -3,19 +3,14 @@ package com.youyu.service.post.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.dto.moment.MomentCommentListOutput;
-import com.youyu.dto.post.comment.CommentListInput;
-import com.youyu.dto.post.comment.CommentListOutput;
-import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.post.post.PostUserOutput;
-import com.youyu.dto.user.ActorBase;
-import com.youyu.entity.moment.Moment;
-import com.youyu.entity.moment.MomentComment;
-import com.youyu.entity.moment.MomentUserOutput;
+import com.youyu.dto.Actor;
+import com.youyu.dto.ActorBase;
+import com.youyu.dto.comment.CommentListInput;
+import com.youyu.dto.comment.CommentListOutput;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.entity.post.Comment;
 import com.youyu.entity.post.CommentLike;
 import com.youyu.entity.post.Post;
-import com.youyu.entity.user.Actor;
 import com.youyu.enums.ActorType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -31,6 +26,8 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import utils.PageUtils;
+
 import java.util.*;
 
 /**
@@ -138,6 +135,15 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         int insert = commentMapper.insert(comment);
         if (insert > 0) {
             CommentListOutput detail = getCommentById(comment.getId());
+//            Actor actor = input.getActor();
+//            Actor actorTo = input.getActorTo();
+//            PostDetailOutput post = contentServiceClient.getPostById(input.getPostId()).getData();
+//            String actorEmail = userServiceClient.getActorEmailById(actor.getId(), actor.getType()).getData();
+//            String actorToEmail = userServiceClient.getActorEmailById(actorTo.getId(), actorTo.getType()).getData();
+//            if (actorEmail.equals(actorToEmail)) {
+//                // 回复自己，不发送邮件
+//                return;
+//            }
             template.convertAndSend("amq.direct", "postCommentMail", detail);
             return detail;
         } else {

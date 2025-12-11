@@ -3,11 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>youyu-cloud</artifactId>
+        <artifactId>user-service</artifactId>
         <groupId>com.youyu</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <packaging>pom</packaging>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>user-service-core</artifactId>
@@ -15,7 +14,17 @@
     <dependencies>
         <dependency>
             <groupId>com.youyu</groupId>
-            <artifactId>common-log</artifactId>
+            <artifactId>framework-log</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.youyu</groupId>
+            <artifactId>content-service-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.youyu</groupId>
+            <artifactId>user-service-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <!--nacos-config-->

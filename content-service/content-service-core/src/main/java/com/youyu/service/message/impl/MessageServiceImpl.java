@@ -4,19 +4,19 @@ import cn.hutool.core.collection.CollStreamUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.UserDTO;
+import com.youyu.dto.VisitorDTO;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.dto.message.MessageListInput;
 import com.youyu.dto.message.MessageListOutput;
-import com.youyu.entity.user.Visitor;
-import com.youyu.entity.user.Message;
-import com.youyu.entity.user.User;
+import com.youyu.entity.message.Message;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.message.MessageMapper;
 import com.youyu.service.message.MessageService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.DateUtils;
 import com.youyu.utils.LocateUtils;
-import com.youyu.utils.PageUtils;
+import utils.PageUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -100,20 +100,20 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         // 查询用户/游客信息并转化成map方便获取
         List<Long> userIds = messageList.stream().map(MessageListOutput::getUserId).toList();
         List<Long> visitorIds = messageList.stream().map(MessageListOutput::getVisitorId).toList();
-        List<User> users = userIds.isEmpty() ? new ArrayList<>() : userServiceClient.listByIds(userIds).getData();
-        List<Visitor> visitors = visitorIds.isEmpty() ? new ArrayList<>() : userServiceClient.selectBatchIds(visitorIds).getData();
-        Map<Long, User> userMap = CollStreamUtil.toMap(users, User::getId, user -> user);
-        Map<Long, Visitor> visitorMap = CollStreamUtil.toMap(visitors, Visitor::getId, visitor -> visitor);
+        List<UserDTO> users = userIds.isEmpty() ? new ArrayList<>() : userServiceClient.listByIds(userIds).getData();
+        List<VisitorDTO> visitors = visitorIds.isEmpty() ? new ArrayList<>() : userServiceClient.selectBatchIds(visitorIds).getData();
+        Map<Long, UserDTO> userMap = CollStreamUtil.toMap(users, UserDTO::getId, user -> user);
+        Map<Long, VisitorDTO> visitorMap = CollStreamUtil.toMap(visitors, VisitorDTO::getId, visitor -> visitor);
         // 填充信息
         messageList.forEach(item -> {
             item.setAdname(LocateUtils.getShortNameByCode(String.valueOf(item.getAdcode())));
             if (item.getUserId() != null) {
-                User user = userMap.get(item.getUserId());
+                UserDTO user = userMap.get(item.getUserId());
                 item.setUserId(user.getId());
                 item.setNickname(user.getNickname());
                 item.setAvatar(user.getAvatar());
             } else if (item.getVisitorId() != null) {
-                Visitor visitor = visitorMap.get(item.getVisitorId());
+                VisitorDTO visitor = visitorMap.get(item.getVisitorId());
                 item.setNickname(visitor.getNickname());
                 item.setAvatar(visitor.getAvatar());
             }

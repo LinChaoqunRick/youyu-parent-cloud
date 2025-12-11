@@ -1,14 +1,13 @@
 package com.youyu.controller.post;
 
 import com.youyu.annotation.Log;
-import com.youyu.dto.post.comment.CommentListInput;
-import com.youyu.dto.post.comment.CommentListOutput;
-import com.youyu.dto.post.comment.PostReplyListInput;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.VisitorDTO;
+import com.youyu.dto.comment.CommentListInput;
+import com.youyu.dto.comment.CommentListOutput;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.entity.post.Comment;
 import com.youyu.entity.post.CommentLike;
-import com.youyu.entity.result.TencentLocationResult;
-import com.youyu.entity.user.Visitor;
+import com.youyu.dto.result.TencentLocationResult;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -64,7 +63,7 @@ public class CommentController {
             input.setUserId(SecurityUtils.getUserId());
         } else {
             // 游客
-            Visitor visitor = new Visitor();
+            VisitorDTO visitor = new VisitorDTO();
             visitor.setEmail(input.getEmail());
             visitor.setNickname(input.getNickname());
             visitor.setHomepage(input.getHomepage());

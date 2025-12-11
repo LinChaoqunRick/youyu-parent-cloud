@@ -4,13 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.annotation.Log;
+import com.youyu.dto.UserDTO;
 import com.youyu.dto.album.AlbumListInput;
 import com.youyu.dto.album.AlbumListOutput;
-import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.post.post.PostUserOutput;
+import com.youyu.dto.page.PageOutput;
+import com.youyu.dto.post.PostUserOutput;
 import com.youyu.entity.album.Album;
 import com.youyu.entity.album.AlbumImage;
-import com.youyu.entity.user.User;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -93,7 +93,7 @@ public class AlbumController {
                 throw new SystemException(ResultCode.FORBIDDEN);
             }
         }
-        List<User> users = null;
+        List<UserDTO> users = null;
         if (StringUtils.hasText(album.getAuthorizedUsers())) {
             authorizedUserIds = Arrays.stream(album.getAuthorizedUsers().split(","))
                     .map(String::trim)

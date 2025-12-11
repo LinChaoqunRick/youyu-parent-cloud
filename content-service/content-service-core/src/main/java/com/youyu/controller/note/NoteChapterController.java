@@ -2,8 +2,8 @@ package com.youyu.controller.note;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.youyu.annotation.Log;
+import com.youyu.dto.note.ChapterListOutput;
 import com.youyu.dto.note.detail.NoteChapterDetailOutput;
-import com.youyu.dto.note.list.ChapterListOutput;
 import com.youyu.entity.note.NoteChapter;
 import com.youyu.enums.LogType;
 import com.youyu.result.ResponseResult;

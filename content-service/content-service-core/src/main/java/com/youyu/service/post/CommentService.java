@@ -1,10 +1,9 @@
 package com.youyu.service.post;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.dto.post.comment.CommentListInput;
-import com.youyu.dto.post.comment.CommentListOutput;
-import com.youyu.dto.post.comment.PostReplyListInput;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.comment.CommentListInput;
+import com.youyu.dto.comment.CommentListOutput;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.entity.post.Comment;
 
 /**

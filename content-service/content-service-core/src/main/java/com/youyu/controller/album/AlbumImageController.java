@@ -11,7 +11,7 @@ import com.youyu.config.OssProperties;
 import com.youyu.dto.album.AlbumImageListInput;
 import com.youyu.dto.album.AlbumImageListOutput;
 import com.youyu.dto.album.AlbumImageSaveInput;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.entity.album.Album;
 import com.youyu.entity.album.AlbumImage;
 import com.youyu.enums.LogType;
@@ -21,7 +21,7 @@ import com.youyu.result.ResponseResult;
 
 import com.youyu.service.album.AlbumImageService;
 import com.youyu.service.album.AlbumService;
-import com.youyu.utils.PageUtils;
+import utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import lombok.Data;
 import org.springframework.cloud.context.config.annotation.RefreshScope;

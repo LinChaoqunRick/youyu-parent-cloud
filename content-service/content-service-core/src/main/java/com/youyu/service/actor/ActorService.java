@@ -1,7 +1,7 @@
 package com.youyu.service.actor;
 
-import com.youyu.dto.user.ActorBase;
-import com.youyu.entity.user.Actor;
+import com.youyu.dto.Actor;
+import com.youyu.dto.ActorBase;
 import com.youyu.feign.UserServiceClient;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;

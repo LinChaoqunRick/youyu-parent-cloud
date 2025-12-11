@@ -4,15 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
-import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.post.column.ColumnListOutput;
-import com.youyu.dto.post.comment.CommentListOutput;
-import com.youyu.dto.post.post.*;
+import com.youyu.dto.UserDTO;
+import com.youyu.dto.post.*;
+import com.youyu.dto.page.PageOutput;
+import com.youyu.dto.column.ColumnListOutput;
+import com.youyu.dto.comment.CommentListOutput;
 import com.youyu.entity.post.Category;
 import com.youyu.entity.post.Post;
 import com.youyu.entity.post.PostCollect;
 import com.youyu.entity.post.PostLike;
-import com.youyu.entity.user.User;
 import com.youyu.enums.post.CreateType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
@@ -26,7 +26,7 @@ import com.youyu.service.post.CategoryService;
 import com.youyu.service.post.ColumnService;
 import com.youyu.service.post.PostService;
 import com.youyu.utils.BeanCopyUtils;
-import com.youyu.utils.PageUtils;
+import utils.PageUtils;
 import com.youyu.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
 
@@ -220,7 +220,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         if (Objects.isNull(userId)) {
             return null;
         }
-        User user = userServiceClient.selectById(userId).getData();
+        UserDTO user = userServiceClient.selectById(userId).getData();
         if (!Objects.isNull(user)) {
             PostUserOutput userDetailOutput = BeanCopyUtils.copyBean(user, PostUserOutput.class);
             if (enhance) {

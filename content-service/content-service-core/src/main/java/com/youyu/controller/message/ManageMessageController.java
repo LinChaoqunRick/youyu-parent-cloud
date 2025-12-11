@@ -2,10 +2,10 @@ package com.youyu.controller.message;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.youyu.annotation.Log;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.dto.message.MessageListInput;
 import com.youyu.dto.message.MessageListOutput;
-import com.youyu.entity.user.Message;
+import com.youyu.entity.message.Message;
 import com.youyu.enums.LogType;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.message.MessageService;

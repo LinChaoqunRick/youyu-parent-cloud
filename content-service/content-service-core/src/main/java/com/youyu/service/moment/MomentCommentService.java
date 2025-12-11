@@ -1,13 +1,10 @@
 package com.youyu.service.moment;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.dto.moment.MomentCommentListInput;
 import com.youyu.dto.moment.MomentCommentListOutput;
-import com.youyu.dto.moment.MomentReplyListInput;
 import com.youyu.entity.moment.MomentComment;
-
-import java.util.List;
 
 /**
  * (MomentComment)表服务接口

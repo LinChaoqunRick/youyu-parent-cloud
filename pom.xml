@@ -9,7 +9,7 @@
         <module>user-service</module>
         <module>content-service</module>
         <module>infra-service</module>
-        <module>common</module>
+        <module>framework</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

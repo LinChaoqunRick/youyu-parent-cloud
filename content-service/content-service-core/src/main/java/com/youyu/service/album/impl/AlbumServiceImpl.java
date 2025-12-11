@@ -8,19 +8,19 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.config.OssProperties;
+import com.youyu.dto.UserDTO;
 import com.youyu.dto.album.AlbumListOutput;
-import com.youyu.dto.common.PageOutput;
-import com.youyu.dto.post.post.PostUserOutput;
+import com.youyu.dto.page.PageOutput;
+import com.youyu.dto.post.PostUserOutput;
 import com.youyu.entity.album.Album;
 import com.youyu.entity.album.AlbumImage;
-import com.youyu.entity.user.User;
 import com.youyu.feign.UserServiceClient;
 
 import com.youyu.mapper.album.AlbumMapper;
 import com.youyu.service.album.AlbumImageService;
 import com.youyu.service.album.AlbumService;
 import com.youyu.utils.BeanCopyUtils;
-import com.youyu.utils.PageUtils;
+import utils.PageUtils;
 import lombok.Data;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
@@ -120,7 +120,7 @@ public class AlbumServiceImpl extends ServiceImpl<AlbumMapper, Album> implements
         if (Objects.isNull(userId)) {
             return null;
         }
-        User user = userServiceClient.selectById(userId).getData();
+        UserDTO user = userServiceClient.selectById(userId).getData();
         if (!Objects.isNull(user)) {
             return BeanCopyUtils.copyBean(user, PostUserOutput.class);
         } else {

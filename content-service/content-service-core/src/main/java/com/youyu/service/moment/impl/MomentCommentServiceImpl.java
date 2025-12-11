@@ -1,21 +1,21 @@
 package com.youyu.service.moment.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.dto.common.PageOutput;
+import com.youyu.dto.Actor;
+import com.youyu.dto.ActorBase;
+import com.youyu.dto.moment.MomentUserOutput;
+import com.youyu.dto.page.PageOutput;
 import com.youyu.dto.moment.MomentCommentListInput;
 import com.youyu.dto.moment.MomentCommentListOutput;
-import com.youyu.dto.user.ActorBase;
 import com.youyu.entity.moment.Moment;
 import com.youyu.entity.moment.MomentComment;
 import com.youyu.entity.moment.MomentCommentLike;
-import com.youyu.entity.moment.MomentUserOutput;
-import com.youyu.entity.user.Actor;
 import com.youyu.enums.ActorType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
-import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.moment.MomentCommentMapper;
 import com.youyu.service.actor.ActorService;
 import com.youyu.service.moment.MomentCommentLikeService;
@@ -26,6 +26,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
+import utils.PageUtils;
 
 import java.util.*;
 
@@ -239,11 +240,13 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
      */
     public void fillCommentActor(MomentCommentListOutput comment, Map<Integer, Map<Long, Actor>> actorMap, Map<Long, ActorBase> repliedActorMap) {
         ActorBase topActorBase = getCommentActor(comment);
-        comment.setActor(ActorUtils.getActorWithMap(topActorBase.getActorId(), topActorBase.getActorType(), actorMap));
+        MomentUserOutput actor = BeanUtil.copyProperties(ActorUtils.getActorWithMap(topActorBase.getActorId(), topActorBase.getActorType(), actorMap), MomentUserOutput.class);
+        comment.setActor(actor);
         if (comment.getReplyId() != -1) {
             // 如果回复了某条评论，就把被回复人的信息查询出来
             ActorBase repliedActorBase = repliedActorMap.get(comment.getReplyId());
-            comment.setActorTo(ActorUtils.getActorWithMap(repliedActorBase.getActorId(), repliedActorBase.getActorType(), actorMap));
+            MomentUserOutput actorTo = BeanUtil.copyProperties(ActorUtils.getActorWithMap(repliedActorBase.getActorId(), repliedActorBase.getActorType(), actorMap), MomentUserOutput.class);
+            comment.setActorTo(actorTo);
         }
     }
 }
