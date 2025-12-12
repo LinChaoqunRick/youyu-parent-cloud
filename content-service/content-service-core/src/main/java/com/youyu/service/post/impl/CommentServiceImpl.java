@@ -7,6 +7,7 @@ import com.youyu.dto.Actor;
 import com.youyu.dto.ActorBase;
 import com.youyu.dto.comment.CommentListInput;
 import com.youyu.dto.comment.CommentListOutput;
+import com.youyu.dto.mail.CommentMailSendInput;
 import com.youyu.dto.page.PageOutput;
 import com.youyu.entity.post.Comment;
 import com.youyu.entity.post.CommentLike;
@@ -135,16 +136,36 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         int insert = commentMapper.insert(comment);
         if (insert > 0) {
             CommentListOutput detail = getCommentById(comment.getId());
-//            Actor actor = input.getActor();
-//            Actor actorTo = input.getActorTo();
-//            PostDetailOutput post = contentServiceClient.getPostById(input.getPostId()).getData();
-//            String actorEmail = userServiceClient.getActorEmailById(actor.getId(), actor.getType()).getData();
-//            String actorToEmail = userServiceClient.getActorEmailById(actorTo.getId(), actorTo.getType()).getData();
-//            if (actorEmail.equals(actorToEmail)) {
-//                // 回复自己，不发送邮件
-//                return;
-//            }
-            template.convertAndSend("amq.direct", "commentMail", detail);
+
+            Actor actor = detail.getActor();
+            Actor actorTo = detail.getActorTo();
+            Post post = postService.getById(detail.getPostId());
+            String actorEmail = userServiceClient.getActorEmailById(actor.getId(), actor.getType()).getData();
+            String actorToEmail = userServiceClient.getActorEmailById(actorTo.getId(), actorTo.getType()).getData();
+
+            boolean isComment = detail.getRootId() == -1; // 是评论，而不是回复
+
+            if (!actorEmail.equals(actorToEmail)) {
+                // 如果不是自己，就发送邮件，是自己就不发
+                CommentMailSendInput mailSendInput = new CommentMailSendInput();
+                mailSendInput.setTo(actorToEmail);
+                mailSendInput.setActorNickname(actor.getNickname());
+                mailSendInput.setActorToNickname(actorTo.getNickname());
+                mailSendInput.setContentType("文章");
+                // 根据 isComment 设置不同的邮件标题
+                if (isComment) {
+                    // 评论：您的文章【xxx】有了新的评论
+                    mailSendInput.setSubject("您的文章【" + StringUtils.ellipsisUnicode(post.getTitle(), 20) + "】有了新的评论");
+                } else {
+                    // 回复：您在【xxx】的评论有了新的回复
+                    mailSendInput.setSubject("您在【" + StringUtils.ellipsisUnicode(post.getTitle(), 20) + "】的评论有了新的回复");
+                }
+                mailSendInput.setTitle(StringUtils.ellipsisUnicode(post.getTitle(), 20));
+                mailSendInput.setCommentType(isComment ? "评论" : "回复");
+                mailSendInput.setContent(detail.getContent());
+                mailSendInput.setLink("https://v2.youyul.com");
+                template.convertAndSend("amq.direct", "commentMail", mailSendInput);
+            }
             return detail;
         } else {
             throw new SystemException(ResultCode.OPERATION_FAIL);
@@ -163,7 +184,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         Long replyId = getCommentReplyId(comment);
         if (replyId != null) {
             // 不是根评论，而是子评论或回复了子评论
-            Comment replyComment = comment.selectById(replyId);
+            Comment replyComment = commentMapper.selectById(replyId);
             ActorBase actorBaseTo = getCommentActor(replyComment);
             if (Objects.nonNull(actorBaseTo.getActorId())) {
                 Actor actorTo = userServiceClient.getActorById(actorBaseTo.getActorId(), actorBaseTo.getActorType()).getData();

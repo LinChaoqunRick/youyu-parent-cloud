@@ -66,4 +66,13 @@ public interface UserServiceClient {
 
     @PostMapping(value = "/visitor/open/getVisitorsByProvince")
     ResponseResult<List<RegionData>> getVisitorsByProvince();
+
+    @PostMapping(value = "/user/open/selectCountByEmail")
+    ResponseResult<Integer> selectCountByEmail(@RequestParam String email);
+
+    @PostMapping(value = "/user/open/selectCountByUsername")
+    ResponseResult<Integer> selectCountByUsername(@RequestParam String username);
+
+    @PostMapping(value = "/user/open/getActorEmailById")
+    ResponseResult<String> getActorEmailById(@RequestParam Long actorId, @RequestParam int actorType);
 }

@@ -32,6 +32,11 @@
             <artifactId>user-service-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.youyu</groupId>
+            <artifactId>infra-service-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
         <!--nacos-config-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

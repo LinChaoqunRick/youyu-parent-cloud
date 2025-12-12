@@ -44,7 +44,7 @@ public class AliyunEmailService {
                 .setToAddress(toAddress)
                 .setReplyToAddress(true)
                 .setAccountName(accountName)
-                .setSubject("您收到了一条新的回复")
+                .setSubject(params.get("subject"))
                 .setAddressType(1);
 
         RuntimeOptions runtime = new RuntimeOptions();

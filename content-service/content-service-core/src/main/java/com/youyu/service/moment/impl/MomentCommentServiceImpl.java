@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.dto.Actor;
 import com.youyu.dto.ActorBase;
+import com.youyu.dto.mail.CommentMailSendInput;
+import com.youyu.dto.moment.MomentListOutput;
 import com.youyu.dto.moment.MomentUserOutput;
 import com.youyu.dto.page.PageOutput;
 import com.youyu.dto.moment.MomentCommentListInput;
@@ -16,6 +18,7 @@ import com.youyu.entity.moment.MomentCommentLike;
 import com.youyu.enums.ActorType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
+import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.moment.MomentCommentMapper;
 import com.youyu.service.actor.ActorService;
 import com.youyu.service.moment.MomentCommentLikeService;
@@ -52,6 +55,9 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
     private ActorService actorService;
 
     @Resource
+    private UserServiceClient userServiceClient;
+
+    @Resource
     RabbitTemplate template;
 
     @Override
@@ -59,10 +65,37 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
         int save = momentCommentMapper.insert(input);
         if (save > 0) {
             MomentCommentListOutput detail = getCommentById(input.getId());
-            // 如果不是回复自己，发送通知邮件
-            if (!detail.getActor().getId().equals(detail.getActorTo().getId())) {
-                template.convertAndSend("amq.direct", "commentMail", detail);
+            Actor actor = detail.getActor();
+            Actor actorTo = detail.getActorTo();
+            Moment moment = momentService.getById(input.getMomentId());
+            String actorEmail = userServiceClient.getActorEmailById(actor.getId(), actor.getType()).getData();
+            String actorToEmail = userServiceClient.getActorEmailById(actorTo.getId(), actorTo.getType()).getData();
+
+            boolean isComment = detail.getRootId() == -1; // 是评论，而不是回复
+
+            if (!actorEmail.equals(actorToEmail)) {
+                // 如果不是自己，就发送邮件，是自己就不发
+                CommentMailSendInput mailSendInput = new CommentMailSendInput();
+                mailSendInput.setTo(actorToEmail);
+                mailSendInput.setActorNickname(actor.getNickname());
+                mailSendInput.setActorToNickname(actorTo.getNickname());
+                mailSendInput.setContentType("时刻");
+                // 根据 isComment 设置不同的邮件标题
+                if (isComment) {
+                    // 评论：您的文章【xxx】有了新的评论
+                    mailSendInput.setSubject("您的时刻【" + StringUtils.ellipsisUnicode(moment.getContent(), 20) + "】有了新的评论");
+                } else {
+                    // 回复：您在【xxx】的评论有了新的回复
+                    mailSendInput.setSubject("您在【" + StringUtils.ellipsisUnicode(moment.getContent(), 20) + "】的评论有了新的回复");
+                }
+                mailSendInput.setTitle(StringUtils.ellipsisUnicode(moment.getContent(), 20));
+                mailSendInput.setCommentType(isComment ? "评论" : "回复");
+                mailSendInput.setContent(detail.getContent());
+                mailSendInput.setLink("https://v2.youyul.com");
+                template.convertAndSend("amq.direct", "commentMail", mailSendInput);
+
             }
+
             return detail;
         } else {
             throw new SystemException(ResultCode.OPERATION_FAIL);
@@ -148,7 +181,7 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
         MomentCommentListOutput output = BeanCopyUtils.copyBean(comment, MomentCommentListOutput.class);
         // 评论人信息查询
         ActorBase actorBase = getCommentActor(comment);
-        MomentUserOutput actor = momentService.getMomentActor(actorBase.getActorId(), actorBase.getActorType(), false);
+        Actor actor = userServiceClient.getActorById(actorBase.getActorId(), actorBase.getActorType()).getData();
         output.setActor(actor);
         // 被评论人信息查询
         Long replyId = getCommentReplyId(comment);
@@ -157,13 +190,13 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
             MomentComment replyComment = momentCommentMapper.selectById(replyId);
             ActorBase actorBaseTo = getCommentActor(replyComment);
             if (Objects.nonNull(actorBaseTo.getActorId())) {
-                MomentUserOutput actorTo = momentService.getMomentActor(actorBaseTo.getActorId(), actorBaseTo.getActorType(), false);
+                Actor actorTo = userServiceClient.getActorById(actorBaseTo.getActorId(), actorBaseTo.getActorType()).getData();
                 output.setActorTo(actorTo);
             }
         } else {
             // 是根评论，就要查询时刻的发布者
             Moment moment = momentService.getById(comment.getMomentId());
-            MomentUserOutput actorTo = momentService.getMomentActor(moment.getUserId(), ActorType.USER.getCode(), false);
+            Actor actorTo = userServiceClient.getActorById(moment.getUserId(), ActorType.USER.getCode()).getData();
             output.setActorTo(actorTo);
         }
         return output;
@@ -240,13 +273,11 @@ public class MomentCommentServiceImpl extends ServiceImpl<MomentCommentMapper, M
      */
     public void fillCommentActor(MomentCommentListOutput comment, Map<Integer, Map<Long, Actor>> actorMap, Map<Long, ActorBase> repliedActorMap) {
         ActorBase topActorBase = getCommentActor(comment);
-        MomentUserOutput actor = BeanUtil.copyProperties(ActorUtils.getActorWithMap(topActorBase.getActorId(), topActorBase.getActorType(), actorMap), MomentUserOutput.class);
-        comment.setActor(actor);
+        comment.setActor(ActorUtils.getActorWithMap(topActorBase.getActorId(), topActorBase.getActorType(), actorMap));
         if (comment.getReplyId() != -1) {
             // 如果回复了某条评论，就把被回复人的信息查询出来
             ActorBase repliedActorBase = repliedActorMap.get(comment.getReplyId());
-            MomentUserOutput actorTo = BeanUtil.copyProperties(ActorUtils.getActorWithMap(repliedActorBase.getActorId(), repliedActorBase.getActorType(), actorMap), MomentUserOutput.class);
-            comment.setActorTo(actorTo);
+            comment.setActorTo(ActorUtils.getActorWithMap(repliedActorBase.getActorId(), repliedActorBase.getActorType(), actorMap));
         }
     }
 }

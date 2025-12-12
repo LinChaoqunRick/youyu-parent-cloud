@@ -18,12 +18,12 @@ public class LogSaveListener {
     private LogsService logsService;
 
     @RabbitListener(queues = "systemLog", messageConverter = "jacksonConverter")
-    public void systemLogListener(Logs logMessage) {
+    public void systemLogSave(Logs logMessage) {
         try {
             logsService.save(logMessage);
-            log.debug("日志保存成功: {}", logMessage.getName());
+            // log.debug("日志保存成功: {}", logMessage.getName());
         } catch (Exception e) {
-            log.error("日志保存失败", e);
+            // log.error("日志保存失败", e);
             throw e; // 抛出异常以便进入死信队列
         }
     }
