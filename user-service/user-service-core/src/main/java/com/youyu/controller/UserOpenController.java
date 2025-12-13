@@ -82,19 +82,6 @@ public class UserOpenController {
         return ResponseResult.success(menu);
     }
 
-    /**
-     * 获取用户动态
-     *
-     * @param input 查询
-     * @return 动态分页
-     */
-    @RequestMapping("/listUserActivities")
-    ResponseResult<PageOutput<Object>> listUserActivities(@Valid UserActivitiesInput input) {
-        input.setAuthorizationUserId(SecurityUtils.getUserId());
-        PageOutput<Object> pageInfo = userService.listUserActivities(input);
-        return ResponseResult.success(pageInfo);
-    }
-
     @RequestMapping("/followList")
     ResponseResult<PageOutput<UserListOutput>> followList(@Valid UserFollowListInput input) {
         return ResponseResult.success(userService.followList(input));

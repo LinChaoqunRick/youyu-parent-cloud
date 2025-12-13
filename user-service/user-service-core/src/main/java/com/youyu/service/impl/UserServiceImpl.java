@@ -1,17 +1,11 @@
 package com.youyu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.youyu.dto.moment.MomentListOutput;
-import com.youyu.dto.note.ChapterListOutput;
-import com.youyu.dto.note.NoteListOutput;
-import com.youyu.dto.post.PostListOutput;
 import com.youyu.dto.user.*;
 import com.youyu.entity.auth.Route;
 import com.youyu.entity.auth.UserFramework;
-import com.youyu.feign.ContentServiceClient;
 import com.youyu.mapper.UserFollowMapper;
 import com.youyu.mapper.UserMapper;
 import com.youyu.service.UserService;
@@ -44,9 +38,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private UserFollowMapper userFollowMapper;
-
-    @Resource
-    private ContentServiceClient contentServiceClient;
 
     @Override
     public PageOutput<UserListOutput> list(UserListInput input) {
@@ -154,44 +145,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public UserFramework getUserById(Long id) {
         UserFramework user = userMapper.getUserById(id);
         return user;
-    }
-
-    @Override
-    public PageOutput<Object> listUserActivities(UserActivitiesInput input) {
-        Page<UserActivities> page = new Page<>(input.getPageNum(), input.getPageSize());
-        IPage<UserActivities> activities = userMapper.listUserActivities(page, input);
-
-        Map<Integer, List<UserActivities>> collect = activities.getRecords().stream().collect(Collectors.groupingBy(UserActivities::getType));
-        List<Object> resultList = new ArrayList<>();
-
-        collect.keySet().forEach(key -> {
-            if (key == 1) { // 文章
-                List<Long> postIds = collect.get(key).stream().map(UserActivities::getId).collect(Collectors.toList());
-                List<PostListOutput> postList = contentServiceClient.postListByIds(postIds).getData();
-                resultList.addAll(postList);
-            } else if (key == 2) { // 时刻
-                List<Long> momentIds = collect.get(key).stream().map(UserActivities::getId).collect(Collectors.toList());
-                List<MomentListOutput> momentList = contentServiceClient.momentListByIds(momentIds).getData();
-                resultList.addAll(momentList);
-            } else if (key == 3) { // 笔记
-                List<Long> noteIds = collect.get(key).stream().map(UserActivities::getId).collect(Collectors.toList());
-                List<NoteListOutput> noteList = contentServiceClient.noteListByIds(noteIds).getData();
-                resultList.addAll(noteList);
-            } else if (key == 4) { // 章节
-                List<Long> chapterIds = collect.get(key).stream().map(UserActivities::getId).collect(Collectors.toList());
-                List<ChapterListOutput> chapterList = contentServiceClient.listChapterByIds(chapterIds).getData();
-                resultList.addAll(chapterList);
-            }
-        });
-
-        PageOutput<Object> output = PageUtils.setPageResult(page, Object.class);
-        resultList.sort((a, b) -> {
-            Long aTime = ((Date) Objects.requireNonNull(BeanUtils.getFieldValueByFieldName(a, "createTime"))).getTime();
-            Long bTime = ((Date) Objects.requireNonNull(BeanUtils.getFieldValueByFieldName(b, "createTime"))).getTime();
-            return bTime.compareTo(aTime);
-        });
-        output.setList(resultList);
-        return output;
     }
 
     private void setFollow(Long currentUserId, List<UserListOutput> list) {

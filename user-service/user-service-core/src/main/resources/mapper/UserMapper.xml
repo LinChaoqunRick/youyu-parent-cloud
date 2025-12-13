@@ -10,13 +10,6 @@
         <result column="description" property="description"></result>
     </resultMap>
 
-    <resultMap type="com.youyu.entity.user.UserActivities" id="UserActivitiesMap">
-        <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-        <result property="type" column="type" jdbcType="INTEGER"/>
-    </resultMap>
-
-
     <select id="getAuthRoutes" resultMap="route">
         SELECT *
         FROM bs_route
@@ -51,48 +44,5 @@
         SELECT *
         FROM bs_user
         where id = #{id}
-    </select>
-
-    <!--查询动态-->
-    <select id="listUserActivities" resultMap="UserActivitiesMap">
-        SELECT t.id, t.create_time, t.type
-        FROM (
-        (SELECT id, create_time, 1 AS type
-        FROM bs_post
-        WHERE user_id = #{input.userId}
-        AND deleted = 0
-        <if test="input.userId != input.authorizationUserId">
-            AND status = 0
-        </if>
-        )
-        UNION
-        (SELECT id, create_time, 2 AS type
-        FROM bs_moment
-        WHERE user_id = #{input.userId}
-        AND deleted = 0
-        <if test="input.userId != input.authorizationUserId">
-            AND status = 0
-        </if>
-        )
-        UNION
-        (SELECT id, create_time, 3 AS type
-        FROM bs_note
-        WHERE user_id = #{input.userId}
-        AND deleted = 0
-        <if test="input.userId != input.authorizationUserId">
-            AND status = 0
-        </if>
-        )
-        UNION
-        (SELECT id, create_time, 4 AS type
-        FROM bs_note_chapter
-        WHERE FIND_IN_SET(#{input.userId}, user_ids)
-        AND deleted = 0
-        <if test="input.userId != input.authorizationUserId">
-            AND status = 0
-        </if>
-        )
-        ) t
-        ORDER BY t.create_time DESC
     </select>
 </mapper>

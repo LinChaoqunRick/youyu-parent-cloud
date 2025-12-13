@@ -27,6 +27,5 @@ public interface UserMapper extends BaseMapper<User> {
     List<Route> getManageAuthRoutes(@Param("id") Long id);
     List<Route> getRoutesByRoleId(@Param("roleId") Long roleId);
     UserFramework getUserById(@Param("id") Long id);
-    IPage<UserActivities> listUserActivities(Page<?> page, @Param("input") UserActivitiesInput input);
 }
 

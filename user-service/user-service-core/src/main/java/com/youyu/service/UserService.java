@@ -32,6 +32,4 @@ public interface UserService extends IService<User> {
     List<Route> getRoutesByRoleId(Long roleId);
 
     UserFramework getUserById(Long id);
-
-    PageOutput<Object> listUserActivities(UserActivitiesInput input);
 }
