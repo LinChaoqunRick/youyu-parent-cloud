@@ -8,9 +8,8 @@
         <module>auth-service</module>
         <module>user-service</module>
         <module>content-service</module>
-        <module>notify-service</module>
-        <module>file-service</module>
-        <module>common</module>
+        <module>infra-service</module>
+        <module>framework</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

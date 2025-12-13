@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.mapper.activity.UserActivityMapper">
+
+    <resultMap type="com.youyu.entity.activity.UserActivity" id="UserActivityMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="type" column="type"/>
+    </resultMap>
+
+    <!--查询用户动态-->
+    <select id="listUserActivities" resultMap="UserActivityMap">
+        SELECT t.id, t.create_time, t.type
+        FROM (
+        (SELECT id, create_time, 1 AS type
+        FROM bs_post
+        WHERE user_id = #{input.userId}
+        AND deleted = 0
+        <if test="input.userId != input.authorizationUserId">
+            AND status = 0
+        </if>
+        )
+        UNION
+        (SELECT id, create_time, 2 AS type
+        FROM bs_moment
+        WHERE user_id = #{input.userId}
+        AND deleted = 0
+        <if test="input.userId != input.authorizationUserId">
+            AND status = 0
+        </if>
+        )
+        UNION
+        (SELECT id, create_time, 3 AS type
+        FROM bs_note
+        WHERE user_id = #{input.userId}
+        AND deleted = 0
+        <if test="input.userId != input.authorizationUserId">
+            AND status = 0
+        </if>
+        )
+        UNION
+        (SELECT id, create_time, 4 AS type
+        FROM bs_note_chapter
+        WHERE FIND_IN_SET(#{input.userId}, user_ids)
+        AND deleted = 0
+        <if test="input.userId != input.authorizationUserId">
+            AND status = 0
+        </if>
+        )
+        ) t
+        ORDER BY t.create_time DESC
+    </select>
+</mapper>

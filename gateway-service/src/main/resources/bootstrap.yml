@@ -10,6 +10,8 @@ spring:
         namespace: ${NACOS_NAMESPACE:}
         username: nacos
         password: nacos123
+        heart-beat:
+          enabled: true
       config:
         server-addr: ${NACOS_SERVER_ADDR:101.43.6.194:8848}
         file-extension: yaml
@@ -35,14 +37,9 @@ spring:
         - id: content-service
           uri: lb://content-service
           predicates:
-            - Path=/category/**,/column/**,/comment/**,/post/**,/favorites/**,/moment/**,/momentComment/**,/momentCommentLike/**,/momentLike/**,/noteChapter/**,/note/**,/album/**,/albumImage/**,/manage/analysis/**,/manage/monitor/**,/manage/logs/**,/message/**,/manage/message/**,/link/**
+            - Path=/category/**,/column/**,/comment/**,/post/**,/favorites/**,/moment/**,/momentComment/**,/momentCommentLike/**,/momentLike/**,/noteChapter/**,/note/**,/album/**,/albumImage/**,/manage/analysis/**,/manage/monitor/**,/manage/logs/**,/message/**,/manage/message/**,/link/**,/activity/**
 
-        - id: file-service
-          uri: lb://file-service
+        - id: infra-service
+          uri: lb://infra-service
           predicates:
-            - Path=/oss/**
-
-        - id: notify-service
-          uri: lb://notify-service
-          predicates:
-            - Path=/mail/**,/sms/**
+            - Path=/mail/**,/sms/**,/oss/**
