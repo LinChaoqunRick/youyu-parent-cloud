@@ -10,6 +10,8 @@ spring:
         namespace: ${NACOS_NAMESPACE:}
         username: nacos
         password: nacos123
+        heart-beat:
+          enabled: true
       config:
         server-addr: ${NACOS_SERVER_ADDR:101.43.6.194:8848}
         file-extension: yaml
