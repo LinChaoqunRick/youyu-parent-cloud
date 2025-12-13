@@ -24,7 +24,7 @@ services:
   auth-service:
     container_name: auth-service
     build:
-      context: ./auth-service
+      context: ./auth-service/auth-service-core
       dockerfile: Dockerfile
     deploy:
       resources:
@@ -46,7 +46,7 @@ services:
   user-service:
     container_name: user-service
     build:
-      context: ./user-service
+      context: ./user-service/user-service-core
       dockerfile: Dockerfile
     deploy:
       resources:
@@ -68,7 +68,7 @@ services:
   content-service:
     container_name: content-service
     build:
-      context: ./content-service
+      context: ./content-service/content-service-core
       dockerfile: Dockerfile
     deploy:
       resources:
@@ -92,7 +92,7 @@ services:
   infra-service:
     container_name: infra-service
     build:
-      context: ./infra-service
+      context: ./infra-service/infra-service-core
       dockerfile: Dockerfile
     deploy:
       resources:
@@ -111,7 +111,7 @@ services:
     depends_on:
       - gateway-service
       - user-service
-      -
+
 # 网络，不定义的话就是默认网络
 networks:
   mynetwork:

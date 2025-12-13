@@ -4,8 +4,8 @@
 
 set -euo pipefail
 
-# 脚本所在目录的父目录（项目根目录）
-PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# 脚本所在目录的上上级目录（项目根目录）
+PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 
 cd "$PROJECT_ROOT"
 
@@ -48,7 +48,7 @@ done
 
 if [ "$all_running" = false ]; then
     echo ""
-    echo "警告: 部分环境服务未运行，建议先运行 ./scripts/start_env.sh"
+    echo "警告: 部分环境服务未运行，建议先运行 ./assets/scripts/start_env.sh"
     read -p "是否继续启动微服务？[y/N] " confirm
     if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
         echo "操作已取消"

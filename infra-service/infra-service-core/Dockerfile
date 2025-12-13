@@ -5,7 +5,7 @@ FROM openjdk:17
 WORKDIR /app
 
 # Copy the JAR file into the container at /app
-COPY ./target/infra-service.jar /app/infra-service.jar
+COPY ./target/infra-service-core.jar /app/infra-service.jar
 
 ENV NACOS_SERVER_ADDR=nacos:8848
 ENV NACOS_NAMESPACE=prod
