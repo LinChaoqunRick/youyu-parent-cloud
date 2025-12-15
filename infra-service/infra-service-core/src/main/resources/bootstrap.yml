@@ -28,3 +28,5 @@ spring:
             refresh: true
           - data-id: security.yaml
             refresh: true
+          - data-id: mysql-backup.yaml
+            refresh: true

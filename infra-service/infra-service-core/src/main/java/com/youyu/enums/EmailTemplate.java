@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum EmailTemplate {
     REGISTER_MAIL(0, "注册验证码邮件", "111111"),
     COMMENT_MAIL(10, "评论回复邮件", "418136"),
+    DATABASE_BACKUP_MAIL(20, "数据库备份邮件", "420260"),
     ;
     private final Integer id;
     private final String name;

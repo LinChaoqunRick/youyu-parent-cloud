@@ -17,7 +17,7 @@
     <artifactId>infra-service</artifactId>
 
     <description>
-        基础设施服务。邮件推送、OSS权限申请、日志入库、消息队列
+        基础设施服务。邮件推送、OSS权限申请、日志入库、消息队列、数据库定时备份
     </description>
 
     <dependencies>

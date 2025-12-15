@@ -42,4 +42,4 @@ spring:
         - id: infra-service
           uri: lb://infra-service
           predicates:
-            - Path=/mail/**,/sms/**,/oss/**
+            - Path=/mail/**,/sms/**,/oss/**,/backup/**

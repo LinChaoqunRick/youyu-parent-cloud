@@ -15,6 +15,7 @@ public enum LogType {
     NOTIFY_SMS(9, "通知_短信"),
     NOTIFY_MAIL(10, "通知_邮件"),
     UPLOAD(20, "文件上传"),
+    BACKUP_DATABASE(21, "数据库备份"),
     OTHER(66, "其他"),
     ;
 
