@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @ConfigurationProperties(prefix = "mysql.backup")
-public class DataBaseBackupProperties {
+public class DatabaseBackupProperties {
     /**
      * MySQL容器名称
      */

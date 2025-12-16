@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DataBaseBackupOutput {
+public class DatabaseBackupOutput {
     /**
      * 备份文件名
      */

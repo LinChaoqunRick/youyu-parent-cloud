@@ -1,7 +1,7 @@
 package com.youyu.service.mail.impl;
 
 import com.youyu.annotation.Log;
-import com.youyu.dto.backup.DataBaseBackupOutput;
+import com.youyu.dto.backup.DatabaseBackupOutput;
 import com.youyu.enums.EmailTemplate;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
@@ -67,7 +67,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     @Log(title = "发送数据库备份通知邮件", type = LogType.NOTIFY_MAIL)
-    public void sendDatabaseBackupMail(String to, DataBaseBackupOutput backupResult) throws Exception {
+    public void sendDatabaseBackupMail(String to, DatabaseBackupOutput backupResult) throws Exception {
         Map<String, String> templateParams = new HashMap<>();
         templateParams.put("subject", "【系统通知】MySQL数据库备份完成");
         templateParams.put("fileName", backupResult.getFileName());
@@ -80,6 +80,18 @@ public class MailServiceImpl implements MailService {
         templateParams.put("remark", backupResult.getRemark() != null ? backupResult.getRemark() : "-");
 
         aliyunEmailService.sendTemplateMail(EmailTemplate.DATABASE_BACKUP_MAIL.getCode(), to, templateParams);
-        log.info("数据库备份通知邮件已发送到: {}", to);
+        log.info("数据库备份成功通知邮件已发送到: {}", to);
+    }
+
+    @Override
+    @Log(title = "发送数据库备份失败通知邮件", type = LogType.NOTIFY_MAIL)
+    public void sendDatabaseBackupFailMail(String to, String errorMessage, String failTime) throws Exception {
+        Map<String, String> templateParams = new HashMap<>();
+        templateParams.put("subject", "【系统告警】MySQL数据库备份失败");
+        templateParams.put("failTime", failTime);
+        templateParams.put("errorMessage", errorMessage);
+
+        aliyunEmailService.sendTemplateMail(EmailTemplate.DATABASE_BACKUP_FAIL_MAIL.getCode(), to, templateParams);
+        log.info("数据库备份失败通知邮件已发送到: {}", to);
     }
 }

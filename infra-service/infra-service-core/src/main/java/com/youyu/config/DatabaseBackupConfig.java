@@ -1,8 +1,8 @@
 package com.youyu.config;
 
-import com.youyu.dto.backup.DataBaseBackupInput;
-import com.youyu.dto.backup.DataBaseBackupOutput;
-import com.youyu.service.backup.DataBaseBackupService;
+import com.youyu.dto.backup.DatabaseBackupInput;
+import com.youyu.dto.backup.DatabaseBackupOutput;
+import com.youyu.service.backup.DatabaseBackupService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -21,13 +21,13 @@ import java.time.ZoneId;
 @Slf4j
 @Configuration
 @ConditionalOnProperty(prefix = "mysql.backup", name = "enable-auto-backup", havingValue = "true", matchIfMissing = true)
-public class DataBaseBackupConfig implements SchedulingConfigurer {
+public class DatabaseBackupConfig implements SchedulingConfigurer {
 
     @Resource
-    private DataBaseBackupProperties backupProperties;
+    private DatabaseBackupProperties backupProperties;
 
     @Resource
-    private DataBaseBackupService dataBaseBackupService;
+    private DatabaseBackupService dataBaseBackupService;
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
@@ -64,11 +64,11 @@ public class DataBaseBackupConfig implements SchedulingConfigurer {
         try {
             log.info("========== 开始执行MySQL自动备份 ==========");
 
-            DataBaseBackupInput input = new DataBaseBackupInput();
+            DatabaseBackupInput input = new DatabaseBackupInput();
             input.setUploadToOss(true);
             input.setRemark("自动备份");
 
-            DataBaseBackupOutput result = dataBaseBackupService.backup(input);
+            DatabaseBackupOutput result = dataBaseBackupService.backup(input);
 
             log.info("MySQL自动备份完成");
             log.info("  - 备份文件: {}", result.getFileName());

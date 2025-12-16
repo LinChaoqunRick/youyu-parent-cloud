@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.annotation.Log;
 import com.youyu.dto.UserDTO;
+import com.youyu.dto.album.AlbumDTO;
 import com.youyu.dto.album.AlbumListInput;
 import com.youyu.dto.album.AlbumListOutput;
 import com.youyu.dto.page.PageOutput;
@@ -171,6 +172,19 @@ public class AlbumController {
         SecurityUtils.authAuthorizationUser(SecurityUtils.getUserId());
         boolean update = albumService.update(updateWrapper);
         return ResponseResult.success(update);
+    }
+
+    /**
+     * 根据相册ID查询相册信息（供Feign调用）
+     *
+     * @param albumId 相册ID
+     * @return 相册信息
+     */
+    @RequestMapping("/open/getById")
+    public ResponseResult<AlbumDTO> getById(@RequestParam Long albumId) {
+        Album album = albumService.getById(albumId);
+        AlbumDTO albumDTO = BeanCopyUtils.copyBean(album, AlbumDTO.class);
+        return ResponseResult.success(albumDTO);
     }
 }
 

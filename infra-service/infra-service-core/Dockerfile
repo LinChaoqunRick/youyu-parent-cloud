@@ -1,5 +1,5 @@
-# Use an official OpenJDK runtime as a parent image
-FROM openjdk:17
+# Use Eclipse Temurin (OpenJDK) with Debian base
+FROM eclipse-temurin:17-jdk
 
 # Set the working directory in the container to /app
 WORKDIR /app
@@ -11,12 +11,12 @@ ENV NACOS_SERVER_ADDR=nacos:8848
 ENV NACOS_NAMESPACE=prod
 ENV ACTIVE_ENV=prod
 
-# Install iputils-ping
-#RUN apt-get update && \
-#    apt-get install -y iputils-ping && \
-#    rm -rf /var/lib/apt/lists/*
+# Install Docker CLI, gzip and other necessary tools for MySQL backup
+RUN apt-get update && \
+    apt-get install -y docker.io gzip && \
+    rm -rf /var/lib/apt/lists/*
 
-# Make port 8080 available to the world outside this container
+# Make port 8110 available to the world outside this container
 EXPOSE 8110
 
 # Run the JAR file

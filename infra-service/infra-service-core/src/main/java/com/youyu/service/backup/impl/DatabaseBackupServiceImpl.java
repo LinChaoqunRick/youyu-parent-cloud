@@ -2,14 +2,14 @@ package com.youyu.service.backup.impl;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.model.PutObjectRequest;
-import com.youyu.config.DataBaseBackupProperties;
+import com.youyu.config.DatabaseBackupProperties;
 import com.youyu.config.OssProperties;
-import com.youyu.dto.backup.DataBaseBackupInput;
-import com.youyu.dto.backup.DataBaseBackupOutput;
+import com.youyu.dto.backup.DatabaseBackupInput;
+import com.youyu.dto.backup.DatabaseBackupOutput;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
 import com.youyu.factory.OssClientFactory;
-import com.youyu.service.backup.DataBaseBackupService;
+import com.youyu.service.backup.DatabaseBackupService;
 import com.youyu.service.mail.MailService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -37,9 +37,9 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class DataBaseBackupServiceImpl implements DataBaseBackupService {
+public class DatabaseBackupServiceImpl implements DatabaseBackupService {
 
-    private final DataBaseBackupProperties backupProperties;
+    private final DatabaseBackupProperties backupProperties;
     private final OssProperties ossProperties;
     private final OssClientFactory ossClientFactory;
 
@@ -48,8 +48,8 @@ public class DataBaseBackupServiceImpl implements DataBaseBackupService {
 
     private static final DateTimeFormatter FILENAME_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
 
-    public DataBaseBackupServiceImpl(
-            DataBaseBackupProperties backupProperties,
+    public DatabaseBackupServiceImpl(
+            DatabaseBackupProperties backupProperties,
             OssProperties ossProperties,
             OssClientFactory ossClientFactory) {
         this.backupProperties = backupProperties;
@@ -58,7 +58,7 @@ public class DataBaseBackupServiceImpl implements DataBaseBackupService {
     }
 
     @Override
-    public DataBaseBackupOutput backup(DataBaseBackupInput input) {
+    public DatabaseBackupOutput backup(DatabaseBackupInput input) {
         long startTime = System.currentTimeMillis();
         LocalDateTime backupTime = LocalDateTime.now();
 
@@ -100,7 +100,7 @@ public class DataBaseBackupServiceImpl implements DataBaseBackupService {
 
             long duration = System.currentTimeMillis() - startTime;
 
-            DataBaseBackupOutput result = DataBaseBackupOutput.builder()
+            DatabaseBackupOutput result = DatabaseBackupOutput.builder()
                     .fileName(fileName)
                     .localPath(localPath)
                     .ossPath(ossPath)
@@ -119,6 +119,10 @@ public class DataBaseBackupServiceImpl implements DataBaseBackupService {
 
         } catch (Exception e) {
             log.error("MySQL备份失败", e);
+
+            // 发送失败通知邮件
+            sendFailureEmailNotification(e.getMessage(), LocalDateTime.now());
+
             throw new SystemException(ResultCode.OTHER_ERROR.getCode(), "MySQL备份失败: " + e.getMessage());
         }
     }
@@ -126,7 +130,7 @@ public class DataBaseBackupServiceImpl implements DataBaseBackupService {
     /**
      * 发送邮件通知
      */
-    private void sendEmailNotification(DataBaseBackupOutput result) {
+    private void sendEmailNotification(DatabaseBackupOutput result) {
         try {
             if (Boolean.TRUE.equals(backupProperties.getEnableEmailNotify())
                     && StringUtils.hasText(backupProperties.getNotifyEmail())) {
@@ -138,7 +142,7 @@ public class DataBaseBackupServiceImpl implements DataBaseBackupService {
                         try {
                             mailService.sendDatabaseBackupMail(email, result);
                         } catch (Exception e) {
-                            log.error("发送备份通知邮件失败，收件人: {}", email, e);
+                            log.error("发送备份成功通知邮件失败，收件人: {}", email, e);
                         }
                     }
                 }
@@ -149,9 +153,37 @@ public class DataBaseBackupServiceImpl implements DataBaseBackupService {
     }
 
     /**
+     * 发送失败邮件通知
+     */
+    private void sendFailureEmailNotification(String errorMessage, LocalDateTime failTime) {
+        try {
+            if (Boolean.TRUE.equals(backupProperties.getEnableEmailNotify())
+                    && StringUtils.hasText(backupProperties.getNotifyEmail())) {
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String failTimeStr = failTime.format(formatter);
+
+                String[] emails = backupProperties.getNotifyEmail().split(",");
+                for (String email : emails) {
+                    email = email.trim();
+                    if (StringUtils.hasText(email)) {
+                        try {
+                            mailService.sendDatabaseBackupFailMail(email, errorMessage, failTimeStr);
+                        } catch (Exception e) {
+                            log.error("发送备份失败通知邮件失败，收件人: {}", email, e);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("失败邮件通知发送异常", e);
+        }
+    }
+
+    /**
      * 执行mysqldump命令
      */
-    private void executeMysqlDump(DataBaseBackupInput input, String outputPath) throws Exception {
+    private void executeMysqlDump(DatabaseBackupInput input, String outputPath) throws Exception {
         // 构建mysqldump命令
         StringBuilder command = new StringBuilder("docker exec ");
         command.append(backupProperties.getContainerName());
@@ -205,7 +237,12 @@ public class DataBaseBackupServiceImpl implements DataBaseBackupService {
         OSS ossClient = null;
         try {
             ossClient = ossClientFactory.getClient();
-            String objectKey = backupProperties.getOssBackupPath() + "/" + fileName;
+            // 去掉开头的 "/" 或 "\"，OSS object key 不能以这些字符开头
+            String ossPath = backupProperties.getOssBackupPath();
+            if (ossPath != null) {
+                ossPath = ossPath.replaceAll("^[/\\\\]+", "");
+            }
+            String objectKey = ossPath + "/" + fileName;
 
             PutObjectRequest putObjectRequest = new PutObjectRequest(
                     ossProperties.getBucket(),
@@ -261,7 +298,7 @@ public class DataBaseBackupServiceImpl implements DataBaseBackupService {
     }
 
     @Override
-    public List<DataBaseBackupOutput> listBackups() {
+    public List<DatabaseBackupOutput> listBackups() {
         try {
             File backupDir = new File(backupProperties.getLocalBackupDir());
             if (!backupDir.exists() || !backupDir.isDirectory()) {
@@ -273,7 +310,7 @@ public class DataBaseBackupServiceImpl implements DataBaseBackupService {
                 return new ArrayList<>();
             }
 
-            List<DataBaseBackupOutput> backupList = new ArrayList<>();
+            List<DatabaseBackupOutput> backupList = new ArrayList<>();
             for (File file : files) {
                 try {
                     Path path = file.toPath();
@@ -283,7 +320,7 @@ public class DataBaseBackupServiceImpl implements DataBaseBackupService {
                             ZoneId.systemDefault()
                     );
 
-                    backupList.add(DataBaseBackupOutput.builder()
+                    backupList.add(DatabaseBackupOutput.builder()
                             .fileName(file.getName())
                             .localPath(file.getAbsolutePath())
                             .fileSize(file.length())
@@ -297,7 +334,7 @@ public class DataBaseBackupServiceImpl implements DataBaseBackupService {
 
             // 按时间倒序排列
             return backupList.stream()
-                    .sorted(Comparator.comparing(DataBaseBackupOutput::getBackupTime).reversed())
+                    .sorted(Comparator.comparing(DatabaseBackupOutput::getBackupTime).reversed())
                     .collect(Collectors.toList());
 
         } catch (Exception e) {

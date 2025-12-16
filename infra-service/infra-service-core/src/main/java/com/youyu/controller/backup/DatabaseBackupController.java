@@ -1,11 +1,11 @@
 package com.youyu.controller.backup;
 
 import com.youyu.annotation.Log;
-import com.youyu.dto.backup.DataBaseBackupInput;
-import com.youyu.dto.backup.DataBaseBackupOutput;
+import com.youyu.dto.backup.DatabaseBackupInput;
+import com.youyu.dto.backup.DatabaseBackupOutput;
 import com.youyu.enums.LogType;
 import com.youyu.result.ResponseResult;
-import com.youyu.service.backup.DataBaseBackupService;
+import com.youyu.service.backup.DatabaseBackupService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -22,10 +22,10 @@ import java.util.Map;
 @RefreshScope
 @RestController
 @RequestMapping("/backup")
-public class DataBaseBackupController {
+public class DatabaseBackupController {
 
     @Resource
-    private DataBaseBackupService dataBaseBackupService;
+    private DatabaseBackupService dataBaseBackupService;
 
     /**
      * 手动备份MySQL数据库
@@ -35,8 +35,8 @@ public class DataBaseBackupController {
      */
     @PostMapping("/database")
     @Log(title = "MySQL手动备份", type = LogType.BACKUP_DATABASE)
-    public ResponseResult<DataBaseBackupOutput> backup(DataBaseBackupInput input) {
-        DataBaseBackupOutput result = dataBaseBackupService.backup(input);
+    public ResponseResult<DatabaseBackupOutput> backup(DatabaseBackupInput input) {
+        DatabaseBackupOutput result = dataBaseBackupService.backup(input);
         return ResponseResult.success(result);
     }
 
@@ -46,8 +46,8 @@ public class DataBaseBackupController {
      * @return 备份文件列表
      */
     @GetMapping("/database/list")
-    public ResponseResult<List<DataBaseBackupOutput>> listBackups() {
-        List<DataBaseBackupOutput> backups = dataBaseBackupService.listBackups();
+    public ResponseResult<List<DatabaseBackupOutput>> listBackups() {
+        List<DatabaseBackupOutput> backups = dataBaseBackupService.listBackups();
         return ResponseResult.success(backups);
     }
 
@@ -56,7 +56,7 @@ public class DataBaseBackupController {
      *
      * @return 清理的文件数量
      */
-    @DeleteMapping("/database/clean")
+    @RequestMapping("/database/clean")
     @Log(title = "清理过期备份", type = LogType.DELETE)
     public ResponseResult<Map<String, Object>> cleanExpiredBackups() {
         int count = dataBaseBackupService.cleanExpiredBackups();

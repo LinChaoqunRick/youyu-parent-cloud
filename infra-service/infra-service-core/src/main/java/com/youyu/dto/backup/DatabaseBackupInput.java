@@ -9,7 +9,7 @@ import java.util.List;
  * MySQL备份请求参数
  */
 @Data
-public class DataBaseBackupInput {
+public class DatabaseBackupInput {
     /**
      * 是否上传到OSS（默认true）
      */

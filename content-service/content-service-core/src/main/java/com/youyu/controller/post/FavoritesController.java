@@ -68,7 +68,7 @@ public class FavoritesController {
             throw new SystemException(ResultCode.OTHER_ERROR.getCode(), "专栏数目已达上限" + favoritesMaxNum + "个");
         }
         input.setUserId(userId);
-        input.setCover("https://youyu-source.oss-cn-beijing.aliyuncs.com/firstImages/default/defaultFirstPic.png");
+        input.setCover("https://youyu-source.youyul.com/firstImages/default/defaultFirstPic.png");
         boolean save = favoritesService.save(input);
         if (save) {
             return ResponseResult.success(input);
@@ -125,7 +125,7 @@ public class FavoritesController {
             Favorites defaultFavorites = new Favorites();
             defaultFavorites.setName("默认收藏夹");
             defaultFavorites.setUserId(authUserId);
-            defaultFavorites.setCover("https://youyu-source.oss-cn-beijing.aliyuncs.com/firstImages/default/defaultFirstPic.png");
+            defaultFavorites.setCover("https://youyu-source.youyul.com/firstImages/default/defaultFirstPic.png");
             favoritesService.save(defaultFavorites);
             favoritesList.add(defaultFavorites);
         }

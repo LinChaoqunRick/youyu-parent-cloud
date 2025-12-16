@@ -104,6 +104,8 @@ services:
     #      - "8110:8110"
     volumes:
       - /data/volumes/service-log/infra-service:/opt/logs
+      - /data/backups/mysql:/data/backups/mysql  # MySQL备份文件目录
+      - /var/run/docker.sock:/var/run/docker.sock  # 映射Docker socket，允许容器内执行docker命令
     environment:
       TZ: Asia/Shanghai # 设置时区
     networks:
