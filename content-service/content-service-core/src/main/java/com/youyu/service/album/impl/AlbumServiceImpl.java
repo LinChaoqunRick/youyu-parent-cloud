@@ -62,7 +62,45 @@ public class AlbumServiceImpl extends ServiceImpl<AlbumMapper, Album> implements
             return pageOutput;
         }
 
-        // 第一次遍历：收集封面路径和基本信息
+        // 收集所有需要的ID
+        List<Long> albumIds = pageOutput.getList().stream()
+                .map(AlbumListOutput::getId)
+                .collect(Collectors.toList());
+        List<Long> userIds = pageOutput.getList().stream()
+                .map(AlbumListOutput::getUserId)
+                .distinct()
+                .collect(Collectors.toList());
+        List<Long> coverImageIds = pageOutput.getList().stream()
+                .map(AlbumListOutput::getCoverImageId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 批量查询用户信息
+        List<UserDTO> users = userServiceClient.listByIds(userIds).getData();
+        Map<Long, PostUserOutput> userMap = users.stream()
+                .collect(Collectors.toMap(UserDTO::getId,
+                    user -> BeanCopyUtils.copyBean(user, PostUserOutput.class)));
+
+        // 批量查询照片数量
+        Map<Long, Long> imageCountMap = albumImageService.batchGetImageCount(albumIds);
+
+        // 批量查询封面图片
+        Map<Long, AlbumImage> coverImageMap = coverImageIds.isEmpty()
+                ? Collections.emptyMap()
+                : albumImageService.listByIds(coverImageIds).stream()
+                    .collect(Collectors.toMap(AlbumImage::getId, image -> image));
+
+        // 批量查询没有设置封面的相册的第一张照片
+        List<Long> albumsWithoutCover = pageOutput.getList().stream()
+                .filter(item -> item.getCoverImageId() == null)
+                .map(AlbumListOutput::getId)
+                .collect(Collectors.toList());
+        Map<Long, AlbumImage> firstImageMap = albumsWithoutCover.isEmpty()
+                ? Collections.emptyMap()
+                : albumImageService.batchGetFirstImages(albumsWithoutCover);
+
+        // 第一次遍历：填充基本信息并收集封面路径
         Map<String, AlbumListOutput> coverPathMap = new HashMap<>();
         List<String> openAlbumCovers = new ArrayList<>();
         List<String> privateAlbumCovers = new ArrayList<>();
@@ -72,28 +110,27 @@ public class AlbumServiceImpl extends ServiceImpl<AlbumMapper, Album> implements
             item.setAuthorizedUserList(null);
             item.setAuthorizedUsers(null);
 
-            // 获取用户信息
-            PostUserOutput detail = getUserDetailById(item.getUserId());
-            item.setUserInfo(detail);
+            // 设置用户信息
+            PostUserOutput user = userMap.get(item.getUserId());
+            if (user != null) {
+                item.setUserInfo(user);
+            }
 
-            // 查询照片数量
-            long imageCount = albumImageService.count(new LambdaQueryWrapper<AlbumImage>().eq(AlbumImage::getAlbumId, item.getId()));
-            item.setImageCount(imageCount);
+            // 设置照片数量
+            item.setImageCount(imageCountMap.getOrDefault(item.getId(), 0L));
 
             // 设置封面路径
-            Long coverImageId = item.getCoverImageId();
             String coverPath = null;
+            Long coverImageId = item.getCoverImageId();
 
             if (Objects.nonNull(coverImageId)) {
-                AlbumImage albumImage = albumImageService.getById(coverImageId);
+                AlbumImage albumImage = coverImageMap.get(coverImageId);
                 if (Objects.nonNull(albumImage)) {
                     coverPath = albumImage.getPath();
                 }
             } else {
                 // 如果没有设置封面，就取第一张照片
-                LambdaQueryWrapper<AlbumImage> queryWrapper = new LambdaQueryWrapper<>();
-                queryWrapper.eq(AlbumImage::getAlbumId, item.getId()).last("limit 1");
-                AlbumImage firstImage = albumImageService.getOne(queryWrapper);
+                AlbumImage firstImage = firstImageMap.get(item.getId());
                 if (firstImage != null) {
                     coverPath = firstImage.getPath();
                 }

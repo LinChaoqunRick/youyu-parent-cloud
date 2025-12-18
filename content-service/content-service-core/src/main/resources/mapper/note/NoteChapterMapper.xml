@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.mapper.note.NoteChapterMapper">
+
+    <!--批量查询笔记的章节统计信息-->
+    <select id="batchGetChapterStats" resultType="com.youyu.dto.note.NoteChapterStatsDTO">
+        SELECT
+            note_id as noteId,
+            COUNT(*) as chapterCount,
+            COALESCE(SUM(view_count), 0) as totalViewCount
+        FROM bs_note_chapter
+        WHERE note_id IN
+        <foreach collection="noteIds" item="noteId" open="(" separator="," close=")">
+            #{noteId}
+        </foreach>
+        AND deleted = 0
+        GROUP BY note_id
+    </select>
+</mapper>

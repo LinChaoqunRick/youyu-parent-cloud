@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.youyu.mapper.moment.MomentCommentMapper">
 
-    <resultMap type="com.youyu.dto.moment.MomentCommentListOutput" id="MomentCommentMap">
+    <resultMap type="com.youyu.dto.moment.MomentCommentOutput" id="MomentCommentMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="momentId" column="moment_id" jdbcType="INTEGER"/>
         <result property="rootId" column="root_id" jdbcType="INTEGER"/>
@@ -29,6 +29,61 @@
         moment_id = #{momentId}
         AND root_id = - 1
         AND c1.deleted = 0
+    </select>
+
+    <!--批量查询根评论的回复数量-->
+    <select id="batchGetReplyCount" resultType="com.youyu.dto.moment.ReplyCountDTO">
+        SELECT
+            root_id as rootId,
+            COUNT(*) as replyCount
+        FROM bs_moment_comment
+        WHERE root_id IN
+        <foreach collection="rootIds" item="rootId" open="(" separator="," close=")">
+            #{rootId}
+        </foreach>
+        AND deleted = 0
+        GROUP BY root_id
+    </select>
+
+    <!--批量查询根评论的最新N条子评论-->
+    <select id="batchGetLatestReplies" resultType="com.youyu.entity.moment.MomentComment">
+        SELECT * FROM (
+            SELECT
+                *,
+                ROW_NUMBER() OVER (PARTITION BY root_id ORDER BY create_time DESC) as rn
+            FROM bs_moment_comment
+            WHERE root_id IN
+            <foreach collection="rootIds" item="rootId" open="(" separator="," close=")">
+                #{rootId}
+            </foreach>
+            AND deleted = 0
+        ) t WHERE t.rn &lt;= #{limit}
+    </select>
+
+    <!--批量查询时刻的评论数量（包括根评论和子评论，但排除已删除根评论的子评论）-->
+    <select id="batchGetMomentCommentCount" resultType="com.youyu.dto.moment.MomentCommentCountDTO">
+        SELECT
+            moment_id as momentId,
+            COUNT(*) as commentCount
+        FROM bs_moment_comment
+        WHERE moment_id IN
+        <foreach collection="momentIds" item="momentId" open="(" separator="," close=")">
+            #{momentId}
+        </foreach>
+        AND deleted = 0
+        AND (
+            root_id = -1  -- 统计未删除的根评论
+            OR root_id IN (  -- 统计未删除根评论的子评论
+                SELECT id FROM bs_moment_comment
+                WHERE moment_id IN
+                <foreach collection="momentIds" item="momentId" open="(" separator="," close=")">
+                    #{momentId}
+                </foreach>
+                AND root_id = -1
+                AND deleted = 0
+            )
+        )
+        GROUP BY moment_id
     </select>
 </mapper>
 

@@ -2,6 +2,7 @@ package com.youyu.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.annotation.Log;
 import com.youyu.entity.auth.UserFramework;
 import com.youyu.dto.result.TencentLocationResult;
@@ -16,6 +17,7 @@ import com.youyu.service.VisitorService;
 import com.youyu.utils.LocateUtils;
 import com.youyu.utils.RedisCache;
 import com.youyu.utils.SecurityUtils;
+import com.youyu.utils.PageUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,8 @@ import com.youyu.entity.user.ProfileMenu;
 import com.youyu.entity.user.User;
 import com.youyu.entity.user.UserDetailOutput;
 import com.youyu.entity.user.UserFollow;
+import com.youyu.dto.page.PageOutput;
+import com.youyu.dto.user.UserPageInput;
 
 import java.util.Objects;
 
@@ -219,6 +223,24 @@ public class UserController {
     @RequestMapping("/noAuthTest")
     public ResponseResult<String> noAuthTest() {
         return ResponseResult.success("OK Success");
+    }
+
+    /**
+     * 分页查询用户列表
+     *
+     * @param input 分页查询参数
+     * @return 分页结果
+     */
+    @RequestMapping("/page")
+    public ResponseResult<PageOutput<User>> page(UserPageInput input) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(input.getNickname() != null && !input.getNickname().isEmpty(), User::getNickname, input.getNickname());
+        queryWrapper.like(input.getUsername() != null && !input.getUsername().isEmpty(), User::getUsername, input.getUsername());
+        queryWrapper.orderByAsc(User::getId);
+
+        Page<User> page = userService.page(new Page<>(input.getPageNum(), input.getPageSize()), queryWrapper);
+        PageOutput<User> output = PageUtils.setPageResult(page, User.class);
+        return ResponseResult.success(output);
     }
 }
 

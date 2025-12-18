@@ -1,7 +1,7 @@
 package com.youyu.controller.post;
 
 import com.youyu.annotation.Log;
-import com.youyu.dto.VisitorDTO;
+import com.youyu.common.VisitorCommentHelper;
 import com.youyu.dto.comment.CommentListInput;
 import com.youyu.dto.comment.CommentListOutput;
 import com.youyu.dto.page.PageOutput;
@@ -11,12 +11,10 @@ import com.youyu.dto.result.TencentLocationResult;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
-import com.youyu.feign.UserServiceClient;
 import com.youyu.result.ResponseResult;
 import com.youyu.service.post.CommentLikeService;
 import com.youyu.service.post.CommentService;
 import com.youyu.utils.LocateUtils;
-import com.youyu.utils.SecurityUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,10 +38,7 @@ public class CommentController {
     private CommentLikeService commentLikeService;
 
     @Resource
-    private UserServiceClient userServiceClient;
-
-    @Resource
-    private LocateUtils locateUtils;
+    private VisitorCommentHelper visitorCommentHelper;
 
     @RequestMapping("/open/getCommentsPage")
     ResponseResult<PageOutput<CommentListOutput>> getCommentsPage(@Valid CommentListInput input) {
@@ -55,23 +50,7 @@ public class CommentController {
     @Log(title = "新增文章评论", type = LogType.INSERT)
     @Transactional
     ResponseResult<CommentListOutput> createPostComment(Comment input) {
-        if (SecurityUtils.getUserId() == null && input.getEmail() == null) {
-            throw new SystemException(ResultCode.PARAMETER_ERROR.getCode(), "操作者不能为空");
-        }
-        if (SecurityUtils.getUserId() != null) {
-            // 用户登录
-            input.setUserId(SecurityUtils.getUserId());
-        } else {
-            // 游客
-            VisitorDTO visitor = new VisitorDTO();
-            visitor.setEmail(input.getEmail());
-            visitor.setNickname(input.getNickname());
-            visitor.setHomepage(input.getHomepage());
-            visitor = userServiceClient.saveOrUpdateByEmail(visitor).getData();
-            input.setVisitorId(visitor.getId());
-        }
-        TencentLocationResult locationResult = locateUtils.queryTencentIp();
-        input.setAdcode(locationResult.getAdcode());
+        TencentLocationResult locationResult = visitorCommentHelper.processCommentIdentity(input);
         CommentListOutput output = commentService.createComment(input);
         output.setAdname(LocateUtils.getShortNameByCode(String.valueOf(locationResult.getAdcode())));
         return ResponseResult.success(output);

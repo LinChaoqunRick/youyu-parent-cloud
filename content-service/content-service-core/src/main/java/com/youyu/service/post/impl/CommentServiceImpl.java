@@ -7,6 +7,7 @@ import com.youyu.dto.Actor;
 import com.youyu.dto.ActorBase;
 import com.youyu.dto.comment.CommentListInput;
 import com.youyu.dto.comment.CommentListOutput;
+import com.youyu.dto.comment.ReplyCountDTO;
 import com.youyu.dto.mail.CommentMailSendInput;
 import com.youyu.dto.page.PageOutput;
 import com.youyu.entity.post.Comment;
@@ -30,6 +31,7 @@ import jakarta.validation.Valid;
 import com.youyu.utils.PageUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * (Comment)表服务实现类
@@ -61,45 +63,76 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Override
     public PageOutput<CommentListOutput> getCommentsPage(CommentListInput input) {
         Long userId = SecurityUtils.getUserId();
-        LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
-        if (input.getRootId() != null) {
-            // 子评论只需要rootId就可以查询
-            queryWrapper.eq(Comment::getRootId, input.getRootId());
-        } else {
-            // 根评论需要postId
-            queryWrapper.eq(Comment::getPostId, input.getPostId());
-            queryWrapper.eq(Comment::getRootId, -1);
-        }
-        queryWrapper.last("order by" + " " + input.getOrderBy() + " " + (input.isAsc() ? "asc" : "desc"));
-        // 分页查询
-        Page<Comment> page = new Page<>(input.getPageNum(), input.getPageSize());
-        page(page, queryWrapper);
-        // 封装查询结果
+
+        // 1. 查询基础分页数据（使用安全的 orderBy）
+        Page<Comment> page = queryCommentPage(input);
         PageOutput<CommentListOutput> pageOutput = PageUtils.setPageResult(page, CommentListOutput.class);
-        // 收集所有actor信息，一次性查询
-        List<ActorBase> actorBases = new ArrayList<>(pageOutput.getList().stream().map(this::getCommentActor).toList());
-        // 仅临时记录被回复的评论
+
+        if (pageOutput.getList().isEmpty()) {
+            return pageOutput;
+        }
+
+        // 收集所有需要的ID
+        List<Long> commentIds = pageOutput.getList().stream().map(CommentListOutput::getId).collect(Collectors.toList());
+        List<Long> rootCommentIds = input.getRootId() == null
+            ? commentIds
+            : Collections.emptyList();
+        Set<Long> replyIds = pageOutput.getList().stream()
+            .map(CommentListOutput::getReplyId)
+            .filter(replyId -> replyId != -1)
+            .collect(Collectors.toSet());
+
+        // 2. 批量查询点赞状态
+        Set<Long> likedCommentIds = userId != null
+            ? commentLikeService.getLikedCommentIds(userId, commentIds)
+            : Collections.emptySet();
+
+        // 3. 批量查询回复数量（仅对根评论）
+        Map<Long, Long> replyCountMap = new HashMap<>();
+        if (!rootCommentIds.isEmpty()) {
+            List<ReplyCountDTO> replyCountList = commentMapper.batchGetReplyCount(rootCommentIds);
+            replyCountMap = replyCountList.stream()
+                .collect(Collectors.toMap(ReplyCountDTO::getRootId, ReplyCountDTO::getReplyCount));
+        }
+
+        // 4. 批量查询子评论（仅对根评论）
+        Map<Long, List<Comment>> repliesMap = new HashMap<>();
+        if (!rootCommentIds.isEmpty()) {
+            List<Comment> allReplies = commentMapper.batchGetLatestReplies(rootCommentIds, 2);
+            repliesMap = allReplies.stream().collect(Collectors.groupingBy(Comment::getRootId));
+        }
+
+        // 5. 批量查询被回复的评论
+        Map<Long, Comment> repliedCommentMap = replyIds.isEmpty()
+            ? Collections.emptyMap()
+            : commentMapper.selectBatchIds(replyIds).stream()
+                .collect(Collectors.toMap(Comment::getId, c -> c));
+
+        // 6. 收集所有actor信息
+        List<ActorBase> actorBases = new ArrayList<>(pageOutput.getList().stream()
+            .map(this::getCommentActor).collect(Collectors.toList()));
         Map<Long, ActorBase> tempReplyActorMap = new HashMap<>();
-        // 处理额外信息
+
+        // 7. 填充数据
+        Map<Long, Long> finalReplyCountMap = replyCountMap;
+        Map<Long, List<Comment>> finalRepliesMap = repliesMap;
         pageOutput.getList().forEach(item -> {
+            // 设置地址名称
             item.setAdname(LocateUtils.getShortNameByCode(String.valueOf(item.getAdcode())));
-            // 查询是否点赞
-            if (Objects.nonNull(userId)) {
-                CommentLike commentLike = new CommentLike();
-                commentLike.setCommentId(item.getId());
-                item.setCommentLike(commentLikeService.isPostCommentLike(commentLike));
-            }
-            // 根评论，查询回复数量，最早n条回复
+
+            // 设置点赞状态
+            item.setCommentLike(likedCommentIds.contains(item.getId()));
+
+            // 处理根评论的回复信息
             if (input.getRootId() == null) {
-                LambdaQueryWrapper<Comment> replyQueryWrapper = new LambdaQueryWrapper<>();
-                replyQueryWrapper.eq(Comment::getRootId, item.getId());
-                replyQueryWrapper.orderByDesc(Comment::getCreateTime);
-                Long replyCount = commentMapper.selectCount(replyQueryWrapper);
+                Long replyCount = finalReplyCountMap.getOrDefault(item.getId(), 0L);
                 item.setReplyCount(replyCount);
+
                 if (replyCount > 0) {
-                    List<Comment> repliesList = commentMapper.selectList(replyQueryWrapper.last("LIMIT 2"));
-                    actorBases.addAll(repliesList.stream().map(this::getCommentActor).toList());
-                    List<CommentListOutput> children = BeanCopyUtils.copyBeanList(repliesList, CommentListOutput.class);
+                    List<Comment> replies = finalRepliesMap.getOrDefault(item.getId(), Collections.emptyList());
+                    actorBases.addAll(replies.stream().map(this::getCommentActor).collect(Collectors.toList()));
+
+                    List<CommentListOutput> children = BeanCopyUtils.copyBeanList(replies, CommentListOutput.class);
                     children.forEach(child -> {
                         child.setAdname(LocateUtils.getShortNameByCode(String.valueOf(child.getAdcode())));
                         if (child.getReplyId() > -1) {
@@ -109,18 +142,20 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                     item.setChildren(children);
                 }
             }
-            // 子评论，如果回复是回复了某条子评论，查询被回复人信息
+
+            // 处理被回复评论的actor信息
             if (item.getReplyId() != -1) {
-                // 如果回复了某条评论，就把被回复人的信息查询出来
-                Comment repliedComment = commentMapper.selectById(item.getReplyId());
-                ActorBase repliedActorBase = getCommentActor(repliedComment);
-                actorBases.add(repliedActorBase);
-                tempReplyActorMap.put(repliedComment.getId(), repliedActorBase);
+                Comment repliedComment = repliedCommentMap.get(item.getReplyId());
+                if (repliedComment != null) {
+                    ActorBase repliedActorBase = getCommentActor(repliedComment);
+                    actorBases.add(repliedActorBase);
+                    tempReplyActorMap.put(repliedComment.getId(), repliedActorBase);
+                }
             }
         });
-        // 批量查询actor信息
+
+        // 8. 批量查询actor信息并填充
         Map<Integer, Map<Long, Actor>> actorMap = actorService.makeActorMap(actorBases);
-        // 填充actor信息
         pageOutput.getList().forEach(item -> {
             fillCommentActor(item, actorMap, tempReplyActorMap);
             if (item.getChildren() != null) {
@@ -129,6 +164,30 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         });
 
         return pageOutput;
+    }
+
+    /**
+     * 查询评论分页数据
+     */
+    private Page<Comment> queryCommentPage(CommentListInput input) {
+        LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
+
+        if (input.getRootId() != null) {
+            // 子评论只需要rootId就可以查询
+            queryWrapper.eq(Comment::getRootId, input.getRootId());
+        } else {
+            // 根评论需要postId
+            queryWrapper.eq(Comment::getPostId, input.getPostId());
+            queryWrapper.eq(Comment::getRootId, -1);
+        }
+
+        // 使用安全的 orderBy（已验证白名单）
+        String validatedOrderBy = input.getValidatedOrderBy();
+        queryWrapper.last("order by " + validatedOrderBy + " " + (input.isAsc() ? "asc" : "desc"));
+
+        Page<Comment> page = new Page<>(input.getPageNum(), input.getPageSize());
+        page(page, queryWrapper);
+        return page;
     }
 
     @Override
@@ -183,7 +242,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         // 被评论人信息查询
         Long replyId = getCommentReplyId(comment);
         if (replyId != null) {
-            // 不是根评论，而是子评论或回复了子评论
+            // 存在回复的id，说明不是根评论，而是子评论或回复了子评论
             Comment replyComment = commentMapper.selectById(replyId);
             ActorBase actorBaseTo = getCommentActor(replyComment);
             if (Objects.nonNull(actorBaseTo.getActorId())) {

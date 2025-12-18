@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.youyu.common.VisitorCommentable;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,7 +24,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @TableName("bs_moment_comment")
-public class MomentComment extends Model<MomentComment> {
+public class MomentComment extends Model<MomentComment> implements VisitorCommentable {
     // 主键
     private Long id;
     // 回复的时刻id

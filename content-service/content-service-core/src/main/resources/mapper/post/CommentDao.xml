@@ -28,5 +28,60 @@
         AND root_id = - 1
         AND c1.deleted = 0
     </select>
+
+    <!--批量查询根评论的回复数量-->
+    <select id="batchGetReplyCount" resultType="com.youyu.dto.comment.ReplyCountDTO">
+        SELECT
+            root_id as rootId,
+            COUNT(*) as replyCount
+        FROM bs_comment
+        WHERE root_id IN
+        <foreach collection="rootIds" item="rootId" open="(" separator="," close=")">
+            #{rootId}
+        </foreach>
+        AND deleted = 0
+        GROUP BY root_id
+    </select>
+
+    <!--批量查询根评论的最新N条子评论-->
+    <select id="batchGetLatestReplies" resultType="com.youyu.entity.post.Comment">
+        SELECT * FROM (
+            SELECT
+                *,
+                ROW_NUMBER() OVER (PARTITION BY root_id ORDER BY create_time DESC) as rn
+            FROM bs_comment
+            WHERE root_id IN
+            <foreach collection="rootIds" item="rootId" open="(" separator="," close=")">
+                #{rootId}
+            </foreach>
+            AND deleted = 0
+        ) t WHERE t.rn &lt;= #{limit}
+    </select>
+
+    <!--批量查询文章的评论数量（包括根评论和子评论，但排除已删除根评论的子评论）-->
+    <select id="batchGetPostCommentCount" resultType="com.youyu.dto.post.PostCommentCountDTO">
+        SELECT
+            post_id as postId,
+            COUNT(*) as commentCount
+        FROM bs_comment
+        WHERE post_id IN
+        <foreach collection="postIds" item="postId" open="(" separator="," close=")">
+            #{postId}
+        </foreach>
+        AND deleted = 0
+        AND (
+            root_id = -1  -- 统计未删除的根评论
+            OR root_id IN (  -- 统计未删除根评论的子评论
+                SELECT id FROM bs_comment
+                WHERE post_id IN
+                <foreach collection="postIds" item="postId" open="(" separator="," close=")">
+                    #{postId}
+                </foreach>
+                AND root_id = -1
+                AND deleted = 0
+            )
+        )
+        GROUP BY post_id
+    </select>
 </mapper>
 

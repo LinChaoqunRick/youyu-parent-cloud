@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -107,6 +107,67 @@ public class MomentLikeServiceImpl extends ServiceImpl<MomentLikeMapper, MomentL
             moment.setSupportCount(count);
             momentMapper.updateById(moment);
         });
+    }
+
+    @Override
+    public Set<Long> getLikedMomentIds(Long userId, List<Long> momentIds) {
+        if (userId == null || momentIds == null || momentIds.isEmpty()) {
+            return Collections.emptySet();
+        }
+        LambdaQueryWrapper<MomentLike> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(MomentLike::getUserId, userId);
+        queryWrapper.in(MomentLike::getMomentId, momentIds);
+        queryWrapper.select(MomentLike::getMomentId);
+        return momentLikeMapper.selectList(queryWrapper).stream()
+                .map(MomentLike::getMomentId)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Map<Long, List<MomentUserOutput>> batchGetLikeUsers(List<Long> momentIds, int limit) {
+        if (momentIds == null || momentIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        // 查询所有点赞记录
+        LambdaQueryWrapper<MomentLike> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(MomentLike::getMomentId, momentIds);
+        queryWrapper.select(MomentLike::getMomentId, MomentLike::getUserId, MomentLike::getCreateTime);
+        queryWrapper.orderByDesc(MomentLike::getCreateTime);
+        List<MomentLike> likes = momentLikeMapper.selectList(queryWrapper);
+
+        // 按 momentId 分组
+        Map<Long, List<MomentLike>> likesByMoment = likes.stream()
+                .collect(Collectors.groupingBy(MomentLike::getMomentId));
+
+        // 收集所有用户ID
+        Set<Long> allUserIds = likes.stream()
+                .map(MomentLike::getUserId)
+                .collect(Collectors.toSet());
+
+        // 批量查询用户信息
+        Map<Long, UserDTO> userMap = Collections.emptyMap();
+        if (!allUserIds.isEmpty()) {
+            List<UserDTO> users = userServiceClient.listByIds(new ArrayList<>(allUserIds)).getData();
+            userMap = users.stream().collect(Collectors.toMap(UserDTO::getId, u -> u));
+        }
+
+        // 组装结果
+        Map<Long, List<MomentUserOutput>> result = new HashMap<>();
+        Map<Long, UserDTO> finalUserMap = userMap;
+        likesByMoment.forEach((momentId, momentLikes) -> {
+            List<MomentUserOutput> likeUsers = momentLikes.stream()
+                    .limit(limit)
+                    .map(like -> {
+                        UserDTO user = finalUserMap.get(like.getUserId());
+                        return user != null ? BeanUtil.copyProperties(user, MomentUserOutput.class) : null;
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            result.put(momentId, likeUsers);
+        });
+
+        return result;
     }
 }
 

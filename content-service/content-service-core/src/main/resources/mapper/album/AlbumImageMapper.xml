@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.mapper.album.AlbumImageMapper">
+
+    <!--批量查询相册的照片数量-->
+    <select id="batchGetImageCount" resultType="com.youyu.dto.album.AlbumImageCountDTO">
+        SELECT
+            album_id as albumId,
+            COUNT(*) as imageCount
+        FROM bs_album_image
+        WHERE album_id IN
+        <foreach collection="albumIds" item="albumId" open="(" separator="," close=")">
+            #{albumId}
+        </foreach>
+        AND deleted = 0
+        GROUP BY album_id
+    </select>
+
+    <!--批量查询每个相册的第一张照片-->
+    <select id="batchGetFirstImages" resultType="com.youyu.entity.album.AlbumImage">
+        SELECT * FROM (
+            SELECT
+                *,
+                ROW_NUMBER() OVER (PARTITION BY album_id ORDER BY create_time ASC) as rn
+            FROM bs_album_image
+            WHERE album_id IN
+            <foreach collection="albumIds" item="albumId" open="(" separator="," close=")">
+                #{albumId}
+            </foreach>
+            AND deleted = 0
+        ) t WHERE t.rn = 1
+    </select>
+</mapper>

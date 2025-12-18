@@ -31,8 +31,8 @@ import com.youyu.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * (Post)表服务实现类
@@ -101,25 +101,86 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         // 封装查询结果
         PageOutput<PostListOutput> pageOutput = PageUtils.setPageResult(page, PostListOutput.class);
 
-        // 查询categoryName, 普通循环
-        pageOutput.getList().forEach(this::setPostListData);
-
-        // 查询categoryName, stream流
+        // 批量填充数据
+        batchSetPostListData(pageOutput.getList());
 
         return pageOutput;
     }
 
     @Override
     public List<PostListOutput> postListByIds(List<Long> ids) {
-        if (Objects.isNull(ids)) {
-            return null;
+        if (Objects.isNull(ids) || ids.isEmpty()) {
+            return Collections.emptyList();
         }
         LambdaQueryWrapper<Post> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.in(Post::getId, ids);
         List<Post> postList = postMapper.selectList(lambdaQueryWrapper);
         List<PostListOutput> outputs = BeanCopyUtils.copyBeanList(postList, PostListOutput.class);
-        outputs.forEach(this::setPostListData);
+
+        // 批量填充数据
+        batchSetPostListData(outputs);
+
         return outputs;
+    }
+
+    /**
+     * 批量填充文章列表数据（分类、评论数、用户信息）
+     */
+    private void batchSetPostListData(List<PostListOutput> posts) {
+        if (posts == null || posts.isEmpty()) {
+            return;
+        }
+
+        // 收集所有需要的ID
+        List<Long> postIds = posts.stream()
+                .map(PostListOutput::getId)
+                .collect(Collectors.toList());
+        List<Long> categoryIds = posts.stream()
+                .map(PostListOutput::getCategoryId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        List<Long> userIds = posts.stream()
+                .map(PostListOutput::getUserId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 批量查询分类信息
+        Map<Long, Category> categoryMap = categoryIds.isEmpty()
+                ? Collections.emptyMap()
+                : categoryService.listByIds(categoryIds).stream()
+                    .collect(Collectors.toMap(Category::getId, c -> c));
+
+        // 批量查询评论数量
+        List<PostCommentCountDTO> commentCountList = commentMapper.batchGetPostCommentCount(postIds);
+        Map<Long, Integer> commentCountMap = commentCountList.stream()
+                .collect(Collectors.toMap(PostCommentCountDTO::getPostId, PostCommentCountDTO::getCommentCount));
+
+        // 批量查询用户信息
+        List<UserDTO> users = userServiceClient.listByIds(userIds).getData();
+        Map<Long, PostUserOutput> userMap = users.stream()
+                .collect(Collectors.toMap(UserDTO::getId,
+                    user -> BeanCopyUtils.copyBean(user, PostUserOutput.class)));
+
+        // 填充数据
+        posts.forEach(post -> {
+            // 设置分类名称
+            if (post.getCategoryId() != null) {
+                Category category = categoryMap.get(post.getCategoryId());
+                if (category != null) {
+                    post.setCategoryName(category.getName());
+                }
+            }
+
+            // 设置评论数量
+            post.setCommentCount(Long.valueOf(commentCountMap.getOrDefault(post.getId(), 0)));
+
+            // 设置用户信息
+            PostUserOutput user = userMap.get(post.getUserId());
+            if (user != null) {
+                post.setUser(user);
+            }
+        });
     }
 
     @Override
