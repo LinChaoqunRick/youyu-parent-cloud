@@ -37,7 +37,7 @@ spring:
         - id: content-service
           uri: lb://content-service
           predicates:
-            - Path=/category/**,/column/**,/comment/**,/post/**,/favorites/**,/moment/**,/momentComment/**,/momentCommentLike/**,/momentLike/**,/noteChapter/**,/note/**,/album/**,/albumImage/**,/manage/analysis/**,/manage/monitor/**,/manage/logs/**,/message/**,/manage/message/**,/link/**,/activity/**
+            - Path=/category/**,/column/**,/comment/**,/post/**,/favorites/**,/moment/**,/momentComment/**,/momentCommentLike/**,/momentLike/**,/noteChapter/**,/note/**,/album/**,/albumImage/**,/manage/analysis/**,/manage/monitor/**,/manage/logs/**,/message/**,/manage/message/**,/link/**,/activity/**,/rss/**
 
         - id: infra-service
           uri: lb://infra-service
