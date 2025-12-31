@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.dto.UserDTO;
+import com.youyu.dto.note.NoteChapterStatsDTO;
 import com.youyu.dto.note.NoteListOutput;
 import com.youyu.dto.note.NoteUserExtraInfo;
 import com.youyu.dto.note.NoteUserOutput;
@@ -15,14 +16,15 @@ import com.youyu.entity.note.NoteChapter;
 import com.youyu.feign.UserServiceClient;
 import com.youyu.mapper.note.NoteChapterMapper;
 import com.youyu.mapper.note.NoteMapper;
+import com.youyu.service.note.NoteChapterService;
 import com.youyu.service.note.NoteService;
 import com.youyu.utils.BeanCopyUtils;
 import com.youyu.utils.PageUtils;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -95,11 +97,56 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note> implements No
 
     @Override
     public List<NoteListOutput> noteListByIds(List<Long> noteIds) {
+        if (noteIds == null || noteIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         LambdaQueryWrapper<Note> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(Note::getId, noteIds);
         List<Note> noteList = noteMapper.selectList(queryWrapper);
         List<NoteListOutput> outputs = BeanCopyUtils.copyBeanList(noteList, NoteListOutput.class);
-        outputs.forEach(this::setExtraData);
+
+        if (outputs.isEmpty()) {
+            return outputs;
+        }
+
+        // 收集所有需要的ID
+        List<Long> userIds = outputs.stream()
+                .map(NoteListOutput::getUserId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 批量查询章节统计信息
+        List<NoteChapterStatsDTO> chapterStatsList = noteIds.isEmpty()
+                ? Collections.emptyList()
+                : noteChapterMapper.batchGetChapterStats(noteIds);
+        Map<Long, NoteChapterStatsDTO> chapterStatsMap = chapterStatsList.stream()
+                .collect(Collectors.toMap(NoteChapterStatsDTO::getNoteId, stats -> stats));
+
+        // 批量查询用户信息
+        List<NoteUserOutput> users = getUserDetailByIds(userIds, true);
+        Map<Long, NoteUserOutput> userMap = users.stream()
+                .collect(Collectors.toMap(NoteUserOutput::getId, user -> user));
+
+        // 填充数据
+        outputs.forEach(note -> {
+            // 设置章节统计信息
+            NoteChapterStatsDTO stats = chapterStatsMap.get(note.getId());
+            if (stats != null) {
+                note.setViewCount(stats.getTotalViewCount());
+                note.setChapterCount(stats.getChapterCount());
+            } else {
+                note.setViewCount(0L);
+                note.setChapterCount(0);
+            }
+
+            // 设置用户信息
+            NoteUserOutput user = userMap.get(note.getUserId());
+            if (user != null) {
+                note.setUser(user);
+            }
+        });
+
         return outputs;
     }
 

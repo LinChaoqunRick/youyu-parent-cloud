@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.youyu.common.VisitorCommentable;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,7 +24,7 @@ import java.util.Date;
 @Getter
 @Setter
 @TableName("bs_comment")
-public class Comment extends Model<Comment> {
+public class Comment extends Model<Comment> implements VisitorCommentable {
     private Long id;
     /**
      * 文章id

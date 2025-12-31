@@ -18,6 +18,7 @@
         <module>framework-mybatis</module>
         <module>framework-redis</module>
         <module>framework-mq</module>
+        <module>framework-web</module>
     </modules>
 
     <properties>

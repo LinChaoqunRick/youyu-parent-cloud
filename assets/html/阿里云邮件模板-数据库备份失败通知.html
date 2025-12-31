@@ -1,0 +1,106 @@
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f7fa; padding: 40px 0;">
+    <tr>
+        <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <!-- 头部 -->
+                <tr>
+                    <td style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); padding: 30px; text-align: center;">
+                        <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 600;">
+                            ❌ 数据库备份失败告警
+                        </h1>
+                    </td>
+                </tr>
+
+                <!-- 主体内容 -->
+                <tr>
+                    <td style="padding: 35px 30px;">
+                        <p style="margin: 0 0 10px; color: #333333; font-size: 15px; line-height: 1.5;">
+                            您好！
+                        </p>
+                        <p style="margin: 0 0 25px; color: #d32f2f; font-size: 14px; font-weight: 600; line-height: 1.6;">
+                            ⚠️ 系统在执行MySQL数据库备份任务时发生错误，备份失败。请立即检查并处理！
+                        </p>
+
+                        <!-- 失败信息卡片 -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #fff5f5; border-left: 4px solid #f44336; border-radius: 6px; padding: 20px; margin-bottom: 20px;">
+                            <tr>
+                                <td>
+                                    <table width="100%" cellpadding="6" cellspacing="0" border="0">
+                                        <tr>
+                                            <td width="28%" style="color: #666666; font-size: 13px; padding: 6px 0;">
+                                                <strong>🕐 失败时间：</strong>
+                                            </td>
+                                            <td style="color: #333333; font-size: 13px; padding: 6px 0;">
+                                                ${failTime}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="color: #666666; font-size: 13px; padding: 6px 0; border-top: 1px solid #ffcdd2;">
+                                                <strong>❗ 错误信息：</strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="padding: 0 0 6px 0;">
+                                                <div style="background-color: #ffffff; border: 1px solid #ffcdd2; border-radius: 4px; padding: 10px; font-family: 'Courier New', monospace; font-size: 12px; color: #d32f2f; line-height: 1.5; word-break: break-all;">
+                                                    ${errorMessage}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- 处理建议 -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px; padding: 12px 15px; margin-bottom: 20px;">
+                            <tr>
+                                <td>
+                                    <p style="margin: 0 0 6px; color: #e65100; font-size: 13px; font-weight: 600;">
+                                        🔧 建议处理步骤：
+                                    </p>
+                                    <p style="margin: 0; color: #666666; font-size: 12px; line-height: 1.6;">
+                                        1. 检查MySQL容器是否正常运行：<code style="background-color: #ffe0b2; padding: 2px 5px; border-radius: 3px; font-size: 11px;">docker ps | grep mysql</code><br>
+                                        2. 检查备份目录权限和磁盘空间<br>
+                                        3. 查看系统日志获取详细错误信息<br>
+                                        4. 检查OSS配置是否正确（如果涉及OSS上传）<br>
+                                        5. 如果问题持续，请联系技术团队
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- 影响说明 -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 4px; padding: 12px 15px; margin-bottom: 20px;">
+                            <tr>
+                                <td>
+                                    <p style="margin: 0; color: #1565c0; font-size: 12px; line-height: 1.6;">
+                                        💡 <strong>影响说明：</strong><br>
+                                        • 本次定时备份未能完成，数据保护存在风险<br>
+                                        • 建议尽快处理并手动执行一次备份<br>
+                                        • 如果备份持续失败，可能影响数据安全保障
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <p style="margin: 0; color: #999999; font-size: 12px; line-height: 1.5; text-align: center;">
+                            此邮件由系统自动发送，请勿直接回复。如需帮助请联系系统管理员。
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- 底部 -->
+                <tr>
+                    <td style="background-color: #f8f9fa; padding: 18px 30px; text-align: center; border-top: 1px solid #e0e0e0;">
+                        <p style="margin: 0 0 4px; color: #999999; font-size: 11px;">
+                            © 2025 优渔云系统 | 数据库自动备份服务
+                        </p>
+                        <p style="margin: 0; color: #cccccc; font-size: 10px;">
+                            系统运维团队
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>

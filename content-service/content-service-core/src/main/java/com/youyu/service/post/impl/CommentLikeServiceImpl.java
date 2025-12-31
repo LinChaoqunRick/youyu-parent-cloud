@@ -16,7 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.Resource;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * (CommentLike)表服务实现类
@@ -92,5 +95,18 @@ public class CommentLikeServiceImpl extends ServiceImpl<CommentLikeMapper, Comme
             comment.setSupportCount(count);
             commentMapper.updateById(comment);
         });
+    }
+
+    @Override
+    public Set<Long> getLikedCommentIds(Long userId, List<Long> commentIds) {
+        if (userId == null || commentIds == null || commentIds.isEmpty()) {
+            return Collections.emptySet();
+        }
+        LambdaQueryWrapper<CommentLike> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(CommentLike::getUserId, userId);
+        queryWrapper.in(CommentLike::getCommentId, commentIds);
+        return commentLikeMapper.selectList(queryWrapper).stream()
+                .map(CommentLike::getCommentId)
+                .collect(Collectors.toSet());
     }
 }

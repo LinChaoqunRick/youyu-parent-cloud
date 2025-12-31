@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youyu.dto.Actor;
+import com.youyu.dto.UserDTO;
 import com.youyu.dto.moment.*;
 import com.youyu.dto.page.PageOutput;
 import com.youyu.entity.moment.Moment;
@@ -26,9 +27,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -82,22 +82,75 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
 
     @Override
     public PageOutput<MomentListOutput> getMomentList(MomentListInput input) {
+        Long currentUserId = SecurityUtils.getUserId();
+
+        // 1. 查询基础分页数据（使用安全的 orderBy）
         LambdaQueryWrapper<Moment> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         if (Objects.nonNull(input.getUserIds())) {
             List<Long> userIds = Arrays.stream(input.getUserIds().split(",")).map(Long::parseLong).toList();
             lambdaQueryWrapper.in(Moment::getUserId, userIds);
         }
-        lambdaQueryWrapper.last("order by" + " " + input.getOrderBy() + " " + (input.isAsc() ? "asc" : "desc"));
+        // 使用安全的 orderBy（已验证白名单）
+        String validatedOrderBy = input.getValidatedOrderBy();
+        lambdaQueryWrapper.last("order by " + validatedOrderBy + " " + (input.isAsc() ? "asc" : "desc"));
 
-        // 分页查询
         Page<Moment> page = new Page<>(input.getPageNum(), input.getPageSize());
         Page<Moment> postPage = momentMapper.selectPage(page, lambdaQueryWrapper);
-
-        // 封装查询结果
         PageOutput<MomentListOutput> pageOutput = PageUtils.setPageResult(postPage, MomentListOutput.class);
 
-        // 查询用户信息, 评论数量, 点赞信息
-        pageOutput.getList().forEach(this::setExtraData);
+        if (pageOutput.getList().isEmpty()) {
+            return pageOutput;
+        }
+
+        // 2. 收集所有需要的ID
+        List<Long> momentIds = pageOutput.getList().stream()
+                .map(MomentListOutput::getId)
+                .collect(Collectors.toList());
+        List<Long> userIds = pageOutput.getList().stream()
+                .map(MomentListOutput::getUserId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 3. 批量查询用户信息
+        List<UserDTO> users = userServiceClient.listByIds(userIds).getData();
+        Map<Long, MomentUserOutput> userMap = users.stream()
+                .collect(Collectors.toMap(UserDTO::getId,
+                    user -> BeanCopyUtils.copyBean(user, MomentUserOutput.class)));
+
+        // 4. 批量查询评论数量
+        Map<Long, Integer> commentCountMap = momentCommentService.batchGetCommentCount(momentIds);
+
+        // 5. 批量查询点赞状态
+        Set<Long> likedMomentIds = currentUserId != null
+                ? momentLikeService.getLikedMomentIds(currentUserId, momentIds)
+                : Collections.emptySet();
+
+        // 6. 批量查询点赞用户列表
+        Map<Long, List<MomentUserOutput>> likeUsersMap = momentLikeService.batchGetLikeUsers(momentIds, 10);
+
+        // 7. 填充数据
+        pageOutput.getList().forEach(moment -> {
+            // 设置用户信息
+            MomentUserOutput user = userMap.get(moment.getUserId());
+            if (user != null) {
+                moment.setUser(user);
+            }
+
+            // 设置评论数量
+            moment.setCommentCount(commentCountMap.getOrDefault(moment.getId(), 0));
+
+            // 设置点赞状态
+            moment.setMomentLike(likedMomentIds.contains(moment.getId()));
+
+            // 设置地址名称
+            moment.setAdname(LocateUtils.getShortNameByCode(String.valueOf(moment.getAdcode())));
+
+            // 设置点赞用户列表
+            List<MomentUserOutput> likeUsers = likeUsersMap.get(moment.getId());
+            if (Objects.nonNull(likeUsers)) {
+                moment.setLikeUsers(likeUsers);
+            }
+        });
 
         return pageOutput;
     }
@@ -165,11 +218,68 @@ public class MomentServiceImpl extends ServiceImpl<MomentMapper, Moment> impleme
 
     @Override
     public List<MomentListOutput> momentListByIds(List<Long> momentIds) {
+        if (momentIds == null || momentIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Long currentUserId = SecurityUtils.getUserId();
+
         LambdaQueryWrapper<Moment> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(Moment::getId, momentIds);
         List<Moment> momentList = momentMapper.selectList(queryWrapper);
         List<MomentListOutput> outputList = BeanCopyUtils.copyBeanList(momentList, MomentListOutput.class);
-        outputList.forEach(this::setExtraData);
+
+        if (outputList.isEmpty()) {
+            return outputList;
+        }
+
+        // 收集所有需要的ID
+        List<Long> userIds = outputList.stream()
+                .map(MomentListOutput::getUserId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 批量查询用户信息
+        List<UserDTO> users = userServiceClient.listByIds(userIds).getData();
+        Map<Long, MomentUserOutput> userMap = users.stream()
+                .collect(Collectors.toMap(UserDTO::getId,
+                    user -> BeanCopyUtils.copyBean(user, MomentUserOutput.class)));
+
+        // 批量查询评论数量
+        Map<Long, Integer> commentCountMap = momentCommentService.batchGetCommentCount(momentIds);
+
+        // 批量查询点赞状态
+        Set<Long> likedMomentIds = currentUserId != null
+                ? momentLikeService.getLikedMomentIds(currentUserId, momentIds)
+                : Collections.emptySet();
+
+        // 批量查询点赞用户列表
+        Map<Long, List<MomentUserOutput>> likeUsersMap = momentLikeService.batchGetLikeUsers(momentIds, 10);
+
+        // 填充数据
+        outputList.forEach(moment -> {
+            // 设置用户信息
+            MomentUserOutput user = userMap.get(moment.getUserId());
+            if (user != null) {
+                moment.setUser(user);
+            }
+
+            // 设置评论数量
+            moment.setCommentCount(commentCountMap.getOrDefault(moment.getId(), 0));
+
+            // 设置点赞状态
+            moment.setMomentLike(likedMomentIds.contains(moment.getId()));
+
+            // 设置地址名称
+            moment.setAdname(LocateUtils.getShortNameByCode(String.valueOf(moment.getAdcode())));
+
+            // 设置点赞用户列表
+            List<MomentUserOutput> likeUsers = likeUsersMap.get(moment.getId());
+            if (Objects.nonNull(likeUsers)) {
+                moment.setLikeUsers(likeUsers);
+            }
+        });
+
         return outputList;
     }
 

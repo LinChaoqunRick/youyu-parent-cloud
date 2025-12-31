@@ -58,13 +58,13 @@ public interface UserServiceClient {
     @RequestMapping("/user/open/pageUserByUserIds")
     ResponseResult<PageOutput<UserDTO>> pageUserByUserIds(@RequestParam long current, @RequestParam long size, @RequestParam List<Long> userIds);
 
-    @PostMapping(value = "/visitor/open/getVisitorTotal")
+    @PostMapping(value = "/visitor/getVisitorTotal")
     ResponseResult<Long> getVisitorTotal();
 
-    @PostMapping(value = "/visitor/open/getMonthlyNewVisitors")
+    @PostMapping(value = "/visitor/getMonthlyNewVisitors")
     ResponseResult<List<VisitData>> getMonthlyNewVisitors();
 
-    @PostMapping(value = "/visitor/open/getVisitorsByProvince")
+    @PostMapping(value = "/visitor/getVisitorsByProvince")
     ResponseResult<List<RegionData>> getVisitorsByProvince();
 
     @PostMapping(value = "/user/open/selectCountByEmail")

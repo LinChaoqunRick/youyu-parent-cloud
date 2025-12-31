@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>评论通知</title>
+</head>
+<body>
+<div style="max-width:620px; margin:0 auto; background:#ffffff; border-radius:10px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,0.06);">
+  <div style="display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#4a6ee0,#6a11cb); padding:24px 32px; color:white;">
+    <h1 style="font-size:22px; font-weight:600; margin:0;">
+      系统通知
+    </h1><img alt="" src="https://youyu-source.oss-cn-beijing.aliyuncs.com/youyu/logo_280x120.png" style="width: 100px;display:block;"/>
+  </div>
+  <div style="padding:32px;">
+    <div style="font-size:18px; margin-bottom:22px; color:#2c3e50; font-weight:500;">
+      Hi！<span style="color:#4a6ee0; font-weight:600;">{actorToNickname}</span>：
+    </div>
+    <div style="margin:18px 0; font-size:15px;">
+      用户&nbsp;<span style="color:#4a6ee0; font-weight:600;">@{actorNickname}&nbsp;</span>在 <span style="color: rgb(74, 110, 224); font-size: 15px; font-weight: 600; text-wrap-mode: wrap;">{contentType}</span>:<span style="color:#4a6ee0"><strong>《<span style="color: rgb(74, 110, 224); font-size: 15px; font-weight: 600; text-wrap-mode: wrap;">{title}》</span></strong></span>下{commentType}了以下内容：
+    </div>
+    <div style="background:#f8f9fb; border-left:4px solid #4a6ee0; padding:16px 20px; margin:24px 0; border-radius:0 6px 6px 0; color:#556372; white-space:pre-wrap;">
+      {content}
+    </div>
+    <p style="margin:0 0 18px;">
+      您可以点击下方按钮查看详情：
+    </p>
+    <div style="text-align:center; margin:30px 0;">
+      <a href="http://{link}" style="display:inline-block;
+             background:linear-gradient(135deg,#4a6ee0,#6a11cb);
+             color:white;
+             padding:12px 60px;
+             border-radius:6px;
+             font-weight:600;
+             text-decoration:none;
+             box-shadow:0 3px 8px rgba(74,110,224,0.25);
+             transition:all .3s;">查看详情</a>
+    </div>
+    <div style="margin-top:32px; padding-top:20px; border-top:1px solid #e4e4e4; font-size:13px; color:#8391a5; text-align:center;">
+      <p style="margin:0 0 6px;">
+        此邮件由系统自动发送，请勿直接回复
+      </p>
+      <p style="margin:0;">
+        如有疑问，请联系系统管理员
+      </p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

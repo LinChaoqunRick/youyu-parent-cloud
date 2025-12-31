@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.Collections;
 
 /**
  * (MomentCommentLike)表服务实现类
@@ -78,6 +81,19 @@ public class MomentCommentLikeServiceImpl extends ServiceImpl<MomentCommentLikeM
             comment.setSupportCount(count);
             momentCommentMapper.updateById(comment);
         });
+    }
+
+    @Override
+    public Set<Long> getLikedCommentIds(Long userId, List<Long> commentIds) {
+        if (userId == null || commentIds == null || commentIds.isEmpty()) {
+            return Collections.emptySet();
+        }
+        LambdaQueryWrapper<MomentCommentLike> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(MomentCommentLike::getUserId, userId);
+        queryWrapper.in(MomentCommentLike::getCommentId, commentIds);
+        return momentCommentLikeMapper.selectList(queryWrapper).stream()
+                .map(MomentCommentLike::getCommentId)
+                .collect(Collectors.toSet());
     }
 }
 

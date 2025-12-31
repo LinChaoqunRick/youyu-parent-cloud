@@ -1,22 +1,20 @@
 package com.youyu.controller.album;
 
-import com.aliyun.oss.HttpMethod;
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.model.GeneratePresignedUrlRequest;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.youyu.annotation.Log;
-import com.youyu.config.OssProperties;
 import com.youyu.dto.album.AlbumImageListInput;
 import com.youyu.dto.album.AlbumImageListOutput;
 import com.youyu.dto.album.AlbumImageSaveInput;
+import com.youyu.dto.oss.OssBatchSignedUrlInput;
+import com.youyu.dto.oss.OssSignedUrlInput;
 import com.youyu.dto.page.PageOutput;
 import com.youyu.entity.album.Album;
 import com.youyu.entity.album.AlbumImage;
 import com.youyu.enums.LogType;
 import com.youyu.enums.ResultCode;
 import com.youyu.exception.SystemException;
+import com.youyu.feign.OssServiceClient;
 import com.youyu.result.ResponseResult;
 
 import com.youyu.service.album.AlbumImageService;
@@ -33,10 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 
-import java.net.URL;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -53,13 +50,13 @@ import java.util.stream.Collectors;
 public class AlbumImageController {
 
     @Resource
-    private OssProperties ossProperties;
-
-    @Resource
     private AlbumImageService albumImageService;
 
     @Resource
     private AlbumService albumService;
+
+    @Resource
+    private OssServiceClient ossServiceClient;
 
     @RequestMapping("/open/list")
     public ResponseResult<PageOutput<AlbumImageListOutput>> list(@Valid AlbumImageListInput input) {
@@ -121,17 +118,18 @@ public class AlbumImageController {
     }
 
     @RequestMapping("/open/origin")
-    @Log(title = "查看原图", type = LogType.OTHER)
+    // @Log(title = "查看原图", type = LogType.OTHER)
     public ResponseResult<String> getOriginUrl(@RequestParam Long id) {
         AlbumImage albumImage = albumImageService.getById(id);
-        OSS ossClient = new OSSClientBuilder().build(ossProperties.getEndPoint(), ossProperties.getAccessKeyId(), ossProperties.getAccessKeySecret());
 
-        // 指定签名URL过期时间为10分钟。
-        Date expiration = new Date(new Date().getTime() + 1000 * 60 * 10);
-        GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(ossProperties.getBucket(), albumImage.getPath(), HttpMethod.GET);
-        req.setExpiration(expiration);
-        URL signedOriginalUrl = ossClient.generatePresignedUrl(req);
-        return ResponseResult.success(signedOriginalUrl.toString());
+        // 通过 Feign 调用 infra-service 生成签名 URL
+        OssSignedUrlInput input = new OssSignedUrlInput();
+        input.setPath(albumImage.getPath());
+        input.setExpireSeconds(600L); // 10分钟
+        input.setBucket("album"); // 使用相册 bucket
+
+        String signedUrl = ossServiceClient.generateSignedUrl(input).getData();
+        return ResponseResult.success(signedUrl);
     }
 
     public boolean isAccessible(Album album, Long userId) {
@@ -148,22 +146,26 @@ public class AlbumImageController {
      * @param imageList 图片列表;
      */
     public void generateOSSUrl(List<AlbumImageListOutput> imageList) {
-        OSS ossClient = new OSSClientBuilder().build(ossProperties.getEndPoint(), ossProperties.getAccessKeyId(), ossProperties.getAccessKeySecret());
+        if (imageList == null || imageList.isEmpty()) {
+            return;
+        }
 
+        // 批量生成缩略图签名 URL
+        OssBatchSignedUrlInput input = new OssBatchSignedUrlInput();
+        input.setPaths(imageList.stream().map(AlbumImageListOutput::getPath).collect(Collectors.toList()));
+        input.setExpireSeconds(600L); // 10分钟
+        input.setProcess("style/thumbnail");
+        input.setBucket("album"); // 使用相册 bucket
+
+        Map<String, String> urlMap = ossServiceClient.generateBatchSignedUrl(input).getData();
+
+        // 设置 URL
         imageList.forEach(item -> {
-            // 指定签名URL过期时间为10分钟。
-            Date expiration = new Date(new Date().getTime() + 1000 * 60 * 10);
-            GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(ossProperties.getBucket(), item.getPath(), HttpMethod.GET);
-            req.setExpiration(expiration);
-//            URL signedOriginalUrl = ossClient.generatePresignedUrl(req);
-//            item.setOriginUrl(signedOriginalUrl.toString());
-            req.setProcess("style/thumbnail");
-            URL signedUrl = ossClient.generatePresignedUrl(req);
-            item.setUrl(signedUrl.toString());
+            String signedUrl = urlMap.get(item.getPath());
+            if (signedUrl != null) {
+                item.setUrl(signedUrl);
+            }
         });
-
-        // 关闭 OSS 客户端
-        ossClient.shutdown();
     }
 }
 

@@ -167,11 +167,21 @@ public class UserOpenController {
         List<Long> visitorIds = actorBases.stream().filter(actor -> actor.getActorType() == ActorType.VISITOR.getCode()).map(ActorBase::getActorId).toList();
         Map<Integer, Map<Long, Actor>> resultMap = Maps.newHashMap();
         if (CollUtil.isNotEmpty(userIds)) {
-            Map<Long, Actor> userMap = userService.listByIds(userIds).stream().collect(Collectors.toMap(User::getId, user -> BeanCopyUtils.copyBean(user, Actor.class)));
+            Map<Long, Actor> userMap = userService.listByIds(userIds).stream().map(user -> {
+                Actor actor = BeanCopyUtils.copyBean(user, Actor.class);
+                actor.setType(ActorType.USER.getCode());
+                actor.setAdname(LocateUtils.getShortNameByCode(String.valueOf(actor.getAdcode())));
+                return actor;
+            }).collect(Collectors.toMap(Actor::getId, actor -> actor));
             resultMap.put(ActorType.USER.getCode(), userMap);
         }
         if (CollUtil.isNotEmpty(visitorIds)) {
-            Map<Long, Actor> visitorMap = visitorService.listByIds(visitorIds).stream().collect(Collectors.toMap(Visitor::getId, visitor -> BeanCopyUtils.copyBean(visitor, Actor.class)));
+            Map<Long, Actor> visitorMap = visitorService.listByIds(visitorIds).stream().map(visitor -> {
+                Actor actor = BeanCopyUtils.copyBean(visitor, Actor.class);
+                actor.setType(ActorType.VISITOR.getCode());
+                actor.setAdname(LocateUtils.getShortNameByCode(String.valueOf(actor.getAdcode())));
+                return actor;
+            }).collect(Collectors.toMap(Actor::getId, actor -> actor));
             resultMap.put(ActorType.VISITOR.getCode(), visitorMap);
         }
         return ResponseResult.success(resultMap);

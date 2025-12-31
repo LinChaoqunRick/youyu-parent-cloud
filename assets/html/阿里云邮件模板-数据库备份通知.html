@@ -1,0 +1,132 @@
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f7fa; padding: 40px 0;">
+    <tr>
+        <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <!-- 头部 -->
+                <tr>
+                    <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
+                        <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 600;">
+                            ✅ 数据库备份完成通知
+                        </h1>
+                    </td>
+                </tr>
+
+                <!-- 主体内容 -->
+                <tr>
+                    <td style="padding: 35px 30px;">
+                        <p style="margin: 0 0 10px; color: #333333; font-size: 15px; line-height: 1.5;">
+                            您好！
+                        </p>
+                        <p style="margin: 0 0 25px; color: #666666; font-size: 14px; line-height: 1.6;">
+                            系统已成功完成MySQL数据库备份任务，以下是本次备份的详细信息：
+                        </p>
+
+                        <!-- 备份信息卡片 -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; border-radius: 6px; padding: 20px; margin-bottom: 20px;">
+                            <tr>
+                                <td>
+                                    <table width="100%" cellpadding="6" cellspacing="0" border="0">
+                                        <tr>
+                                            <td width="28%" style="color: #666666; font-size: 13px; padding: 6px 0;">
+                                                <strong>📄 备份文件：</strong>
+                                            </td>
+                                            <td style="color: #333333; font-size: 13px; padding: 6px 0;">
+                                                ${fileName}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #666666; font-size: 13px; padding: 6px 0;">
+                                                <strong>💾 文件大小：</strong>
+                                            </td>
+                                            <td style="color: #333333; font-size: 13px; padding: 6px 0;">
+                                                ${fileSize}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #666666; font-size: 13px; padding: 6px 0;">
+                                                <strong>🕐 备份时间：</strong>
+                                            </td>
+                                            <td style="color: #333333; font-size: 13px; padding: 6px 0;">
+                                                ${backupTime}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #666666; font-size: 13px; padding: 6px 0;">
+                                                <strong>⏱️ 耗时：</strong>
+                                            </td>
+                                            <td style="color: #333333; font-size: 13px; padding: 6px 0;">
+                                                ${duration} 毫秒
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #666666; font-size: 13px; padding: 6px 0; border-top: 1px solid #e0e0e0;">
+                                                <strong>☁️ OSS状态：</strong>
+                                            </td>
+                                            <td style="color: #28a745; font-size: 13px; padding: 6px 0; font-weight: 600; border-top: 1px solid #e0e0e0;">
+                                                ${uploadStatus}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #666666; font-size: 13px; padding: 6px 0;">
+                                                <strong>📍 本地路径：</strong>
+                                            </td>
+                                            <td style="color: #666666; font-size: 12px; padding: 6px 0; word-break: break-all;">
+                                                ${localPath}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #666666; font-size: 13px; padding: 6px 0;">
+                                                <strong>☁️ OSS路径：</strong>
+                                            </td>
+                                            <td style="color: #666666; font-size: 12px; padding: 6px 0; word-break: break-all;">
+                                                ${ossPath}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color: #666666; font-size: 13px; padding: 6px 0;">
+                                                <strong>📝 备注：</strong>
+                                            </td>
+                                            <td style="color: #333333; font-size: 13px; padding: 6px 0;">
+                                                ${remark}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- 提示信息 -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #e7f3ff; border-left: 4px solid #1890ff; border-radius: 4px; padding: 12px 15px; margin-bottom: 20px;">
+                            <tr>
+                                <td>
+                                    <p style="margin: 0; color: #1890ff; font-size: 12px; line-height: 1.7;">
+                                        💡 <strong>温馨提示：</strong><br>
+                                        • 本地备份文件将保留7天后自动清理<br>
+                                        • OSS备份将长期保存，请定期验证备份文件可用性<br>
+                                        • 如需恢复数据，请联系系统管理员
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <p style="margin: 0; color: #999999; font-size: 12px; line-height: 1.5; text-align: center;">
+                            此邮件由系统自动发送，请勿直接回复。
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- 底部 -->
+                <tr>
+                    <td style="background-color: #f8f9fa; padding: 18px 30px; text-align: center; border-top: 1px solid #e0e0e0;">
+                        <p style="margin: 0 0 4px; color: #999999; font-size: 11px;">
+                            © 2025 优渔云系统 | 数据库自动备份服务
+                        </p>
+                        <p style="margin: 0; color: #cccccc; font-size: 10px;">
+                            系统运维团队
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
